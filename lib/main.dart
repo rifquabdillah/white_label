@@ -1,4 +1,4 @@
-import 'dart:async'; // Import untuk Timer
+import 'dart:async' show Timer; // Import untuk Timer
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'account.dart';
@@ -429,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ),
           SizedBox(width: 8),
           Text(
-            'Poin 52.336',
+            'Poin 4.126',
             style: TextStyle(
               color: Color(0xFF676c6c),
               fontWeight: FontWeight.w500,
@@ -1167,9 +1167,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
-                      _buildTransactionItem('S10 - 08123456789', '18 September 2024 - 20:33:24', 'Dalam Proses'),
-                      _buildTransactionItem('TD25 - 082286798400', '18 September 2024 - 18:43:32', 'Sukses'),
-                      _buildTransactionItem('S10 - 08123456789', '18 September 2024 - 20:33:24', 'Gagal'),
+                      _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Dalam Proses'),
+                      _buildTransactionItem('TD25 - 0812 2126 0284', '18 September 2024 - 18:43:32', 'Sukses'),
+                      _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Gagal'),
                     ],
                   ),
                 ),

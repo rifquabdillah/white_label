@@ -175,14 +175,14 @@ class TabBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Container(
         color: Colors.white,
         child: Column(
-          mainAxisSize: MainAxisSize.max, // Menjaga ukuran Column minimum
+          mainAxisSize: MainAxisSize.max,
           children: [
             const SizedBox(
-              width: double.infinity, // Membuat TabBar memenuhi lebar
+              width: double.infinity,
               child: TabBar(
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.grey,
@@ -196,6 +196,7 @@ class TabBarWidget extends StatelessWidget {
             ),
             SizedBox(
               height: 600,
+              width: double.infinity,
               child: Container(
                 color: const Color(0xfffdf7e6),
                 child: TabBarView(

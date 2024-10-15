@@ -11,7 +11,6 @@ class TransactionSummary extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionSummary> {
   bool _isSaldoVisible = true; // Controller for saldo visibility
-  List<int> barStates = List.filled(20, 0); // 0 for green, 1 for amber
   String? selectedMonth;
 
   final List<String> months = [
@@ -23,7 +22,7 @@ class _TransactionPageState extends State<TransactionSummary> {
     'June 2024',
     'July 2024',
     'August 2024',
-    'Sept 2024',
+    'September 2024',
     'October 2024',
     'November 2024',
     'December 2024',
@@ -32,27 +31,14 @@ class _TransactionPageState extends State<TransactionSummary> {
   final List<Map<String, String>> transactions = [
     {'date': '2024-10-01', 'amount': '100', 'status': 'Sukses'},
     {'date': '2024-10-02', 'amount': '50', 'status': 'Dalam Proses'},
+    // Add more transactions as needed for testing the bar chart
   ];
-
-  Color _getBarColor(int index) {
-    return barStates[index] == 0 ? const Color(0xff198754) : const Color(0xffecb709);
-  }
 
   @override
   void initState() {
     super.initState();
     // Set the default selected month
     selectedMonth = months[8]; // September 2024
-  }
-
-
-  void _onBarTap(int index) {
-    if (index >= 0 && index < barStates.length) { // Check if the index is within bounds
-      setState(() {
-        // Toggle between green (0) and amber (1)
-        barStates[index] = barStates[index] == 0 ? 1 : 0;
-      });
-    }
   }
 
   @override
@@ -71,7 +57,7 @@ class _TransactionPageState extends State<TransactionSummary> {
                 fontSize: 18.0,
                 fontWeight: FontWeight.normal,
                 color: Color(0xFF4e5558),
-                fontFamily: 'Poppins', // Set font family to Poppins
+                fontFamily: 'Poppins',
               ),
             ),
             const SizedBox(width: 10.0),
@@ -80,7 +66,7 @@ class _TransactionPageState extends State<TransactionSummary> {
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins', // Set font family to Poppins
+                fontFamily: 'Poppins',
               ),
             ),
             const SizedBox(width: 25.0),
@@ -147,22 +133,22 @@ class _TransactionPageState extends State<TransactionSummary> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // Adjust padding for better appearance
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           decoration: BoxDecoration(
             color: const Color(0xfff5db84),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            value: selectedMonth ?? months[0],  // Provide a default value if selectedMonth is null
+            value: selectedMonth ?? months[0],
             icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xff353e43)),
             elevation: 2,
             style: const TextStyle(
               color: Color(0xff353e43),
               fontWeight: FontWeight.w600,
-              fontSize: 14,
+              fontSize: 12,
               fontFamily: 'Poppins',
             ),
-            underline: Container(), // Remove the underline
+            underline: Container(),
             onChanged: (String? newValue) {
               setState(() {
                 selectedMonth = newValue; // Update the selected month
@@ -171,7 +157,7 @@ class _TransactionPageState extends State<TransactionSummary> {
             items: months.map<DropdownMenuItem<String>>((String month) {
               return DropdownMenuItem<String>(
                 value: month,
-                child: Text(month), // Display full month name in the dropdown list
+                child: Text(month),
               );
             }).toList(),
           ),
@@ -179,41 +165,6 @@ class _TransactionPageState extends State<TransactionSummary> {
       ],
     );
   }
-
-// Function to get abbreviated month name for display
-  String getAbbreviatedMonth(String month) {
-    switch (month) {
-      case 'January 2024':
-        return 'Jan 2024';
-      case 'February 2024':
-        return 'Feb 2024';
-      case 'March 2024':
-        return 'Mar 2024';
-      case 'April 2024':
-        return 'Apr 2024';
-      case 'May 2024':
-        return 'May 2024';
-      case 'June 2024':
-        return 'Jun 2024';
-      case 'July 2024':
-        return 'Jul 2024';
-      case 'August 2024':
-        return 'Aug 2024';
-      case 'September 2024':
-        return 'Sep 2024';
-      case 'October 2024':
-        return 'Oct 2024';
-      case 'November 2024':
-        return 'Nov 2024';
-      case 'December 2024':
-        return 'Dec 2024';
-      default:
-        return month; // Fallback in case month is not matched
-    }
-  }
-
-
-
 
   Widget _buildProfitIndicator() {
     return Row(
@@ -272,10 +223,9 @@ class _TransactionPageState extends State<TransactionSummary> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTransactionText('Transaksi Sukses', '64', const Color(0xff198754)),
-              _buildSalesText('Penjualan', 'Rp. 2.731.250'),
               _buildTransactionText('Transaksi', 'Rp. 2.246.775', const Color(0xff198754)),
               _buildTransactionText('Profit', 'Rp. 484.475', const Color(0xffecb709)),
-              const SizedBox(height: 10), // Optional: add some space between Profit and Lihat Mutasi
+              const SizedBox(height: 10),
               _buildMonthlyMutationButton(), // Add the button here
             ],
           ),
@@ -312,24 +262,16 @@ class _TransactionPageState extends State<TransactionSummary> {
   }
 
   Widget _buildBarChart(List<Map<String, String>> transactions) {
-    const barWidth = 8.0; // Width of each bar
-    const barSpacing = 15.0; // Space between the bars
+    // Data statis untuk bar
+    List<double> barStates = [5, 3, 8, 6, 2, 7, 4, 9, 1, 3, 5, 2, 4, 6, 8]; // Contoh nilai
 
-    // Calculate the number of transactions for each status
-    int successCount = transactions.where((t) => t['status'] == 'Sukses').length;
-    int processingCount = transactions.where((t) => t['status'] == 'Dalam Proses').length;
-    int failedCount = transactions.where((t) => t['status'] == 'Gagal').length;
-
-    // Create bar states
-    List<double> barStates = [successCount.toDouble(), processingCount.toDouble(), failedCount.toDouble()];
-
-    final totalWidth = (barStates.length * barWidth) + ((barStates.length - 1) * barSpacing); // Total width calculation
+    // Variabel untuk melacak indeks bar yang sedang diklik
+    int? clickedIndex;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       child: SizedBox(
-        height: 200, // Height of the bar chart
-        width: totalWidth, // Set total width for the horizontal scroll
+        height: 200, // Tinggi grafik batang
         child: BarChart(
           BarChartData(
             barGroups: List.generate(barStates.length, (index) {
@@ -337,67 +279,55 @@ class _TransactionPageState extends State<TransactionSummary> {
                 x: index,
                 barRods: [
                   BarChartRodData(
-                    y: barStates[index], // Y value from barStates
-                    colors: [_getBarColor(index)],
-                    width: barWidth, // Width of the bar
-                    borderRadius: BorderRadius.circular(4), // Optional: round the corners
+                    y: barStates[index], // Tinggi batang
+                    colors: [
+                      // Warna kuning jika bar yang sedang diklik, hijau jika tidak
+                      (clickedIndex == index) ? const Color(0xffecb709) : const Color(0xff198754)
+                    ],
+                    width: 10,
+                    borderRadius: BorderRadius.circular(4), // Sudut melengkung
                   ),
                 ],
               );
             }),
             titlesData: FlTitlesData(
+              leftTitles: SideTitles(showTitles: false), // Sembunyikan judul kiri
+              topTitles: SideTitles(showTitles: false),  // Sembunyikan judul atas
+              rightTitles: SideTitles(showTitles: false), // Sembunyikan judul kanan
               bottomTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 30,
-                getTitles: (value) {
-                  switch (value.toInt()) {
-                    case 0:
-                      return 'Sukses';
-                    case 1:
-                      return 'Dalam Proses';
-                    case 2:
-                      return 'Gagal';
-                    default:
-                      return '';
-                  }
+                reservedSize: 38,
+                getTitles: (double value) {
+                  // Tampilkan judul di bawah setiap bar
+                  return '1 ${(value + 1).toInt()}';
                 },
               ),
             ),
-            gridData: FlGridData(show: false),
-            borderData: FlBorderData(show: false),
-            alignment: BarChartAlignment.spaceAround,
+            gridData: FlGridData(show: true), // Tampilkan garis kisi
+            borderData: FlBorderData(
+              show: false, // Sembunyikan batas
+            ),
+            barTouchData: BarTouchData(
+              touchCallback: (event, response) {
+                // Tangani respons sentuhan
+                if (response != null && response.spot != null &&
+                    (event is FlTapUpEvent || event is FlLongPressEnd)) {
+                  // Cek jika widget masih terpasang
+                  if (mounted) {
+                    setState(() {
+                      // Dapatkan indeks bar yang diklik
+                      clickedIndex = response.spot!.touchedBarGroupIndex;
+                    });
+                  }
+                }
+              },
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSalesText(String label, String value) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          TextSpan(
-            text: ' $value',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Color(0xff4d4d4d),
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildMonthlyMutationButton() {
     return RichText(

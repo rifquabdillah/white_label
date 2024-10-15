@@ -1,0 +1,39 @@
+name: white_label
+description: "white label project"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  carousel_slider: ^5.0.0
+  font_awesome_flutter: ^10.1.0
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.40.0
+
+  intl: ^0.19.0
+  percent_indicator: ^4.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/logo_sukses.png
+    - assets/topup.png
+    - assets/qris.png
+    - assets/topup1.png # This includes all assets in this folder
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins-SemiBold.ttf

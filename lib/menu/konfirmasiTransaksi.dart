@@ -11,6 +11,12 @@ class _TransaksiPayState extends State<TransaksiPay> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transaksi Pay'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back when tapped
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -55,7 +61,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
   }
 }
 
-class KonfirmasiTransaksi extends StatelessWidget {
+  class KonfirmasiTransaksi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

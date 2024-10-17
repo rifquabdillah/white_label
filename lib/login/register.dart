@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -54,7 +56,7 @@ class _RegisterState extends State<Register> {
         backgroundColor: const Color(0xfffaf9f6),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Go back to the previous page
           },
@@ -90,7 +92,7 @@ class _RegisterState extends State<Register> {
                       fontFamily: 'Poppins', // Use Poppins font
                       color: Colors.amber,
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -324,7 +326,11 @@ class _RegisterState extends State<Register> {
                               fontWeight: FontWeight.bold,
                             ),
                             recognizer: TapGestureRecognizer()..onTap = () {
-                              // Action to go to the registration page
+                              // Navigate to the registration page
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const Login()),
+                              );
                             },
                           ),
                         ],

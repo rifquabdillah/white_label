@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:white_label/login/register.dart';
+import 'otpScreen.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -27,20 +29,26 @@ class _LoginState extends State<Login> {
   }
 
   void _checkRegistration() {
-    // This function should contain your logic to check if the number is registered
-    // For demonstration, let's assume any input is considered unregistered if it's not "123456789"
+    // Check if the input number is registered
     setState(() {
-      isRegistered = _controller.text != "123456789"; // Example logic to check registration
-      borderColor = isRegistered ? Colors.red : Colors.black54; // Change border color to red if unregistered
+      isRegistered = _controller.text == "123456789"; // Example logic to check registration
+      borderColor = isRegistered ? Colors.black54 : Colors.red; // Change border color
     });
   }
 
   void _onLoginPressed() {
-    // This function is called when the login button is pressed
     _checkRegistration(); // Check registration status
-    setState(() {
-      showWarning = isRegistered; // Show warning if the number is unregistered
-    });
+    if (isRegistered) {
+      // Navigate to Otpscreen if registered
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Otpscreen()), // Navigate to Otpscreen
+      );
+    } else {
+      setState(() {
+        showWarning = true; // Show warning if the number is unregistered
+      });
+    }
   }
 
   @override
@@ -52,7 +60,7 @@ class _LoginState extends State<Login> {
         backgroundColor: const Color(0xfffaf9f6),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Go back to the previous page
           },
@@ -88,7 +96,7 @@ class _LoginState extends State<Login> {
                       fontFamily: 'Poppins', // Use Poppins font
                       color: Colors.amber,
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -155,7 +163,8 @@ class _LoginState extends State<Login> {
                           style: TextStyle(
                             fontFamily: 'Poppins', // Use Poppins font
                             color: Colors.white,
-                            fontSize: 16,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600
                           ),
                         ),
                       ),
@@ -179,7 +188,11 @@ class _LoginState extends State<Login> {
                               fontWeight: FontWeight.bold,
                             ),
                             recognizer: TapGestureRecognizer()..onTap = () {
-                              // Action to go to the registration page
+                              // Navigate to the registration page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const Register()),
+                              );
                             },
                           ),
                         ],

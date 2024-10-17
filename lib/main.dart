@@ -1,12 +1,12 @@
-import 'dart:async' show Timer; // Import untuk Timer
+import 'dart:async'; // Import untuk Timer
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
 import 'menu/mPulsaPaket.dart' show PulsaPaketScreen;
 import 'menu/mTokenListrik.dart' show mTokenListrikScreen;
 import 'menu/mPertagas.dart' show mPertagasScreen;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: ''),
+      home: const SplashScreen(), // Set SplashScreen sebagai halaman awal
     );
   }
 }
@@ -95,49 +95,89 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      if (index == 1) { // History page index
-        Navigator.pushReplacement( // Use pushReplacement to remove the current screen
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: [],),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); // Start from right
-              const end = Offset.zero; // End at normal position
-              const curve = Curves.easeIn;
+    if (_selectedIndex != index) {
+      setState(() {
+        // Determine the direction of the slide transition based on the selected index
+        if (index == 0) { // Home
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(-1.0, 0.0); // Start from left
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
 
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
-      } else if (index == 2) { // Account page index
-        Navigator.pushReplacement( // Use pushReplacement here as well
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); // Start from right
-              const end = Offset.zero;
-              const curve = Curves.ease;
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 1) { // History
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
 
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
-      } else {
-        _selectedIndex = index; // Update selected index for other items
-      }
-    });
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 2) { // Profile (Account)
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 3) { // Support
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: ''), // Replace with your actual SupportPage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+        _selectedIndex = index; // Update selected index after navigating
+      });
+    }
   }
 
   @override
@@ -183,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               _buildIconWithText(Icons.home_filled, "Beranda", 0), // Pass index 0
               _buildIconWithText(Icons.access_time_filled_rounded, "History", 1), // Pass index 1
               _buildIconWithText(Icons.person_rounded, "Akun", 2), // Pass index 2
-              _buildIconWithText(Icons.headset_mic_outlined, "Support", 3), // Pass index 3
+              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3), // Pass index 3
             ],
           ),
         ),
@@ -406,7 +446,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            FontAwesomeIcons.crown,
+            Icons.star,
             color: Color(0xFFf7d82f),
             size: 20,
           ),
@@ -790,7 +830,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ],
       ),

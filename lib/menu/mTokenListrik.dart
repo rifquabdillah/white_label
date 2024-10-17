@@ -66,7 +66,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 ],
               ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back_ios),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -93,7 +93,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 });
               },
             ),
-            const Spacer(), // Mengisi ruang yang tersisa
           ],
         ),
       ),
@@ -105,7 +104,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0), // Menghilangkan padding kanan
+          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0, right: 26), // Menghilangkan padding kanan
           child: TextField(
             controller: _phoneController,
             decoration: InputDecoration(
@@ -170,46 +169,37 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
+    return Expanded(
       child: Column(
         children: [
           Container(
             color: const Color(0xfffaf9f6),
             child: Column(
               children: [
-                const TabBar(
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicator: BoxDecoration(), // Menghilangkan indikator
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'Token Listrik',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,// Mengubah teks menjadi bold
-                        ),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(
+                    'Token Listrik',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.black,
                     ),
-                  ],
+                  ),
                 ),
                 Container(
-                  height: 2, // Tinggi garis bawah
-                  width: double.infinity, // Panjang dari ujung ke ujung
-                  color: Colors.orange, // Warna garis bawah
+                  height: 3,
+                  width: double.infinity,
+                  color: Colors.orange,
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 600,
-            child: Container(
-              color: const Color(0xfffdf7e6),
-              child: TabBarView(
-                children: [
-                  _buildTokenListrikTab(selectedPromoIndex, onPromoSelected, context),
-                ],
+          Expanded(
+            child: SingleChildScrollView( // Wrap the Container in SingleChildScrollView
+              child: Container(
+                color: const Color(0xfffdf7e6),
+                child: _buildTokenListrikTab(selectedPromoIndex, onPromoSelected, context),
               ),
             ),
           ),
@@ -255,10 +245,10 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
   }
 
   Widget _buildTokenPromoCards(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
+    return Row(
+      children: [
+        Expanded(
+          child: SingleChildScrollView( // Wrap Column in SingleChildScrollView
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -269,11 +259,21 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
                 const SizedBox(height: 10),
                 _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: SingleChildScrollView( // Wrap Column in SingleChildScrollView
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -284,19 +284,25 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
                 const SizedBox(height: 10),
                 _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+                const SizedBox(height: 10),
+                _buildTokenCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
-
 
   Widget _buildTokenCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false}) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the TransaksiPay page
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -420,8 +426,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
     );
   }
 
-
-
   Widget _buildPromoButton(String text, int index) {
     return ElevatedButton(
       onPressed: () {
@@ -460,6 +464,9 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
                 const SizedBox(height: 10),
                 _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
+                _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
+                const SizedBox(height: 10),
+                _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
               ],
             ),
           ),
@@ -475,6 +482,9 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
                 const SizedBox(height: 10),
                 _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
+                _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
+                const SizedBox(height: 10),
+                _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
               ],
             ),
           ),
@@ -482,7 +492,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
       ),
     );
   }
-
 
   Widget _buildTokenPremiumCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false}) {
     return GestureDetector(
@@ -495,7 +504,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
               nominal: nominal,
               kodeproduk: kodeproduk,
               hargaJual: hargaJual,
-              description: 'Deskripsi produk di sini', // You can change this to the relevant description
+              description: 'Deskripsi produk di sini',
               originalPrice: originalPrice,
               info: info,
               transactionType: 'TokenListrik',
@@ -513,10 +522,10 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.2), // Warna bayangan
-                    spreadRadius: 0, // Mengatur radius penyebaran
-                    blurRadius: 2, // Mengatur blur
-                    offset: const Offset(0, 0), // Posisi bayangan
+                    color: Colors.orange.withOpacity(0.2),
+                    spreadRadius: 0,
+                    blurRadius: 2,
+                    offset: const Offset(0, 0),
                   ),
                 ],
               ),
@@ -607,8 +616,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
       ),
     );
   }
-
-
 
   Widget _buildTokenEkonomis(BuildContext context) {
     return Expanded(

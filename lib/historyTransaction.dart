@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:white_label/main.dart';
 import 'account.dart';
 import 'menu/transactionsiSummary.dart'; // Import this for BackdropFilter
 
@@ -50,49 +51,89 @@ class _HistoryPageState extends State<HistoryPage> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      if (index == 1) { // History page index
-        Navigator.pushReplacement( // Use pushReplacement to remove the current screen
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: [],),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); // Start from right
-              const end = Offset.zero; // End at normal position
-              const curve = Curves.easeIn;
+    if (_selectedIndex != index) {
+      setState(() {
+        // Determine the direction of the slide transition based on the selected index
+        if (index == 0) { // Home
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(-1.0, 0.0); // Start from left
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
 
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
-      } else if (index == 2) { // Account page index
-        Navigator.pushReplacement( // Use pushReplacement here as well
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); // Start from right
-              const end = Offset.zero;
-              const curve = Curves.ease;
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 1) { // History
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
 
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
-      } else {
-        _selectedIndex = index; // Update selected index for other items
-      }
-    });
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 2) { // Profile (Account)
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 3) { // Support
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: ''), // Replace with your actual SupportPage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+        _selectedIndex = index; // Update selected index after navigating
+      });
+    }
   }
 
 
@@ -157,7 +198,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     ],
                   ),
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_ios),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -213,7 +254,7 @@ class _HistoryPageState extends State<HistoryPage> {
               // Pass index 1
               _buildIconWithText(Icons.person_rounded, "Akun", 2),
               // Pass index 2
-              _buildIconWithText(Icons.headset_mic_outlined, "Support", 3),
+              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3),
               // Pass index 3
             ],
           ),

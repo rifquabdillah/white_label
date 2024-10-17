@@ -13,7 +13,6 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
   bool _isSaldoVisible = true; // Controller for phone input
   final TextEditingController _phoneController = TextEditingController();
 
-  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     const String saldo = '2.862.590'; // Menyimpan saldo
@@ -66,11 +65,12 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
                 ],
               ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back_ios),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
+              // Menambahkan toolbarHeight untuk menyesuaikan tinggi AppBar
               toolbarHeight: 60,
               elevation: 0, // Menghilangkan bayangan
             ),
@@ -78,7 +78,7 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0), // Menghilangkan padding
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0), // Menghilangkan padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -92,7 +92,6 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
                 });
               },
             ),
-            const Spacer(), // Mengisi ruang yang tersisa
           ],
         ),
       ),
@@ -170,46 +169,37 @@ class TabBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
+    return Expanded(
       child: Column(
         children: [
           Container(
             color: const Color(0xfffaf9f6),
             child: Column(
               children: [
-                const TabBar(
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicator: BoxDecoration(), // Menghilangkan indikator
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'Pertagas',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,// Mengubah teks menjadi bold
-                        ),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(
+                    'Token Listrik',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.black,
                     ),
-                  ],
+                  ),
                 ),
                 Container(
-                  height: 2, // Tinggi garis bawah
-                  width: double.infinity, // Panjang dari ujung ke ujung
-                  color: Colors.orange, // Warna garis bawah
+                  height: 3,
+                  width: double.infinity,
+                  color: Colors.orange,
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 600,
-            child: Container(
-              color: const Color(0xfffdf7e6),
-              child: TabBarView(
-                children: [
-                  _buildPertagasTab(selectedPromoIndex, onPromoSelected, context),
-                ],
+          Expanded(
+            child: SingleChildScrollView( // Wrap the Container in SingleChildScrollView
+              child: Container(
+                color: const Color(0xfffdf7e6),
+                child: _buildPertagasTab(selectedPromoIndex, onPromoSelected, context),
               ),
             ),
           ),

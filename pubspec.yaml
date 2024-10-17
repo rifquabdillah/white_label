@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   carousel_slider: ^5.0.0
-  font_awesome_flutter: ^10.1.0
+  font_awesome_flutter: ^10.0.0
   cupertino_icons: ^1.0.8
   fl_chart: ^0.40.0
 

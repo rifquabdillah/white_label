@@ -10,88 +10,86 @@ class PulsaPaketScreen extends StatefulWidget {
 
 class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   int _selectedPromoIndex = 0;
-  bool _isCardVisible = false;
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true;
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    const String saldo = '2.862.590'; // Get the screen size
+    const String saldo = '2.862.590'; // Consider using localization
+
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        child: Stack(
-          children: [
-            AppBar(
-              backgroundColor: const Color(0XFFfaf9f6),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: AppBar(
+          backgroundColor: const Color(0XFFfaf9f6),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      const Text(
-                        'Saldo ',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF4e5558),
-                        ),
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(
-                        _isSaldoVisible ? saldo : '********',
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 25.0),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSaldoVisible = !_isSaldoVisible;
-                          });
-                        },
-                        child: Icon(
-                          _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
-                    ],
+                  const Text(
+                    'Saldo ',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF4e5558),
+                    ),
                   ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    _isSaldoVisible ? saldo : '********',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 25.0),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isSaldoVisible = !_isSaldoVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  const Icon(Icons.add, color: Colors.grey),
                 ],
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.00), // Hanya horizontal padding
+        padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildPhoneNumberField(screenSize),
-            const SizedBox(height: 0),
-            if (_isCardVisible)
-              TabBarWidget(
-                selectedPromoIndex: _selectedPromoIndex,
-                onPromoSelected: (index) {
-                  setState(() {
-                    _selectedPromoIndex = index;
-                  });
-                },
+            const SizedBox(height: 0), // Remove if not necessary
+            // Wrap TabBarWidget with Expanded
+            if (_phoneController.text.isNotEmpty)
+              Expanded(
+                child: TabBarWidget(
+                  selectedPromoIndex: _selectedPromoIndex,
+                  onPromoSelected: (index) {
+                    setState(() {
+                      _selectedPromoIndex = index;
+                    });
+                  },
+                ),
               ),
-            const Spacer(),
           ],
         ),
       ),
@@ -116,43 +114,34 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
               hintText: 'Masukkan nomor handphone',
-              hintStyle: const TextStyle(
-                color: Colors.grey,
-              ),
+              hintStyle: const TextStyle(color: Colors.grey),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.mic, color: Color(0xFFecb709)),
-                    // Ikon mikrofon berwarna oranye
                     onPressed: () {
-                      // Tambahkan logika untuk menangani input suara di sini
+                      // Handle voice input logic here
                     },
                   ),
-                  const SizedBox(width: 0), // Mengatur jarak antar ikon
+                  const SizedBox(width: 2),
                   IconButton(
                     icon: const Icon(Icons.contacts, color: Color(0xFFecb709)),
-                    // Ikon kontak berwarna oranye
                     onPressed: () {
-                      // Tambahkan logika untuk membuka kontak di sini
+                      // Handle opening contacts logic here
                     },
                   ),
-                  const SizedBox(width: 2), // Mengatur jarak antar ikon
                 ],
               ),
             ),
             style: TextStyle(
               fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(
-                  0xFF363636),
+              fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
+              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
             ),
             onChanged: (value) {
               setState(() {
-                _isCardVisible =
-                    value.isNotEmpty; // Show/hide TabBar content based on input
+// Show/hide TabBar content based on input
               });
             },
           ),
@@ -162,7 +151,7 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   }
 }
 
-class TabBarWidget extends StatelessWidget {
+  class TabBarWidget extends StatelessWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
 
@@ -175,11 +164,11 @@ class TabBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3, // Change this to match your tabs count
       child: Container(
         color: Colors.white,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: MainAxisSize.min, // Change to min to avoid extra space
           children: [
             const SizedBox(
               width: double.infinity,
@@ -194,16 +183,17 @@ class TabBarWidget extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
-              height: 600,
-              width: double.infinity,
+            Expanded( // Use Expanded instead of fixed height SizedBox
               child: Container(
                 color: const Color(0xfffdf7e6),
                 child: TabBarView(
                   children: [
-                    _buildPulsaTabContent(selectedPromoIndex, onPromoSelected, context),
-                    _buildSmsTelponTabContent(selectedPromoIndex, onPromoSelected),
-                    _buildInternetTabContent(selectedPromoIndex, onPromoSelected),
+                    _buildPulsaTabContent(
+                        selectedPromoIndex, onPromoSelected, context),
+                    _buildSmsTelponTabContent(
+                        selectedPromoIndex, onPromoSelected),
+                    _buildInternetTabContent(
+                        selectedPromoIndex, onPromoSelected),
                   ],
                 ),
               ),
@@ -214,7 +204,7 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPulsaTabContent(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
+    Widget _buildPulsaTabContent(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 6.0),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'mutasiMenu.dart';
 
 class TransactionSummary extends StatefulWidget {
   const TransactionSummary({super.key});
@@ -12,21 +13,23 @@ class TransactionSummary extends StatefulWidget {
 class _TransactionPageState extends State<TransactionSummary> {
   bool _isSaldoVisible = true; // Controller for saldo visibility
   String? selectedMonth;
+  int? clickedIndex;
 
   final List<String> months = [
-    'January 2024',
-    'February 2024',
-    'March 2024',
+    'Januari 2024',
+    'Februari 2024',
+    'Maret 2024',
     'April 2024',
-    'May 2024',
-    'June 2024',
-    'July 2024',
-    'August 2024',
+    'Mei 2024',
+    'Juni 2024',
+    'Juli 2024',
+    'Agustus 2024',
     'September 2024',
-    'October 2024',
+    'Oktober 2024',
     'November 2024',
-    'December 2024',
+    'Desember 2024',
   ];
+
 
   final List<Map<String, String>> transactions = [
     {'date': '2024-10-01', 'amount': '100', 'status': 'Sukses'},
@@ -38,7 +41,7 @@ class _TransactionPageState extends State<TransactionSummary> {
   void initState() {
     super.initState();
     // Set the default selected month
-    selectedMonth = months[8]; // September 2024
+    selectedMonth = months[0]; // September 2024
   }
 
   @override
@@ -49,6 +52,12 @@ class _TransactionPageState extends State<TransactionSummary> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back when tapped
+          },
+        ),
         title: Row(
           children: [
             const Text(
@@ -99,6 +108,7 @@ class _TransactionPageState extends State<TransactionSummary> {
     );
   }
 
+
   Widget _buildSummaryContainer(String saldo, List<Map<String, String>> transactions) {
     return Container(
       padding: const EdgeInsets.all(20.0), // Padding inside the container
@@ -129,23 +139,25 @@ class _TransactionPageState extends State<TransactionSummary> {
   }
 
   Widget _buildMonthDropdown() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return
+      Row(
+      mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
       children: [
+        // Add a Text widget for the label
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
           decoration: BoxDecoration(
             color: const Color(0xfff5db84),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            value: selectedMonth ?? months[0],
-            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xff353e43)),
+            value: selectedMonth,
+            icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 24, color: Color(0xff353e43)), // Reduced icon size
             elevation: 2,
             style: const TextStyle(
               color: Color(0xff353e43),
               fontWeight: FontWeight.w600,
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: 'Poppins',
             ),
             underline: Container(),
@@ -164,6 +176,30 @@ class _TransactionPageState extends State<TransactionSummary> {
         ),
       ],
     );
+  }
+
+
+  String formatSelectedMonth(String month) {
+    // Mapping full month names to abbreviated ones
+    final Map<String, String> monthAbbreviations = {
+      'Januari 2024': 'Jan 2024',
+      'Februari 2024': 'Feb 2024',
+      'Maret 2024': 'Mar 2024',
+      'April 2024': 'Apr 2024',
+      'Mei 2024': 'Mei 2024',
+      'Juni 2024': 'Jun 2024',
+      'Juli 2024': 'Jul 2024',
+      'Agustus 2024': 'Agu 2024',
+      'September 2024': 'Sep 2024',
+      'Oktober 2024': 'Okt 2024',
+      'November 2024': 'Nov 2024',
+      'Desember 2024': 'Des 2024',
+    };
+
+    return monthAbbreviations[month] ?? month; // Return abbreviated month or original month if not found
+  }
+  void selectMonth(String selectedMonth) {
+    formatSelectedMonth(selectedMonth);
   }
 
   Widget _buildProfitIndicator() {
@@ -185,12 +221,12 @@ class _TransactionPageState extends State<TransactionSummary> {
               radius: 60.0,
               lineWidth: 13.0,
               animation: true,
-              percent: 0.18, // 18% progress
+              percent: 0.50, // 18% progress
               center: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "18%",
+                    "50%",
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
@@ -226,7 +262,7 @@ class _TransactionPageState extends State<TransactionSummary> {
               _buildTransactionText('Transaksi', 'Rp. 2.246.775', const Color(0xff198754)),
               _buildTransactionText('Profit', 'Rp. 484.475', const Color(0xffecb709)),
               const SizedBox(height: 10),
-              _buildMonthlyMutationButton(), // Add the button here
+              _buildMonthlyMutationButton(context), // Add the button here
             ],
           ),
         ),
@@ -263,15 +299,13 @@ class _TransactionPageState extends State<TransactionSummary> {
 
   Widget _buildBarChart(List<Map<String, String>> transactions) {
     // Data statis untuk bar
-    List<double> barStates = [5, 3, 8, 6, 2, 7, 4, 9, 1, 3, 5, 2, 4, 6, 8]; // Contoh nilai
-
-    // Variabel untuk melacak indeks bar yang sedang diklik
-    int? clickedIndex;
+    List<double> barStates = [1, 3,3, 1, 2, 1, 4, 7, 1, 3, 5, 2, 4, 6, 8,10,5,5,5,5]; // Contoh nilai
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       child: SizedBox(
-        height: 200, // Tinggi grafik batang
+        height: 200,
+        width: double.infinity,// Tinggi grafik batang
         child: BarChart(
           BarChartData(
             barGroups: List.generate(barStates.length, (index) {
@@ -281,7 +315,6 @@ class _TransactionPageState extends State<TransactionSummary> {
                   BarChartRodData(
                     y: barStates[index], // Tinggi batang
                     colors: [
-                      // Warna kuning jika bar yang sedang diklik, hijau jika tidak
                       (clickedIndex == index) ? const Color(0xffecb709) : const Color(0xff198754)
                     ],
                     width: 10,
@@ -298,12 +331,11 @@ class _TransactionPageState extends State<TransactionSummary> {
                 showTitles: true,
                 reservedSize: 38,
                 getTitles: (double value) {
-                  // Tampilkan judul di bawah setiap bar
-                  return '1 ${(value + 1).toInt()}';
+                  return ' ${(value + 1).toInt()}';
                 },
               ),
             ),
-            gridData: FlGridData(show: true), // Tampilkan garis kisi
+            gridData: FlGridData(show: true),
             borderData: FlBorderData(
               show: false, // Sembunyikan batas
             ),
@@ -328,36 +360,44 @@ class _TransactionPageState extends State<TransactionSummary> {
     );
   }
 
-
-  Widget _buildMonthlyMutationButton() {
-    return RichText(
-      text: const TextSpan(
-        children: [
-          TextSpan(
-            text: 'Lihat Mutasi Saldo Bulanan',
-            style: TextStyle(
-              color: Color(0xffecb709), // Yellow color
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-              decoration: TextDecoration.underline,
-              decorationColor: Color(0xffecb709), // Underline text
-              fontFamily: 'Poppins',
-            ),
-          ),
-          WidgetSpan(
-            child: SizedBox(width: 1), // Adjust the width for desired spacing
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: EdgeInsets.only(left: 2.0), // Adjust spacing between text and icon
-              child: Icon(
-                Icons.double_arrow, // Appropriate icon
-                color: Color(0xffecb709), // Yellow color to match text
-                size: 14, // Adjust size to match text
+  Widget _buildMonthlyMutationButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the mutasiMenu page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MutasiMenu()), // Adjust MutasiMenu according to your class name in mutasiMenu.dart
+        );
+      },
+      child: RichText(
+        text: const TextSpan(
+          children: [
+            TextSpan(
+              text: 'Lihat Mutasi Saldo Bulanan',
+              style: TextStyle(
+                color: Color(0xffecb709),
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xffecb709),
+                fontFamily: 'Poppins',
               ),
             ),
-          ),
-        ],
+            WidgetSpan(
+              child: SizedBox(width: 1), // Adjust the width for desired spacing
+            ),
+            WidgetSpan(
+              child: Padding(
+                padding: EdgeInsets.only(left: 2.0), // Adjust spacing between text and icon
+                child: Icon(
+                  Icons.double_arrow, // Appropriate icon
+                  color: Color(0xffecb709), // Yellow color to match text
+                  size: 14, // Adjust size to match text
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

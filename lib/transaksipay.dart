@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'menu/konfirmasiTransaksi.dart';
+import 'menuTransaksi/konfirmasiTransaksi.dart';
 
 class TransaksiPay extends StatefulWidget {
   final String nominal;

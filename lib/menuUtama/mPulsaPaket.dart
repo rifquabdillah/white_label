@@ -1,33 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:white_label/transaksipay.dart';
 
-class ReferallMarkupScreen extends StatefulWidget {
-  const ReferallMarkupScreen({super.key});
+class PulsaPaketScreen extends StatefulWidget {
+  const PulsaPaketScreen({super.key});
 
   @override
-  _ReferallMarkupScreenState createState() => _ReferallMarkupScreenState();
+  _PulsaPaketScreenState createState() => _PulsaPaketScreenState();
 }
 
-class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
+class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   int _selectedPromoIndex = 0;
   int _activeContentIndex = 0; // Variabel untuk menyimpan konten yang aktif
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _productController = TextEditingController();
   bool _isSaldoVisible = true;
   String? _provider; // Tambahkan variabel untuk menyimpan nama provider
 
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
+    final screenSize = MediaQuery.of(context).size;
+    const String saldo = '2.862.590'; // Consider using localization
+
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: AppBar(
           backgroundColor: const Color(0XFFfaf9f6),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'Saldo ',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF4e5558),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    _isSaldoVisible ? saldo : '********',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 25.0),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isSaldoVisible = !_isSaldoVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  const Icon(Icons.add, color: Colors.grey),
+                ],
+              ),
+            ],
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -41,9 +80,8 @@ class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchProductField(screenSize),
-            const SizedBox(height: 8.0),
-            // Beri jarak
+            _buildPhoneNumberField(screenSize),
+            const SizedBox(height: 8.0), // Beri jarak
             if (_provider != null) // Tampilkan provider jika ada
               Padding(
                 padding: const EdgeInsets.only(left: 26.0),
@@ -57,25 +95,35 @@ class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
                   ),
                 ),
               ),
-            const SizedBox(height: 8.0),
-            // Beri jarak
+            const SizedBox(height: 8.0), // Beri jarak
             // Selalu tampilkan TabBarWidget, tapi kontennya bergantung pada nomor ponsel
-
+            Expanded(
+              child: TabBarWidget(
+                selectedPromoIndex: _selectedPromoIndex,
+                onPromoSelected: (index) {
+                  setState(() {
+                    _selectedPromoIndex = index;
+                  });
+                },
+                tabTitles: ['Pulsa', 'SMS/Nelpon', 'Internet'],
+                isPhoneNumberEmpty: _phoneController.text.isEmpty,
+                provider: _provider, // Tambahkan provider
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSearchProductField(Size screenSize) {
+  Widget _buildPhoneNumberField(Size screenSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
-            controller: _productController,
-            // Controller yang sudah didefinisikan
+            controller: _phoneController,
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0XFFfaf9f6),
@@ -85,16 +133,22 @@ class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              hintText: 'Cari Produk',
+              hintText: 'Masukkan nomor handphone',
               hintStyle: const TextStyle(color: Colors.grey),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.mic, color: Color(0xFFecb709)),
+                    onPressed: () {
+                      // Handle voice input logic here
+                    },
+                  ),
                   const SizedBox(width: 2),
                   IconButton(
-                    icon: const Icon(Icons.search, color: Color(0xff909EAE)),
+                    icon: const Icon(Icons.contacts, color: Color(0xFFecb709)),
                     onPressed: () {
-                      // Handle search product logic here
+                      // Handle opening contacts logic here
                     },
                   ),
                 ],
@@ -102,15 +156,42 @@ class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
             ),
             style: TextStyle(
               fontSize: 18,
-              fontWeight: _productController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _productController.text.isEmpty
-                  ? Colors.grey
-                  : const Color(0xFF363636),
+              fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
+              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
             ),
             onChanged: (value) {
-
+              setState(() {
+                // Cek 3 digit pertama untuk menentukan provider
+                if (value.length >= 3) {
+                  String prefix = value.substring(0, 3);
+                  switch (prefix) {
+                    case '085':
+                      _provider = 'INDOSAT';
+                      break;
+                    case '081':
+                      _provider = 'TELKOMSEL';
+                      break;
+                    case '087':
+                      _provider = 'XL';
+                      break;
+                    case '088':
+                    case '082':
+                      _provider = 'SMARTFREN';
+                      break;
+                    case '089':
+                      _provider = 'TRI';
+                      break;
+                    case '083':
+                      _provider = 'AXIS';
+                      break;
+                    default:
+                      _provider = null; // Jika tidak cocok
+                      break;
+                  }
+                } else {
+                  _provider = null; // Reset provider jika input kurang dari 3 karakter
+                }
+              });
             },
           ),
         ),
@@ -118,8 +199,6 @@ class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
     );
   }
 }
-
-
 
 class TabBarWidget extends StatelessWidget {
   final int selectedPromoIndex;
@@ -1081,7 +1160,7 @@ class TabBarWidget extends StatelessWidget {
       ),
     );
   }
-}
+  }
 
 Widget _buildInternetTabContent(int selectedPromoIndex, ValueChanged<int> onPromoSelected) {
   // Similar to _buildPulsaTabContent but with different promo buttons for Internet
@@ -1089,9 +1168,180 @@ Widget _buildInternetTabContent(int selectedPromoIndex, ValueChanged<int> onProm
     padding: const EdgeInsets.all(8.0),
     child: Column(
       children: [
-        Text('Internet Content'), // Customize accordingly
+        _buildInternetCard()
       ],
     ),
   );
 }
+
+const platform = MethodChannel('com.example.white_label/native');
+
+Future<List<Map<String, dynamic>>> _fetchDataFromNative() async {
+  try {
+    final List<dynamic> result = await platform.invokeMethod('_buildInternetTabContent');
+    print('Data received from native: $result'); // Print the raw data from the native call
+
+    // Convert each item in the list to Map<String, dynamic>
+    return result.map((item) {
+      return Map<String, dynamic>.from(item as Map); // Explicit cast
+    }).toList();
+  } on PlatformException catch (e) {
+    print('Failed to get data: ${e.message}'); // Print the error
+    throw 'Failed to get data: ${e.message}'; // Handle error
+  }
+}
+
+Widget _buildInternetCard() {
+  return FutureBuilder<List<Map<String, dynamic>>>(
+    future: _fetchDataFromNative(), // Call the native method
+    builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator(); // Loading indicator
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}'); // Handle error
+      } else {
+        final products = snapshot.data ?? [];
+        print('Data displayed in widget: $products'); // Print the data before displaying
+
+        return SizedBox(
+          width: 400,
+          height: 600.0, // Set height constraint for the scroll area
+          child: SingleChildScrollView(
+            child: Column(
+              children: products.map((product) {
+                return _buildProductCard(
+                  product['namaProduk'] ?? 'N/A',
+                  product['masaAktif'] ?? 'N/A',
+                  product['kodeProduk'] ?? 'N/A',
+                  product['hargaJual'] ?? 'N/A',
+                  product['detailProduk'] ?? 'N/A',
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      }
+    },
+  );
+}
+
+Widget _buildProductCard(String namaProduk, String masaAktif, String kodeProduk, String hargaJual, String detailProduk) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8.0), // Vertical margin
+    child: SizedBox(
+      width: 400,
+      height: 125,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12), // Rounded corners
+            ),
+          ),
+          Card(
+            elevation: 1, // Higher elevation for neon effect
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row( // Row to arrange price on the right
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: namaProduk,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xff353E43),
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' / ', // Separator line
+                                style: TextStyle(
+                                  fontSize: 20, // Same font size as namaProduk for consistency
+                                  color: Color(0xff909EAE), // Same color as namaProduk
+                                ),
+                              ),
+                              TextSpan(
+                                text: '$masaAktif Hari', // Append " hari" to masaAktif
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xff353E43),
+                                  fontWeight: FontWeight.w100, // Regular text
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 5), // Space between name and code/info
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: kodeProduk,
+                                style: const TextStyle(
+                                  color: Color(0xff353E43),
+                                  fontSize: 15,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              // Space between code and info
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 5), // Space between name and code/info
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: detailProduk,
+                                style: const TextStyle(
+                                  color: Color(0xff909EAE),
+                                  fontSize: 12,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              // Space between code and info
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Spacer or Expanded to push price to the right
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center, // Vertically centered
+                    crossAxisAlignment: CrossAxisAlignment.end, // Align price to the right
+                    children: [
+                      Text(
+                        hargaJual,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Poppins',
+                          color: Color(0xffECB709),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+
 

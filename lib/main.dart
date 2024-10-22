@@ -3,15 +3,20 @@ import 'dart:ui';
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:white_label/menuUtama/mBpjs.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
-import 'menu/mPromoScreen.dart';
-import 'menu/mPulsaPaket.dart' show PulsaPaketScreen;
-import 'menu/mSpesialDeals.dart';
-import 'menu/mTokenListrik.dart' show mTokenListrikScreen;
-import 'menu/mPertagas.dart' show mPertagasScreen;
-import 'menu/mVoucherGame.dart';
+import 'menuUtama/mPDAM.dart';
+import 'menuUtama/mPLN.dart';
+import 'menuUtama/mPascabayar.dart';
+import 'menuUtama/mPromoScreen.dart';
+import 'menuUtama/mPulsaPaket.dart' show PulsaPaketScreen;
+import 'menuUtama/mSpesialDeals.dart';
+import 'menuUtama/mTelkom.dart';
+import 'menuUtama/mTokenListrik.dart' show mTokenListrikScreen;
+import 'menuUtama/mPertagas.dart' show mPertagasScreen;
+import 'menuUtama/mVoucherGame.dart';
 
 void main() {
   runApp(const MyApp());
@@ -764,7 +769,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       {'title': 'Pulsa & Paket', 'color': Colors.blue},
       {'title': 'Token Listrik', 'color': Colors.blue},
       {'title': 'Pertagas', 'color': Colors.blue},
-      {'title': 'Promo!', 'color': Colors.blue},
+      {'title': 'Dompet Digital', 'color': Colors.blue},
       {'title': 'Voucher Game', 'color': Colors.blue},
       {'title': 'Entertainment', 'color': Colors.blue},
       {'title': 'Lainnya', 'color': Colors.grey},
@@ -815,9 +820,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       case 'Pertagas':
         page = const mPertagasScreen();
         break;
-      case 'Promo!':
-        page = const PromoScreen(); // Replace with the correct screen
-        break;
       case 'Voucher Game':
         page = VoucherGameScreen(); // Replace with the correct screen
         break;
@@ -853,7 +855,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       crossAxisCount: 4,
       crossAxisSpacing: 10,
       mainAxisSpacing: 15,
-      children: _buildGridItemsBill(), // Mengganti children dengan metode baru
+      children: _buildGridItemsBill(),
     );
   }
 
@@ -876,29 +878,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   Widget _buildGridItemBill(String title, MaterialColor color) {
     return GestureDetector(
-      onTap: () {
-        if (title == 'Pulsa & Paket') {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const PulsaPaketScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(0.0, 1.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        }
-      },
+      onTap: () => _onGridItemBillTapped(title), // Call the new method
       child: Column(
         children: [
           Container(
@@ -918,6 +898,55 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _onGridItemBillTapped(String title) {
+    late final Widget page; // Declare the page variable
+
+    switch (title) {
+      case 'BPJS':
+      // Add the corresponding screen for BPJS
+        page = const BpjsScreen(); // Replace with the correct screen
+        break;
+      case 'PLN':
+      // Add the corresponding screen for PLN
+        page = const mPLNScreen(); // Replace with the correct screen
+        break;
+      case 'PDAM':
+      // Add the corresponding screen for PDAM
+        page = const mPDAMScreen(); // Replace with the correct screen
+        break;
+      case 'Telkom':
+      // Add the corresponding screen for Telkom
+        page = const mTelkomScreen(); // Replace with the correct screen
+        break;
+      case 'Pascabayar':
+      // Add the corresponding screen for Telkom
+        page = const mPascabayarScreen(); // Replace with the correct screen
+        break;
+      default:
+        return; // If the title does not match, do nothing
+    }
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => page,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }

@@ -18,6 +18,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   // All transactions defined here
   final List<Map<String, String>> allTransactions = [
+    // Transactions for 18 September 2024
     {
       'nomorTransaksi': 'S10 - 0822 4000 0201',
       'tanggal': '18 September 2024 - 16:40:28',
@@ -38,15 +39,59 @@ class _HistoryPageState extends State<HistoryPage> {
       'tanggal': '18 September 2024 - 09:44:13',
       'status': 'Gagal'
     },
+
+    // Transactions for 19 September 2024
     {
       'nomorTransaksi': 'FF130 - 1143407304',
-      'tanggal': '16 September 2024 - 08:40:26',
+      'tanggal': '19 September 2024 - 08:40:26',
       'status': 'Sukses'
     },
     {
-      'nomorTransaksi': 'FF150 - 1143407304',
-      'tanggal': '16 September 2024 - 08:40:26',
+      'nomorTransaksi': 'S200 - 0822 4000 0301',
+      'tanggal': '19 September 2024 - 10:00:15',
+      'status': 'Dalam Proses'
+    },
+    {
+      'nomorTransaksi': 'T300 - 0812 3126 0284',
+      'tanggal': '19 September 2024 - 12:30:45',
       'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'S400 - 0822 4000 0401',
+      'tanggal': '19 September 2024 - 14:10:00',
+      'status': 'Sukses'
+    },
+    {
+      'nomorTransaksi': 'F500 - 1143407305',
+      'tanggal': '19 September 2024 - 16:20:30',
+      'status': 'Sukses'
+    },
+
+    // Transactions for 20 September 2024
+    {
+      'nomorTransaksi': 'S100 - 0822 4000 0501',
+      'tanggal': '20 September 2024 - 09:15:00',
+      'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'S200 - 0822 4000 0601',
+      'tanggal': '20 September 2024 - 10:45:13',
+      'status': 'Sukses'
+    },
+    {
+      'nomorTransaksi': 'T300 - 0812 3126 0384',
+      'tanggal': '20 September 2024 - 12:00:00',
+      'status': 'Dalam Proses'
+    },
+    {
+      'nomorTransaksi': 'F400 - 1143407404',
+      'tanggal': '20 September 2024 - 14:30:45',
+      'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'FF500 - 1143407405',
+      'tanggal': '20 September 2024 - 16:50:50',
+      'status': 'Sukses'
     },
   ];
 
@@ -154,7 +199,6 @@ class _HistoryPageState extends State<HistoryPage> {
               PreferredSize(
                 preferredSize: const Size.fromHeight(190.0), // Adjust height
                 child: AppBar(
-                  elevation: 0,
                   backgroundColor: const Color(0XFFfaf9f6),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -392,7 +436,6 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-
 class HistoryContent extends StatefulWidget {
   const HistoryContent({super.key});
 
@@ -403,6 +446,7 @@ class HistoryContent extends StatefulWidget {
 class _HistoryContentState extends State<HistoryContent> {
   int _selectedFilterIndex = 0; // Track selected filter button
   List<Map<String, String>> allTransactions = [
+    // Transactions for 18 September 2024
     {
       'nomorTransaksi': 'S10 - 0822 4000 0201',
       'tanggal': '18 September 2024 - 16:40:28',
@@ -423,20 +467,63 @@ class _HistoryContentState extends State<HistoryContent> {
       'tanggal': '18 September 2024 - 09:44:13',
       'status': 'Gagal'
     },
+
+    // Transactions for 19 September 2024
     {
       'nomorTransaksi': 'FF130 - 1143407304',
-      'tanggal': '16 September 2024 - 08:40:26',
+      'tanggal': '19 September 2024 - 08:40:26',
       'status': 'Sukses'
     },
     {
-      'nomorTransaksi': 'FF150 - 1143407304',
-      'tanggal': '16 September 2024 - 08:40:26',
+      'nomorTransaksi': 'S200 - 0822 4000 0301',
+      'tanggal': '19 September 2024 - 10:00:15',
+      'status': 'Dalam Proses'
+    },
+    {
+      'nomorTransaksi': 'T300 - 0812 3126 0284',
+      'tanggal': '19 September 2024 - 12:30:45',
       'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'S400 - 0822 4000 0401',
+      'tanggal': '19 September 2024 - 14:10:00',
+      'status': 'Sukses'
+    },
+    {
+      'nomorTransaksi': 'F500 - 1143407305',
+      'tanggal': '19 September 2024 - 16:20:30',
+      'status': 'Sukses'
+    },
+
+    // Transactions for 20 September 2024
+    {
+      'nomorTransaksi': 'S100 - 0822 4000 0501',
+      'tanggal': '20 September 2024 - 09:15:00',
+      'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'S200 - 0822 4000 0601',
+      'tanggal': '20 September 2024 - 10:45:13',
+      'status': 'Sukses'
+    },
+    {
+      'nomorTransaksi': 'T300 - 0812 3126 0384',
+      'tanggal': '20 September 2024 - 12:00:00',
+      'status': 'Dalam Proses'
+    },
+    {
+      'nomorTransaksi': 'F400 - 1143407404',
+      'tanggal': '20 September 2024 - 14:30:45',
+      'status': 'Gagal'
+    },
+    {
+      'nomorTransaksi': 'FF500 - 1143407405',
+      'tanggal': '20 September 2024 - 16:50:50',
+      'status': 'Sukses'
     },
   ];
 
-  late List<
-      Map<String, String>> filteredTransactions; // To hold filtered results
+  late List<Map<String, String>> filteredTransactions; // To hold filtered results
 
   @override
   void initState() {
@@ -462,6 +549,7 @@ class _HistoryContentState extends State<HistoryContent> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 16.0,
+                  color: Color(0xff353E43),
                 ),
               ),
               InkWell(
@@ -510,6 +598,7 @@ class _HistoryContentState extends State<HistoryContent> {
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                elevation: 4.0, // Set elevation for shadow effect
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -519,7 +608,7 @@ class _HistoryContentState extends State<HistoryContent> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 4.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
                             decoration: BoxDecoration(
                               color: backgroundColor,
                               borderRadius: BorderRadius.circular(8.0),
@@ -528,6 +617,7 @@ class _HistoryContentState extends State<HistoryContent> {
                               status,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: statusColor,
                               ),
@@ -538,15 +628,17 @@ class _HistoryContentState extends State<HistoryContent> {
                             filteredTransactions[index]['nomorTransaksi']!,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
                           ),
                           Text(
                             filteredTransactions[index]['tanggal']!,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 12,
+                              color: Color(0xff909EAE),
                             ),
                           ),
                           const SizedBox(height: 8.0),
@@ -593,45 +685,51 @@ class _HistoryContentState extends State<HistoryContent> {
   }
 
   Widget _buildFilterButton(String label, int index) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        elevation: 4,
-        backgroundColor: _selectedFilterIndex == index
-            ? const Color(0xffc70000) // Warna ketika aktif
-            : const Color(0xfffaf9f6), // Warna ketika tidak aktif
-      ),
-      onPressed: () {
-        setState(() {
-          _selectedFilterIndex = index;
-          // Filter berdasarkan indeks yang dipilih
-          if (index == 0) {
-            filteredTransactions = allTransactions;
-          } else if (index == 1) {
-            filteredTransactions =
-                allTransactions.where((transaction) => transaction['status'] ==
-                    'Dalam Proses').toList();
-          } else if (index == 2) {
-            filteredTransactions =
-                allTransactions.where((transaction) => transaction['status'] ==
-                    'Sukses').toList();
-          } else if (index == 3) {
-            filteredTransactions =
-                allTransactions.where((transaction) => transaction['status'] ==
-                    'Gagal').toList();
-          }
-        });
-      },
-      child: Text(
-        label,
-        style: TextStyle(
-          color: _selectedFilterIndex == index
-              ? Colors.white // Warna font ketika aktif
-              : Colors.black, // Warna font ketika tidak aktif
-          fontWeight: FontWeight.w600, // Ketebalan font
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0), // Add margin here
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 2,
+          backgroundColor: _selectedFilterIndex == index
+              ? const Color(0xffc70000) // Warna ketika aktif
+              : const Color(0xfffaf9f6), // Warna ketika tidak aktif
+        ),
+        onPressed: () {
+          setState(() {
+            _selectedFilterIndex = index;
+            // Filter berdasarkan indeks yang dipilih
+            if (index == 0) {
+              filteredTransactions = allTransactions;
+            } else if (index == 1) {
+              filteredTransactions = allTransactions
+                  .where((transaction) => transaction['status'] == 'Dalam Proses')
+                  .toList();
+            } else if (index == 2) {
+              filteredTransactions = allTransactions
+                  .where((transaction) => transaction['status'] == 'Sukses')
+                  .toList();
+            } else if (index == 3) {
+              filteredTransactions = allTransactions
+                  .where((transaction) => transaction['status'] == 'Gagal')
+                  .toList();
+            }
+          });
+        },
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: _selectedFilterIndex == index
+                ? Colors.white // Warna font ketika aktif
+                : Colors.black, // Warna font ketika tidak aktif
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins', // Ketebalan font
+          ),
         ),
       ),
     );
   }
+
 }
 
 

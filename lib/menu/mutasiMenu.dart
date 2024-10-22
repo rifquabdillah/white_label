@@ -40,7 +40,8 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         'Saldo ',
                         style: TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w300,
                           color: Color(0xFF4e5558),
                         ),
                       ),
@@ -49,7 +50,8 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         _isSaldoVisible ? saldo : '********',
                         style: const TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                          color: Color(0xff353E43),
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 25.0),
@@ -61,17 +63,17 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         },
                         child: Icon(
                           _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                          color: Colors.grey,
+                          color: Color(0xff909EAE),
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
+                      const Icon(Icons.add, color:Color(0xff909EAE)),
                     ],
                   ),
                 ],
               ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
+                icon: const Icon(Icons.arrow_back_ios, color: Color(0xff353E43),),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -113,7 +115,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 14, // Adjust font size as needed
-                                color: Colors.black,
+                                color: Color(0xff353E43),
                               ),
                             ),
                           ),
@@ -157,7 +159,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 14, // Adjust font size as needed
-                                color: Colors.black,
+                                color: Color(0xff353E43),
                               ),
                             ),
                           ),
@@ -179,7 +181,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min, // Fit the Row to its content
                       children: [
-                        Icon(Icons.filter_list_alt, color: Colors.white),
+                        Icon(Icons.filter_list_alt, color:Color(0xffFAF9F6)),
                         SizedBox(width: 5), // Space between icon and text
                         Text(
                           'Filter',
@@ -207,7 +209,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min, // Fit the Row to its content
                       children: [
-                        Icon(Icons.file_download_outlined, color: Colors.white),
+                        Icon(Icons.file_download_outlined, color: Color(0xffFAF9F6)),
                       ],
                     ),
                   ),
@@ -277,7 +279,6 @@ class _MutasiMenuState extends State<MutasiMenu> {
   Widget transactionCard(String title, String subtitle, String date, String amount, String balance, Color amountColor) {
     return GestureDetector(
       onTap: () {
-        _showTransactionDetailDialog(title, subtitle, date, amount, balance, amountColor);
       },
       child: SizedBox(
         width: 400, // Set your desired width
@@ -331,14 +332,14 @@ class _MutasiMenuState extends State<MutasiMenu> {
                                 style: TextStyle(fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     fontFamily: 'Poppins',
-                                    color: Color(0xff414a4e)),
+                                    color: Color(0xff353E43)),
                               ),
                               SizedBox(height: 4),
                               Text(
                                 date,
                                 style: TextStyle(fontSize: 12,
                                     fontFamily: 'Poppins',
-                                    color: Color(0xffa3afbc)),
+                                    color: Color(0xff909EAE)),
                               ),
                             ],
                           ),
@@ -356,7 +357,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                                   fontSize: 12,
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.orange,
+                                  color:  Color(0xffECB709),
                                 ),
                               ),
                               // Amount and balance texts aligned together
@@ -379,7 +380,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                                       fontSize: 12,
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black38,
+                                      color:Color(0xff909EAE),
                                     ),
                                   ),
                                 ],
@@ -400,44 +401,6 @@ class _MutasiMenuState extends State<MutasiMenu> {
   }
 
 
-  void _showTransactionDetailDialog(String title, String subtitle, String date, String amount, String balance, Color amountColor) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)), // Rounded corners at the top
-      ),
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.70, // Set half of the screen height
-          child: Padding(
-            padding: const EdgeInsets.all(16.0), // Add some padding for content
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  Text(subtitle),
-                  SizedBox(height: 10),
-                  Text(date),
-                  SizedBox(height: 20),
-                  Text('Sisa saldo: $balance', style: TextStyle(color: Colors.black45)),
-                  SizedBox(height: 20),
-                  Text('Jumlah: $amount', style: TextStyle(color: amountColor)),
-                  SizedBox(height: 20),
-                  TextButton(
-                    child: Text('Tutup'),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the bottom sheet
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   void _showFilterDialog() {
     List<String> categories = [
@@ -459,6 +422,9 @@ class _MutasiMenuState extends State<MutasiMenu> {
     List<bool> selectedCategories = List<bool>.filled(categories.length, false);
     List<bool> selectedJenis = List<bool>.filled(jenis.length, false); // Track selected checkboxes
 
+    // Create a TextEditingController for the filter text field
+    TextEditingController filterController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Allows the dialog to take full height
@@ -467,12 +433,13 @@ class _MutasiMenuState extends State<MutasiMenu> {
       ),
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.75, // Set height to 50% of the screen height
+          height: MediaQuery.of(context).size.height * 0.75, // Set height to 75% of the screen height
           padding: const EdgeInsets.all(12.0), // Add some padding for content
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
               TextField(
+                controller: filterController, // Set the controller to the TextField
                 decoration: InputDecoration(
                   labelText: 'Filter Mutasi',
                 ),
@@ -486,7 +453,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff909EAE),
-                      fontFamily: 'Poppins'// Text color
+                    fontFamily: 'Poppins', // Text color
                   ),
                 ),
               ),
@@ -506,14 +473,16 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         },
                       ),
                       SizedBox(width: 8), // Space between checkbox and text
-                  Expanded(
-                    child: Text(
-                      category,
-                      style: TextStyle(fontSize: 12,
-                          fontWeight:FontWeight.w600,
-                          fontFamily: 'Poppins'), // Set font to Poppins
-                    ),
-                  ),
+                      Expanded(
+                        child: Text(
+                          category,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins', // Set font to Poppins
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -527,15 +496,15 @@ class _MutasiMenuState extends State<MutasiMenu> {
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff909EAE),
-                    fontFamily: 'Poppins'// Text color
+                    fontFamily: 'Poppins', // Text color
                   ),
                 ),
               ),
               SizedBox(height: 2), // Space before checkboxes
               Row(
                 mainAxisAlignment: MainAxisAlignment.start, // Align checkboxes to the start
-                children: jenis.map((jenis) {
-                  int index = jenis.indexOf(jenis);
+                children: jenis.map((jenisItem) {
+                  int index = jenis.indexOf(jenisItem);
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1), // Space between checkboxes
                     child: Row(
@@ -548,19 +517,20 @@ class _MutasiMenuState extends State<MutasiMenu> {
                             });
                           },
                         ),
-                         Text(
-                            jenis,
-                            style: TextStyle(fontSize: 12,
-                                fontWeight:FontWeight.w600,
-                                fontFamily: 'Poppins'), // Set font to Poppins
+                        Text(
+                          jenisItem,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins', // Set font to Poppins
                           ),
+                        ),
                       ],
                     ),
                   );
                 }).toList(),
               ),
-              SizedBox(height: 0), // Space before the apply button
-              SizedBox(height: 0), // Space before the apply button
+              SizedBox(height: 16), // Space before the apply button
               Row(
                 mainAxisAlignment: MainAxisAlignment.center, // Center the Row contents
                 children: [
@@ -571,6 +541,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         // Resetting the selections
                         selectedCategories.fillRange(0, selectedCategories.length, false);
                         selectedJenis.fillRange(0, selectedJenis.length, false);
+                        filterController.clear(); // Clear the filter input
                       });
                     },
                     child: Text(
@@ -579,16 +550,26 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         decoration: TextDecoration.underline,
                         decorationColor: Color(0xffecb709),
                         color: Color(0xffecb709), // Customize text color
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Poppins' // Customize text size
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins', // Customize text size
                       ),
                     ),
                   ),
-                  SizedBox(width: 16), // Space between text and button (adjustable) // Space between text and button
+                  SizedBox(width: 16), // Space between text and button (adjustable)
                   ElevatedButton(
                     onPressed: () {
                       // Logic to apply the selected filters goes here
+                      String filterValue = filterController.text.trim(); // Get the filter value
+                      // Use filterValue and selectedCategories/selectedJenis for filtering logic
+                      // For demonstration, we can log the selected filters
+                      print("Filter Value: $filterValue");
+                      print("Selected Categories: $selectedCategories");
+                      print("Selected Jenis: $selectedJenis");
+
+                      // Here, you would typically filter your data based on the selections
+                      // e.g., filtering a list of transactions based on the criteria above.
+
                       Navigator.of(context).pop(); // Close the bottom sheet
                     },
                     style: ElevatedButton.styleFrom(
@@ -601,7 +582,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'Poppins'// Customize the font size here
+                        fontFamily: 'Poppins', // Customize the font size here
                       ),
                     ),
                   ),
@@ -613,6 +594,8 @@ class _MutasiMenuState extends State<MutasiMenu> {
       },
     );
   }
+
+
 
 
 

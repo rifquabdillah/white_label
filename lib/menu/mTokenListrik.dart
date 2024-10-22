@@ -34,7 +34,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                         'Saldo ',
                         style: TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
+                          fontWeight: FontWeight.w300,
                           color: Color(0xFF4e5558),
                         ),
                       ),
@@ -43,7 +43,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                         _isSaldoVisible ? saldo : '********',
                         style: const TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(width: 25.0),
@@ -56,11 +56,11 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                         },
                         child: Icon(
                           _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                          color: Colors.grey,
+                          color: Color(0xff909EAE),
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
+                      const Icon(Icons.add, color:Color(0xff909EAE)),
                     ],
                   ),
                 ],
@@ -111,26 +111,29 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
               filled: true,
               fillColor: const Color(0XFFfaf9f6),
               border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                borderSide: BorderSide(color: Color(0xff353E43), width: 2.0),
               ),
               focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                borderSide: BorderSide(color: Color(0xff353E43), width: 2.0),
               ),
               hintText: 'Nomor Meteran',
               hintStyle: const TextStyle(
-                color: Colors.grey,
+                color: Color(0xff909EAE),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+                fontSize: 18
               ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
+                    icon: const Icon(Icons.mic, color: Color(0xffECB709)),
                     onPressed: () {
                       // Tambahkan logika untuk menangani input suara di sini
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
+                    icon: const Icon(Icons.contacts, color: Color(0xffECB709)),
                     onPressed: () {
                       // Tambahkan logika untuk membuka kontak di sini
                     },
@@ -141,9 +144,9 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
+                  ? FontWeight.w400
                   : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+              color: _phoneController.text.isEmpty ? Color(0xff909EAE) : const Color(0xFF363636),
             ),
             onChanged: (value) {
               setState(() {
@@ -155,7 +158,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
     );
   }
 }
-
 
   class TabBarWidget extends StatelessWidget {
   final int selectedPromoIndex;
@@ -183,14 +185,15 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Colors.black,
+                      fontFamily: 'Poppins',
+                      color: Color(0xff353E43),
                     ),
                   ),
                 ),
                 Container(
                   height: 3,
                   width: double.infinity,
-                  color: Colors.orange,
+                  color: Color(0xffECB709),
                 ),
               ],
             ),
@@ -207,7 +210,6 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
       ),
     );
   }
-
 
   Widget _buildTokenListrikTab(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
     return Container(
@@ -354,16 +356,19 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                             nominal,
                             style: const TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           Text(
                             originalPrice,
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: Color(0xff909EAE),
                               fontWeight: FontWeight.normal,
+                                fontFamily: 'Poppins',
                               decoration: TextDecoration.lineThrough,
+                              decorationColor: Color(0xff909EAE)
                             ),
                           ),
                         ],
@@ -374,14 +379,18 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                           children: [
                             TextSpan(
                               text: kodeproduk,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.grey),
+                              style: const TextStyle(fontSize: 14,
+                                  fontWeight: FontWeight.w300,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xff353E43)),
                             ),
                             TextSpan(
                               text: hargaJual,
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: Colors.orange,
-                                fontWeight: FontWeight.bold,
+                                color: Color(0xffECB709),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -391,8 +400,10 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                       Text(
                         info,
                         style: const TextStyle(
-                          fontSize: 8,
-                          color: Colors.grey,
+                          fontSize: 9,
+                          fontFamily: 'Poppins',
+                          color: Color(0xff909EAE),
+                          fontWeight: FontWeight.w300
                         ),
                       ),
                     ],
@@ -407,7 +418,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Color(0xffC70000),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text(
@@ -415,7 +426,8 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -432,8 +444,8 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
         onPromoSelected(index);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedPromoIndex == index ? Colors.red : Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        backgroundColor: selectedPromoIndex == index ? Color(0xffC70000) : Color(0xffFAF9F6),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -443,60 +455,65 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
       child: Text(
         text,
         style: TextStyle(
-            color: selectedPromoIndex == index ? Colors.white : Colors.black, fontWeight: FontWeight.w400  // Ubah warna teks jika aktif
+            color: selectedPromoIndex == index ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            fontSize: 13, // Ubah warna teks jika aktif
         ),
       ),
     );
   }
 
   Widget _buildTokenPremium(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildTokenPremiumCard(context, '5.000', 'P5 - ', '6.735', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '15.000', 'P15 - ', '16.700', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
-                _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
-              ],
-            ),
+    return Row(
+      children: [
+        Flexible(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildTokenPremiumCard(context, '5.000', 'P5 - ', '6.735', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '15.000', 'P15 - ', '16.700', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '50.000', 'P50 - ', '50.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '200.000', 'P200 - ', '200.035', '', 'Proses kilat'),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildTokenPremiumCard(context, '10.000', 'P10 - ', '12.550', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '20.000', 'P20 - ', '20.035', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
-                _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
-                const SizedBox(height: 10),
-                _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
-              ],
-            ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildTokenPremiumCard(context, '10.000', 'P10 - ', '12.550', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '20.000', 'P20 - ', '20.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '100.000', 'P100 - ', '100.035', '', 'Proses kilat'),
+              const SizedBox(height: 10),
+              _buildTokenPremiumCard(context, '500.000', 'P500 - ', '500.035', '', 'Proses kilat'),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildTokenPremiumCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false}) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the TransaksiPay page
+        print("Card tapped!");  // Tambahkan ini untuk debugging
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -522,10 +539,10 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.2),
-                    spreadRadius: 0,
-                    blurRadius: 2,
-                    offset: const Offset(0, 0),
+                    color: Colors.black.withOpacity(0.1), // Slightly lighter shadow color
+                    spreadRadius: 0, // No spread
+                    blurRadius: 0.9, // Very slight blur
+                    offset: const Offset(0, 1), // Slightly offset downwards
                   ),
                 ],
               ),
@@ -545,13 +562,15 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                             nominal,
                             style: const TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           Text(
                             originalPrice,
                             style: const TextStyle(
                               fontSize: 14,
+                              fontFamily: 'Poppins',
                               color: Colors.grey,
                               fontWeight: FontWeight.normal,
                               decoration: TextDecoration.lineThrough,
@@ -559,31 +578,37 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
                               text: kodeproduk,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.grey),
+                              style: const TextStyle(fontSize: 15,
+                                  fontWeight: FontWeight.w300,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xff353E43)),
                             ),
                             TextSpan(
                               text: hargaJual,
                               style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.orange,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                fontFamily: 'Poppins',
+                                color: Color(0xffECB709),
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Text(
                         info,
                         style: const TextStyle(
-                          fontSize: 8,
-                          color: Colors.grey,
+                          fontSize: 10,
+                          fontFamily: 'Poppins',
+                          color: Color(0xff909EAE),
+                          fontWeight: FontWeight.w300
                         ),
                       ),
                     ],
@@ -606,7 +631,8 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -618,32 +644,32 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
   }
 
   Widget _buildTokenEkonomis(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildTokenEkonomisCard(context, '50.000', 'PPT50 - ', '49.950', '50.035', 'Proses sangat lambat'),
-              ],
-            ),
+    return Row(
+      children: [
+        Flexible(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildTokenEkonomisCard(context, '50.000', 'PPT50 - ', '49.950', '50.035', 'Proses sangat lambat'),
+              const SizedBox(height: 10),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildTokenEkonomisCard(context, '100.000', 'PPT100 - ', '99.895', '100.035', 'Proses sangat lambat'),
-
-              ],
-            ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildTokenEkonomisCard(context, '100.000', 'PPT100 - ', '99.895', '100.035', 'Proses sangat lambat'),
+              const SizedBox(height: 10),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
-
 
   Widget _buildTokenEkonomisCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false}) {
     return GestureDetector(
@@ -674,7 +700,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.2), // Warna bayangan
+                    color: Color(0xffECB709).withOpacity(0.2), // Warna bayangan
                     spreadRadius: 0, // Mengatur radius penyebaran
                     blurRadius: 2, // Mengatur blur
                     offset: const Offset(0, 0), // Posisi bayangan
@@ -697,45 +723,54 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                             nominal,
                             style: const TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           Text(
                             originalPrice,
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.normal,
+                                fontFamily: 'Poppins',
+                              color: Color(0xff909EAE),
+                              fontWeight: FontWeight.w400,
                               decoration: TextDecoration.lineThrough,
+                              decorationColor: Color(0xff909EAE)
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
                               text: kodeproduk,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.grey),
+                              style: const TextStyle(fontSize: 15,
+                                  fontWeight: FontWeight.w300,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xff353E43)),
                             ),
                             TextSpan(
                               text: hargaJual,
                               style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.orange,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                fontFamily: 'Poppins',
+                                color: Color(0xffECB709),
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Text(
                         info,
                         style: const TextStyle(
-                          fontSize: 8,
-                          color: Colors.grey,
+                          fontSize: 9,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w300,
+                          color: Color(0xff909EAE),
                         ),
                       ),
                     ],

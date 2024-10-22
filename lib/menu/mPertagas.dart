@@ -208,7 +208,6 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-
   Widget _buildPertagasTab(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
     return Container(
       width: double.infinity,
@@ -238,37 +237,34 @@ class TabBarWidget extends StatelessWidget {
   }
 
   Widget _buildPertagasCards(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildPertagasOptionCard(context, '20.000', 'PR20 - ', '21.760', '', 'Token Pertagas', isClosed: true),
-                const SizedBox(height: 10),
-                _buildPertagasOptionCard(context, '100.000', 'PR100 - ', '101.765', '', 'Token Pertagas'),
-                const SizedBox(height: 10),
-              ],
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildPertagasOptionCard(context, '20.000', 'PR20 - ', '21.760', '', 'Token Pertagas', isClosed: true),
+              const SizedBox(height: 10),
+              _buildPertagasOptionCard(context, '100.000', 'PR100 - ', '101.765', '', 'Token Pertagas'),
+              const SizedBox(height: 10),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
-                const SizedBox(height: 10),
-                _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
-                const SizedBox(height: 10),
-              ],
-            ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+              const SizedBox(height: 10),
+              _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
+              const SizedBox(height: 10),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
-
 
   Widget _buildPertagasOptionCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false, bool isClosed = false}) {
     return GestureDetector(
@@ -431,9 +427,6 @@ class TabBarWidget extends StatelessWidget {
       ),
     );
   }
-
-
-
 
   Widget _buildPromoButton(String text, int index) {
     return ElevatedButton(

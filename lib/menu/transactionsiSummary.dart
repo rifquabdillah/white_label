@@ -50,10 +50,11 @@ class _TransactionPageState extends State<TransactionSummary> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F2E9), // Background warna krem
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFAF9F6),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xff353E43)
+          ),
           onPressed: () {
             Navigator.pop(context); // Navigate back when tapped
           },
@@ -64,7 +65,7 @@ class _TransactionPageState extends State<TransactionSummary> {
               'Saldo ',
               style: TextStyle(
                 fontSize: 18.0,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w300,
                 color: Color(0xFF4e5558),
                 fontFamily: 'Poppins',
               ),
@@ -74,7 +75,7 @@ class _TransactionPageState extends State<TransactionSummary> {
               _isSaldoVisible ? saldo : '********',
               style: const TextStyle(
                 fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
               ),
             ),
@@ -87,11 +88,11 @@ class _TransactionPageState extends State<TransactionSummary> {
               },
               child: Icon(
                 _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                color: Colors.grey,
+                color:Color(0xff909EAE),
               ),
             ),
             const SizedBox(width: 8.0),
-            const Icon(Icons.add, color: Colors.grey),
+            const Icon(Icons.add, color: Color(0xff909EAE)),
           ],
         ),
       ),
@@ -113,7 +114,7 @@ class _TransactionPageState extends State<TransactionSummary> {
     return Container(
       padding: const EdgeInsets.all(20.0), // Padding inside the container
       decoration: BoxDecoration(
-        color: Colors.white, // Background color of the container
+        color: Color(0xffFAF9F6), // Background color of the container
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
@@ -229,9 +230,9 @@ class _TransactionPageState extends State<TransactionSummary> {
                     "50%",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 22.0,
-                      color: Colors.green,
+                      color: Color(0xffECB709),
                     ),
                   ),
                   const SizedBox(height: 4.0),
@@ -240,8 +241,8 @@ class _TransactionPageState extends State<TransactionSummary> {
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xffECB709),
                     ),
                   ),
                 ],
@@ -278,8 +279,8 @@ class _TransactionPageState extends State<TransactionSummary> {
             text: '$label ',
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
+              fontWeight: FontWeight.w300,
+              color: Color(0xff353E43),
               fontFamily: 'Poppins',
             ),
           ),
@@ -287,8 +288,8 @@ class _TransactionPageState extends State<TransactionSummary> {
             text: value,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: color ?? Colors.black,
+              fontWeight: FontWeight.w700,
+              color: color ?? Color(0xff353E43),
               fontFamily: 'Poppins',
             ),
           ),
@@ -305,7 +306,7 @@ class _TransactionPageState extends State<TransactionSummary> {
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       child: SizedBox(
         height: 200,
-        width: double.infinity,// Tinggi grafik batang
+        width: double.infinity, // Height of the bar chart
         child: BarChart(
           BarChartData(
             barGroups: List.generate(barStates.length, (index) {
@@ -313,41 +314,49 @@ class _TransactionPageState extends State<TransactionSummary> {
                 x: index,
                 barRods: [
                   BarChartRodData(
-                    y: barStates[index], // Tinggi batang
-                    colors: [
-                      (clickedIndex == index) ? const Color(0xffecb709) : const Color(0xff198754)
-                    ],
+                    toY: barStates[index], // Height of the bar
+                    color: (clickedIndex == index)
+                        ? const Color(0xffecb709)
+                        : const Color(0xff198754),
                     width: 10,
-                    borderRadius: BorderRadius.circular(4), // Sudut melengkung
+                    borderRadius: BorderRadius.circular(4), // Rounded corners
                   ),
                 ],
               );
             }),
             titlesData: FlTitlesData(
-              leftTitles: SideTitles(showTitles: false), // Sembunyikan judul kiri
-              topTitles: SideTitles(showTitles: false),  // Sembunyikan judul atas
-              rightTitles: SideTitles(showTitles: false), // Sembunyikan judul kanan
-              bottomTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 38,
-                getTitles: (double value) {
-                  return ' ${(value + 1).toInt()}';
-                },
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false), // Hide left titles
+              ),
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false), // Hide top titles
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false), // Hide right titles
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 38,
+                  getTitlesWidget: (value, meta) {
+                    return Text(' ${(value + 1).toInt()}'); // Update title display
+                  },
+                ),
               ),
             ),
             gridData: FlGridData(show: true),
             borderData: FlBorderData(
-              show: false, // Sembunyikan batas
+              show: false, // Hide border
             ),
             barTouchData: BarTouchData(
               touchCallback: (event, response) {
-                // Tangani respons sentuhan
+                // Handle touch response
                 if (response != null && response.spot != null &&
                     (event is FlTapUpEvent || event is FlLongPressEnd)) {
-                  // Cek jika widget masih terpasang
+                  // Check if the widget is still mounted
                   if (mounted) {
                     setState(() {
-                      // Dapatkan indeks bar yang diklik
+                      // Get the index of the tapped bar
                       clickedIndex = response.spot!.touchedBarGroupIndex;
                     });
                   }
@@ -358,6 +367,7 @@ class _TransactionPageState extends State<TransactionSummary> {
         ),
       ),
     );
+
   }
 
   Widget _buildMonthlyMutationButton(BuildContext context) {
@@ -407,7 +417,7 @@ class _TransactionPageState extends State<TransactionSummary> {
       margin: const EdgeInsets.symmetric(horizontal: 16), // Add horizontal margin
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xffFAF9F6),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -424,8 +434,9 @@ class _TransactionPageState extends State<TransactionSummary> {
           const Text(
             '18 September 2024',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               fontSize: 14,
+              color: Color(0xff909EAE),
               fontFamily: 'Poppins', // Set font family to Poppins
             ),
           ),
@@ -446,15 +457,16 @@ class _TransactionPageState extends State<TransactionSummary> {
               Text(
                 'Transaksi',
                 style: TextStyle(
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w300,
                   fontSize: 14,
+                  color: Color(0xff353E43),
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
               ),
               Text(
                 '64',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: 14,
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
@@ -470,13 +482,14 @@ class _TransactionPageState extends State<TransactionSummary> {
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
+                  color: Color(0xff353E43),
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
               ),
               Text(
                 'Rp. 13.000',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: 14,
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
@@ -492,13 +505,14 @@ class _TransactionPageState extends State<TransactionSummary> {
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
+                  color: Color(0xff353E43),
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
               ),
               Text(
                 'Rp. 10.210',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: 14,
                   fontFamily: 'Poppins', // Set font family to Poppins
                 ),
@@ -527,7 +541,6 @@ class _TransactionPageState extends State<TransactionSummary> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Colors.black,
             fontFamily: 'Poppins', // Set font family to Poppins
           ),
         ),

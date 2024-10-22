@@ -1,89 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:white_label/transaksipay.dart';
 
-class PulsaPaketScreen extends StatefulWidget {
-  const PulsaPaketScreen({super.key});
+class ReferallMarkupScreen extends StatefulWidget {
+  const ReferallMarkupScreen({super.key});
 
   @override
-  _PulsaPaketScreenState createState() => _PulsaPaketScreenState();
+  _ReferallMarkupScreenState createState() => _ReferallMarkupScreenState();
 }
 
-class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
+class _ReferallMarkupScreenState extends State<ReferallMarkupScreen> {
   int _selectedPromoIndex = 0;
   int _activeContentIndex = 0; // Variabel untuk menyimpan konten yang aktif
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _productController = TextEditingController();
   bool _isSaldoVisible = true;
   String? _provider; // Tambahkan variabel untuk menyimpan nama provider
 
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.fill;
-
-    // Menggambar segitiga untuk bendera
-    Path path = Path();
-    path.moveTo(0, size.height); // Titik bawah kiri
-    path.lineTo(size.width, size.height / 2); // Titik tengah kanan
-    path.lineTo(0, 0); // Titik atas kiri
-    path.close(); // Menutup path
-
-    canvas.drawPath(path, paint);
-  }
-
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    const String saldo = '2.862.590'; // Consider using localization
-
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: AppBar(
           backgroundColor: const Color(0XFFfaf9f6),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Saldo ',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.normal,
-                      color: Color(0xFF4e5558),
-                    ),
-                  ),
-                  const SizedBox(width: 10.0),
-                  Text(
-                    _isSaldoVisible ? saldo : '********',
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(width: 25.0),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSaldoVisible = !_isSaldoVisible;
-                      });
-                    },
-                    child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  const Icon(Icons.add, color: Colors.grey),
-                ],
-              ),
-            ],
-          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -97,8 +41,9 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhoneNumberField(screenSize),
-            const SizedBox(height: 8.0), // Beri jarak
+            _buildSearchProductField(screenSize),
+            const SizedBox(height: 8.0),
+            // Beri jarak
             if (_provider != null) // Tampilkan provider jika ada
               Padding(
                 padding: const EdgeInsets.only(left: 26.0),
@@ -112,35 +57,25 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                   ),
                 ),
               ),
-            const SizedBox(height: 8.0), // Beri jarak
+            const SizedBox(height: 8.0),
+            // Beri jarak
             // Selalu tampilkan TabBarWidget, tapi kontennya bergantung pada nomor ponsel
-            Expanded(
-              child: TabBarWidget(
-                selectedPromoIndex: _selectedPromoIndex,
-                onPromoSelected: (index) {
-                  setState(() {
-                    _selectedPromoIndex = index;
-                  });
-                },
-                tabTitles: ['Pulsa', 'SMS/Nelpon', 'Internet'],
-                isPhoneNumberEmpty: _phoneController.text.isEmpty,
-                provider: _provider, // Tambahkan provider
-              ),
-            ),
+
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize) {
+  Widget _buildSearchProductField(Size screenSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
-            controller: _phoneController,
+            controller: _productController,
+            // Controller yang sudah didefinisikan
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0XFFfaf9f6),
@@ -150,22 +85,16 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              hintText: 'Masukkan nomor handphone',
+              hintText: 'Cari Produk',
               hintStyle: const TextStyle(color: Colors.grey),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Color(0xFFecb709)),
-                    onPressed: () {
-                      // Handle voice input logic here
-                    },
-                  ),
                   const SizedBox(width: 2),
                   IconButton(
-                    icon: const Icon(Icons.contacts, color: Color(0xFFecb709)),
+                    icon: const Icon(Icons.search, color: Color(0xff909EAE)),
                     onPressed: () {
-                      // Handle opening contacts logic here
+                      // Handle search product logic here
                     },
                   ),
                 ],
@@ -173,42 +102,15 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
             ),
             style: TextStyle(
               fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+              fontWeight: _productController.text.isEmpty
+                  ? FontWeight.normal
+                  : FontWeight.w600,
+              color: _productController.text.isEmpty
+                  ? Colors.grey
+                  : const Color(0xFF363636),
             ),
             onChanged: (value) {
-              setState(() {
-                // Cek 3 digit pertama untuk menentukan provider
-                if (value.length >= 3) {
-                  String prefix = value.substring(0, 3);
-                  switch (prefix) {
-                    case '085':
-                      _provider = 'INDOSAT';
-                      break;
-                    case '081':
-                      _provider = 'TELKOMSEL';
-                      break;
-                    case '087':
-                      _provider = 'XL';
-                      break;
-                    case '088':
-                    case '082':
-                      _provider = 'SMARTFREN';
-                      break;
-                    case '089':
-                      _provider = 'TRI';
-                      break;
-                    case '083':
-                      _provider = 'AXIS';
-                      break;
-                    default:
-                      _provider = null; // Jika tidak cocok
-                      break;
-                  }
-                } else {
-                  _provider = null; // Reset provider jika input kurang dari 3 karakter
-                }
-              });
+
             },
           ),
         ),
@@ -216,6 +118,8 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
     );
   }
 }
+
+
 
 class TabBarWidget extends StatelessWidget {
   final int selectedPromoIndex;
@@ -1177,17 +1081,17 @@ class TabBarWidget extends StatelessWidget {
       ),
     );
   }
-  }
+}
 
-  Widget _buildInternetTabContent(int selectedPromoIndex, ValueChanged<int> onPromoSelected) {
-    // Similar to _buildPulsaTabContent but with different promo buttons for Internet
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Text('Internet Content'), // Customize accordingly
-        ],
-      ),
-    );
-  }
+Widget _buildInternetTabContent(int selectedPromoIndex, ValueChanged<int> onPromoSelected) {
+  // Similar to _buildPulsaTabContent but with different promo buttons for Internet
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Column(
+      children: [
+        Text('Internet Content'), // Customize accordingly
+      ],
+    ),
+  );
+}
 

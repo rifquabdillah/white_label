@@ -1,12 +1,17 @@
 import 'dart:async'; // Import untuk Timer
 import 'dart:ui';
+import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
+import 'menu/mPromoScreen.dart';
 import 'menu/mPulsaPaket.dart' show PulsaPaketScreen;
+import 'menu/mSpesialDeals.dart';
 import 'menu/mTokenListrik.dart' show mTokenListrikScreen;
 import 'menu/mPertagas.dart' show mPertagasScreen;
+import 'menu/mVoucherGame.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +29,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      home: const SplashScreen(), // Set SplashScreen sebagai halaman awal
+      home: const MyHomePage(title: ''), // Set SplashScreen sebagai halaman awal
     );
   }
 }
@@ -45,18 +50,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Timer? _timer; // Mendeklarasikan timer
   int _selectedIndex = 0;
   final ScrollController _scrollController = ScrollController();
+  final int _selectedPromoIndex = 0;
 
   // Variabel untuk mengontrol animasi teks
   bool _isFirstText = true;
 
-  // Tambahkan fungsi untuk mengubah teks secara berkala
   void _toggleText() {
     setState(() {
       _isFirstText = !_isFirstText;
     });
   }
 
-  // Panggil fungsi ini di dalam initState untuk mengubah teks setiap detik
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this); // Inisialisasi TabController
@@ -279,25 +283,25 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             _buildTabBar(), // Tab Bar added here
             const SizedBox(height: 250), // Optional spacing
             _buildBannerCarousel(),
+            const SizedBox(height: 20),
             _buildTransactionSection(),
             const SizedBox(height: 10),
             _buildInfoSection(),
-            const SizedBox(height: 0),
+            const SizedBox(height: 8),
             _buildSpecialDeals(),
-            const SizedBox(height: 5),
+            const SizedBox(height: 8),
             _buildAdditionalSection(),
             const SizedBox(height: 16),
           ],
         ),
-        // Positioned ActionRow and TabBar
         Positioned(
-          top: 199, // Adjust this value based on your design
+          top: 200, // Adjust this value based on your design
           left: 0,
           right: 0,
           child: buildActionRow(),
         ),
         Positioned(
-          top: 348, // Adjust this value based on your design
+          top: 370, // Adjust this value based on your design
           left: 0,
           right: 0,
           child: _buildTabContent(),
@@ -307,43 +311,68 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF), // Background color
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey, // Shadow color
-            blurRadius: 0, // Shadow blur
-            offset: Offset(0, 0), // Shadow offset
+    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(color: Color(0xff353E430), fontFamily: 'Poppins', fontWeight: FontWeight.w700, fontSize: 14); // Unselected text color set to black
+    final selectedTextStyle = textStyle?.copyWith(fontWeight: FontWeight.w700, color: Colors.white, fontFamily: 'Poppins',); // Selected text color set to white
+    return DefaultTabController(
+      length: 3, // Number of tabs
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xffFAF9F6), // Background color
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xff909EAE), // Shadow color
+              blurRadius: 4, // Shadow blur
+              offset: Offset(0, 2), // Shadow offset
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0), // Adjust padding for better appearance
+          child: SegmentedTabControl(
+            controller: _tabController,
+            tabTextColor: const Color(0xff353535), // Unselected tab text color (black)
+            selectedTabTextColor: Color(0xffFAF9F6), // Active tab text color (white)// Indicator color
+            indicatorPadding: const EdgeInsets.all(2), // Adjust the padding for the indicator
+            squeezeIntensity: 1.5,
+            tabPadding: const EdgeInsets.symmetric(horizontal: 2),
+            textStyle: textStyle, // Apply textStyle for unselected state
+            selectedTextStyle: selectedTextStyle, // Apply selectedTextStyle for selected state
+            tabs: [
+              SegmentTab(
+                label: 'Pulsa',
+                color: const Color(0XFFECB709), // Tab color
+                backgroundColor: const Color(0XFFFAF9F6), // Background color
+              ),
+              SegmentTab(
+                label: 'Tagihan',
+                color: const Color(0XFFECB709), // Tab color
+                backgroundColor: const Color(0XFFFAF9F6), // Background color
+              ),
+              SegmentTab(
+                label: 'Voucher',
+                color: const Color(0XFFECB709), // Tab color
+                backgroundColor: const Color(0XFFFAF9F6), // Background color
+              ),
+            ],
           ),
-        ],
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicatorColor: const Color(0xffecb709), // Tab indicator color
-        labelColor: Colors.amber, // Active tab text color
-        unselectedLabelColor: const Color(0xff353535), // Inactive tab text color
-        tabs: const [
-          Tab(text: 'Pulsa'),
-          Tab(text: 'Tagihan'),
-          Tab(text: 'Voucher'),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildTabContent() {
     return Container(
-      padding: const EdgeInsets.all(0),
+      color: Color(0xffFAF9F6),
       child: SizedBox(
-        height: 250, // Adjust height based on content
+        height: 228, // Adjust height based on content
         child: TabBarView(
           controller: _tabController,
+          physics: const BouncingScrollPhysics(),
           children: [
-            _buildTransactionTab(), // Your puls tab content widget
-            _buildBillTab(), // Your token listrik tab content widget
-            _buildVoucherTab(), // Your pertagas tab content widget
+            _buildTransactionTab(), // Your pulsa tab content widget
+            _buildBillTab(), // Your tagihan tab content widget
+            _buildVoucherTab(), // Your voucher tab content widget
           ],
         ),
       ),
@@ -380,14 +409,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 TextSpan(
                                   text: 'PX14025',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w700,
                                     fontSize: 14,
+                                    fontFamily: 'Poppins'
                                   ),
                                 ),
                                 TextSpan(
                                   text: ' - Ferry Febrian N',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     fontSize: 14,
+                                      fontFamily: 'Poppins'
                                   )
                                   ),
                               ],
@@ -427,8 +458,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Text(
           'FF',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.normal,
+            color: Color(0xffFAF9F6),
+            fontWeight: FontWeight.w500,
             fontSize: 24,
           ),
         ),
@@ -446,7 +477,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.star,
+            FontAwesomeIcons.crown,
             color: Color(0xFFf7d82f),
             size: 20,
           ),
@@ -718,150 +749,132 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildGridOptions() {
-    return Container(
-      color: const Color(0xffffffff),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10), // Jarak dari pinggir
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
-        crossAxisSpacing: 10, // Jarak antar box horizontal
-        mainAxisSpacing: 15, // Jarak antar box vertical
-        children: [
-          _buildGridItem('Pulsa & Paket', Colors.blue),
-          _buildGridItem('Token Listrik', Colors.blue),
-          _buildGridItem('Pertagas', Colors.blue),
-          _buildGridItem('Promo!', Colors.blue),
-          _buildGridItem('Voucher Game', Colors.blue),
-          _buildGridItem('Entertainment', Colors.blue),
-          _buildGridItem('Lainnya', Colors.grey),
-        ],
-      ),
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      crossAxisSpacing: 10, // Horizontal spacing between boxes
+      mainAxisSpacing: 15, // Vertical spacing between boxes
+      children: _buildGridItems(), // Call a method to build grid items
     );
+  }
+
+  List<Widget> _buildGridItems() {
+    const List<Map<String, dynamic>> options = [
+      {'title': 'Pulsa & Paket', 'color': Colors.blue},
+      {'title': 'Token Listrik', 'color': Colors.blue},
+      {'title': 'Pertagas', 'color': Colors.blue},
+      {'title': 'Promo!', 'color': Colors.blue},
+      {'title': 'Voucher Game', 'color': Colors.blue},
+      {'title': 'Entertainment', 'color': Colors.blue},
+      {'title': 'Lainnya', 'color': Colors.grey},
+    ];
+
+    return options.map((option) {
+      return _buildGridItem(option['title'], option['color'] as MaterialColor);
+    }).toList();
   }
 
   Widget _buildGridItem(String title, MaterialColor color) {
     return GestureDetector(
-      onTap: () {
-        if (title == 'Pulsa & Paket') {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation,
-                  secondaryAnimation) => const PulsaPaketScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation,
-                  child) {
-                const begin = Offset(0.0, 1.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(
-                    CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (title == 'Token Listrik') {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation,
-                  secondaryAnimation) => const mTokenListrikScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation,
-                  child) {
-                const begin = Offset(0.0, 1.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(
-                    CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (title == 'Pertagas') {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation,
-                  secondaryAnimation) => const mPertagasScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation,
-                  child) {
-                const begin = Offset(0.0, 1.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(
-                    CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        }
-      },
+      onTap: () => _onGridItemTapped(title),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Tambahkan ini untuk memperkecil tinggi
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 60, // Ubah ukuran lebar jika perlu
+            height: 60, // Ubah ukuran tinggi untuk item
             decoration: BoxDecoration(
-              color: const Color(0xFF30b0c7), // Ubah warna sesuai kebutuhan
+              color: color, // Gunakan warna yang disediakan
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 3), // Atur jarak antar konten
           Text(
             title,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildGridOptionsBill() {
-    return Container(
-      color: const Color(0xFFFFFFFF),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 15,
-        children: [
-          _buildGridItemBill('BPJS', Colors.indigo),
-          _buildGridItemBill('PLN', Colors.indigo),
-          _buildGridItemBill('PDAM', Colors.indigo),
-          _buildGridItemBill('Telkom', Colors.indigo),
-          _buildGridItemBill('Pascabayar', Colors.indigo),
-          _buildGridItemBill('Multifinace', Colors.indigo),
-          _buildGridItemBill('Tv Kabel', Colors.indigo),
-          _buildGridItemBill('Lainnya', Colors.indigo),
-        ],
+  void _onGridItemTapped(String title) {
+    late final Widget page; // Declare the page variable
+
+    switch (title) {
+      case 'Pulsa & Paket':
+        page = const PulsaPaketScreen();
+        break;
+      case 'Token Listrik':
+        page = const mTokenListrikScreen();
+        break;
+      case 'Pertagas':
+        page = const mPertagasScreen();
+        break;
+      case 'Promo!':
+        page = const PromoScreen(); // Replace with the correct screen
+        break;
+      case 'Voucher Game':
+        page = VoucherGameScreen(); // Replace with the correct screen
+        break;
+      default:
+        return; // If the title does not match, do nothing
+    }
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => page,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }
 
-  Widget _buildGridItemBill(String title, MaterialColor blue) {
+  Widget _buildGridOptionsBill() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 15,
+      children: _buildGridItemsBill(), // Mengganti children dengan metode baru
+    );
+  }
+
+  List<Widget> _buildGridItemsBill() {
+    const List<Map<String, dynamic>> options = [
+      {'title': 'BPJS', 'color': Colors.indigo},
+      {'title': 'PLN', 'color': Colors.indigo},
+      {'title': 'PDAM', 'color': Colors.indigo},
+      {'title': 'Telkom', 'color': Colors.indigo},
+      {'title': 'Pascabayar', 'color': Colors.indigo},
+      {'title': 'Multifinance', 'color': Colors.indigo},
+      {'title': 'Tv Kabel', 'color': Colors.indigo},
+      {'title': 'Lainnya', 'color': Colors.grey},
+    ];
+
+    return options.map((option) {
+      return _buildGridItemBill(option['title'], option['color'] as MaterialColor);
+    }).toList();
+  }
+
+  Widget _buildGridItemBill(String title, MaterialColor color) {
     return GestureDetector(
       onTap: () {
         if (title == 'Pulsa & Paket') {
@@ -892,7 +905,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.indigo,
+              color: color,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -902,7 +915,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE)),
           ),
         ],
       ),
@@ -910,29 +923,33 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildGridOptionsVoucher() {
-    return Container(
-      color: const Color(0xFFFFFFFF),
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10), // Jarak dari pinggir
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 15,
-        children: [
-          _buildGridItemVoucher('Inject Satuan', Colors.pink),
-          _buildGridItemVoucher('Masal', Colors.pink),
-          _buildGridItemVoucher('Act Perdana', Colors.pink),
-          _buildGridItemVoucher('Voucher Fisik', Colors.pink),
-          _buildGridItemVoucher('Cek Status', Colors.pink),
-          _buildGridItemVoucher('Tutorial', Colors.pink),
-          _buildGridItemVoucher('Provider', Colors.pink),
-        ],
-      ),
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 15,
+      children: _buildGridItemsVoucher(), // Mengganti children dengan metode baru
     );
   }
 
-  Widget _buildGridItemVoucher(String title, MaterialColor blue) {
+  List<Widget> _buildGridItemsVoucher() {
+    const List<Map<String, dynamic>> options = [
+      {'title': 'Inject Satuan', 'color': Colors.pink},
+      {'title': 'Masal', 'color': Colors.pink},
+      {'title': 'Act Perdana', 'color': Colors.pink},
+      {'title': 'Voucher Fisik', 'color': Colors.pink},
+      {'title': 'Cek Status', 'color': Colors.pink},
+      {'title': 'Tutorial', 'color': Colors.pink},
+      {'title': 'Provider', 'color': Colors.grey},
+    ];
+
+    return options.map((option) {
+      return _buildGridItemVoucher(option['title'], option['color'] as MaterialColor);
+    }).toList();
+  }
+
+  Widget _buildGridItemVoucher(String title, MaterialColor color) {
     return GestureDetector(
       onTap: () {
         if (title == 'Pulsa & Paket') {
@@ -963,7 +980,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.pink,
+              color: color,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -973,7 +990,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE)),
           ),
         ],
       ),
@@ -983,15 +1000,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget _buildTransactionTab() {
     return Material(
       elevation: 4, // Set elevation for shadow effect
-      shadowColor: Colors.grey.withOpacity(0.5), // Color of the shadow
+      shadowColor: Colors.black.withOpacity(0.5), // Color of the shadow
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30), // Optional: round the corners
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
           child: Container(
             // Set the background color to match the tab bar
-            color: const Color(0xFFFFFFFF).withOpacity(0.9), // Slightly transparent to enhance the blur effect
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 15), // No horizontal padding
+            color: const Color(0xffFAF9F6).withOpacity(0.9), // Slightly transparent to enhance the blur effect
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical:10), // No horizontal padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1013,8 +1030,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
           child: Container(
-            color: const Color(0xFFFFFFFF).withOpacity(0.9), // Slightly transparent to enhance the blur effect
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10), // No horizontal padding
+            color: const Color(0xffFAF9F6).withOpacity(0.9), // Slightly transparent to enhance the blur effect
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8), // No horizontal padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1036,8 +1053,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
           child: Container(
-            color: const Color(0xFFFFFFFF).withOpacity(0.9), // Slightly transparent to enhance the blur effect
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10), // No horizontal padding
+            color: const Color(0xffFAF9F6).withOpacity(0.9), // Slightly transparent to enhance the blur effect
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8), // No horizontal padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1051,76 +1068,57 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildBannerCarousel() {
-    return Material(
-      elevation: 6.0, // Set elevation for shadow effect
-      shadowColor: Colors.grey.withOpacity(0.5), // Color of the shadow
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30), // Optional: round the corners
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-          child: SizedBox(
-            width: double.infinity, // Set the width of the card to fill the space
-            height: 200, // Height for the PageView
-            child: Container(
-              color: const Color(0xFFFDF7E6).withOpacity(0.9), // Slightly transparent background
-              child: Padding(
-                padding: const EdgeInsets.all(0.0), // Remove inner padding
-                child: PageView.builder(
-                  itemCount: 3, // Number of banners
-                  itemBuilder: (context, index) {
-                    // Determine color for each banner
-                    Color bannerColor;
-                    switch (index) {
-                      case 0:
-                        bannerColor = Colors.red; // Banner 1 color
-                        break;
-                      case 1:
-                        bannerColor = Colors.green; // Banner 2 color
-                        break;
-                      case 2:
-                        bannerColor = Colors.blue; // Banner 3 color
-                        break;
-                      default:
-                        bannerColor = Colors.grey; // Default color
-                    }
-                    return _buildBanner('Banner ${index + 1}', bannerColor);
-                  },
-                  controller: _pageController, // Use initialized controller
-                ),
-              ),
-            ),
-          ),
-        ),
+    return SizedBox(
+      height: 150, // Set the height of the banner
+      child: PageView.builder(
+        itemCount: 3, // Number of banners
+        itemBuilder: (context, index) {
+          // Determine color for each banner
+          Color bannerColor;
+          switch (index) {
+            case 0:
+              bannerColor = Color(0xff34C759); // Banner 1 color
+              break;
+            case 1:
+              bannerColor = Color(0xff34C759); // Banner 2 color
+              break;
+            case 2:
+              bannerColor = Color(0xff34C759); // Banner 3 color
+              break;
+            default:
+              bannerColor = Colors.grey; // Default color
+          }
+          return _buildBanner('Banner ${index + 1}', bannerColor);
+        },
+        controller: _pageController, // Use initialized controller
       ),
     );
   }
 
   Widget _buildBanner(String text, Color color) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
-      child: Material(
-        elevation: 4.0, // Atur elevasi untuk bayangan
-        borderRadius: BorderRadius.circular(12.0), // Sudut membulat banner
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0), // Sudut membulat
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(12.0), // Sudut membulat
-                ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10), // Padding di dalam banner
-                    child: Text(
-                      text,
-                      style: const TextStyle(color: Colors.white, fontSize: 24),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+      margin: const EdgeInsets.symmetric(horizontal: 10.0), // Adjust margin as needed
+      decoration: BoxDecoration(
+        color: color, // Banner background color
+        borderRadius: BorderRadius.circular(12.0), // Optional: rounded corners
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2), // Color of the shadow
+            blurRadius: 4.0, // Blur radius of the shadow
+            offset: Offset(0, -2), // Offset to position the shadow at the top
+          ),
+        ],
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10), // Padding inside the banner
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Color(0xffFAF9F6),
+              fontFamily: 'Poppins',
+              fontSize: 24,
+            ),
           ),
         ),
       ),
@@ -1133,11 +1131,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       child: Material(
         elevation: 4.0, // Set elevation for the shadow effect
         borderRadius: BorderRadius.circular(8.0), // Add border radius for rounded corners
-        shadowColor: Colors.black.withOpacity(0.8), // Shadow color for a subtle blur effect
+        shadowColor: Colors.black.withOpacity(0.15), // Shadow color for a subtle blur effect
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white, // Background color
-            borderRadius: BorderRadius.circular(8.0), // Match border radius with Material
+            color: Color(0xffFAF9F6), // Warna latar belakang
+            borderRadius: BorderRadius.circular(0.0), // Sudut membulat
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2), // Warna bayangan
+                spreadRadius: 1, // Penyebaran bayangan
+                blurRadius: 2, // Keburaman bayangan
+                offset: Offset(1, -1), // Posisi bayangan (x, y)
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1151,7 +1157,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       'Transaksi Terakhir',
                       style: TextStyle(
                         color: Color(0xFF353e43),
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins',
                         fontSize: 16, // Keep the same font size for consistency
                       ),
                     ),
@@ -1182,9 +1189,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             'History',
                             style: TextStyle(
                               color: Color(0xFFfbb034),
+                              fontFamily: 'Poppins',
                               decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFFfbb034), // Underline color
-                              fontWeight: FontWeight.normal,
+                              decorationColor: Color(0xffECB709), // Underline color
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
                         ),
@@ -1192,7 +1200,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         const Text(
                           '>>', // Additional text here
                           style: TextStyle(
-                            color: Colors.orange,
+                            color: Color(0xffECB709),
                             fontSize: 14,
                           ),
                         ),
@@ -1225,11 +1233,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // Tentukan warna berdasarkan status
     Color getStatusColor(String status) {
       if (status == 'Sukses') {
-        return Colors.white; // Warna teks untuk status sukses
+        return  Color(0xffFAF9F6); // Warna teks untuk status sukses
       } else if (status == 'Dalam Proses') {
-        return Colors.white; // Warna teks untuk status dalam proses
+        return  Color(0xffFAF9F6); // Warna teks untuk status dalam proses
       } else if (status == 'Gagal') {
-        return Colors.white; // Warna teks untuk status gagal
+        return  Color(0xffFAF9F6); // Warna teks untuk status gagal
       }
       return Colors.grey; // Default warna jika status tidak diketahui
     }
@@ -1388,24 +1396,29 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   const Text(
                     'Special Deals Hari Ini!',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
                       fontSize: 18,
-                      color: Colors.white,
+                      color: Color(0xffFAF9F6),
                     ),
                   ),
                   InkWell(
                     onTap: () {
-                      // Action for 'Semua'
+                      // Navigate to the mutasiMenu page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SpecialDealsPage()), // Adjust MutasiMenu according to your class name in mutasiMenu.dart
+                      );
                     },
                     child: const Row(
                       children: [
                         Text(
                           'Semua',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xffFAF9F6),
                             decoration: TextDecoration.underline, // Underline
-                            decorationColor: Colors.white,
-                            fontWeight: FontWeight.normal,
+                            decorationColor:Color(0xffFAF9F6),
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                         SizedBox(width: 5),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:white_label/main.dart'; // Adjust according to your file structure
-import 'historyTransaction.dart'; // Adjust according to your file structure
+import 'historyTransaction.dart';
+import 'menu/mReferralMarkup.dart';
+import 'menu/mutasiMenu.dart';
+import 'menu/transactionsiSummary.dart'; // Adjust according to your file structure
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -135,9 +138,10 @@ class _AccountPageState extends State<AccountPage> {
               children: [
                 // User Info Section
                 _buildProfileCard(),
-                const SizedBox(height: 16),
-                _buildInfoSection(),
+                _buildThreeFilledCards(),
                 _buildAccountOptions(),
+                const SizedBox(height: 20),
+                _buildLogoutMember(),
                 const SizedBox(height: 50),
               ],
             ),
@@ -249,8 +253,9 @@ class _AccountPageState extends State<AccountPage> {
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w700,
                                     fontSize: 14,
+                                      fontFamily: 'Poppins'
                                   ),
                                 ),
                                 TextSpan(
@@ -261,6 +266,7 @@ class _AccountPageState extends State<AccountPage> {
                                         .bodyLarge
                                         ?.copyWith(
                                       fontSize: 14,
+                                      fontFamily: 'Poppins'
                                     )
                                 ),
                               ],
@@ -302,7 +308,7 @@ class _AccountPageState extends State<AccountPage> {
           'FF',
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.normal,
+            fontWeight: FontWeight.w500,
             fontSize: 24,
           ),
         ),
@@ -496,7 +502,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildAccountOptions() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -504,99 +510,186 @@ class _AccountPageState extends State<AccountPage> {
           _buildAccountOptionsContainer(),
           const SizedBox(height: 8),
           _buildProfilOptionsContainer(),
+          const SizedBox(height: 8),
+          _buildAboutOptionsContainer(),
         ],
       ),
     );
   }
 
-  Widget _buildInfoSection() {
-    return Container(
-      color: const Color(0xFFFDF7E6), // Latar belakang warna fdf7e6
+  Widget _buildThreeFilledCards() {
+    return SizedBox(
+      height: 150, // Set a fixed height for the scrollable area
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal, // Enable horizontal scrolling
         child: Row(
           children: [
-            // Card pertama dengan informasi
-            _buildInfoCard(
-              title: 'Mutasi Saldo',
-              content: 'Saldo Masuk 2.000.000 \n\Saldo Keluar 2.510.210',
+            SizedBox(width: 10), // Space before the first card
+            GestureDetector( // Wrap the "Penjualan" card with GestureDetector
+              onTap: () {
+                // Navigate to the transaction history screen when the card is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TransactionSummary()), // Replace with your transaction history widget
+                );
+              },
+              child: _buildFilledCard(
+                title: 'Penjualan',
+                amount: 'Rp. 13.000',
+                newSale: 'Penjualan Baru', // New parameter for new sale
+                newSaleAmount: 'Rp. 13.000', // Amount for new sale
+                label1: 'Laba',
+                profit: 'Rp. 2.790',
+                label2: 'Trx Sukses',
+                trxSuccess: '1',
+              ),
             ),
-            const SizedBox(width: 16), // Jarak antar card
-
-            // Card kedua dengan informasi
-            _buildInfoCard(
-              title: 'Penjualan',
-              content: 'Penjualan Rp. 13.000\n\Laba Rp. 2.790\n\Trx Sukses 1',
+            SizedBox(width: 10),
+            GestureDetector( // Wrap the "Mutasi Saldo" card with GestureDetector
+              onTap: () {
+                // Navigate to the MutasiMenu screen when the card is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MutasiMenu()), // Replace with your mutasi menu widget
+                );
+              },
+              child: _buildFilledCard(
+                title: 'Mutasi Saldo',
+                label1: 'Saldo Masuk',
+                profit: 'Rp. 2.000.000',
+                label2: 'Saldo Akhir',
+                trxSuccess: 'Rp. 2.510.210',
+              ),
             ),
-            const SizedBox(width: 16), // Jarak antar card
-
-            // Card ketiga dengan informasi
-            _buildInfoCard(
+            SizedBox(width: 10), // Space between cards
+            _buildFilledCard(
               title: 'Downline',
-              content: 'Komisi Rp. 11.100\n\Downline 174 \n\Trx Jaringan 72',
+              label1: 'Komisi',
+              profit: 'Rp. 11.100',
+              label2: 'Total Downline',
+              trxSuccess: '72',
             ),
+            SizedBox(width: 10), // Space after the last card
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildFilledCard({
     required String title,
-    required String content,
-    double? titleFontSize, // Optional parameter for title font size
-    double? contentFontSize, // Optional parameter for content font size
-    String? fontFamily, // Optional parameter for font family
+    String? amount,
+    String? newSale, // New parameter for new sale
+    String? newSaleAmount, // Amount for new sale
+    required String label1,
+    required String profit,
+    required String label2,
+    required String trxSuccess,
   }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 16.0), // Jarak atas dan bawah card
-      elevation: 8.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+    return Container(
+      width: 200, // Set a fixed width for the card
+      height: 120, // Set a fixed height for the card (increased to accommodate new text)
+      decoration: BoxDecoration(
+        color: Color(0xfffaf9f6), // Background color for the card
+        borderRadius: BorderRadius.circular(8), // Rounded corners
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15), // Shadow color
+            offset: Offset(0, -0), // Shift the shadow downwards
+            blurRadius: 4.0, // Softening the shadow
+            spreadRadius: 3.0, // Extending the shadow
+          ),
+        ],
       ),
-      child: Container(
-        width: 200,
-        color: Color(0xfffaf9f6),// Lebar card, sesuaikan sesuai kebutuhan
-        padding: const EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0), // Padding inside the card
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Optional: Aligns title and icon
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: titleFontSize ?? 14.0, // Default size if not provided
-                              fontFamily: fontFamily ?? Theme.of(context).textTheme.titleLarge?.fontFamily, // Default font family
-                              fontWeight: FontWeight.w300, // You can adjust this as needed
-                              color: const Color(0xffECB709), // Set the text color to orange
-                              decoration: TextDecoration.underline,
-                              decorationColor: const Color(0xffECB709), // Add underline
-                            ),
-                          ),
-                          const SizedBox(width: 4), // Reduced spacing between title and icon
-                          const Icon(
-                            Icons.keyboard_double_arrow_right_outlined, size: 18, // Icon for the arrow
-                            color: Color(0xffECB709), // Match the color of the title
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8), // Space below the title
-                      Text(
-                        content,
-                        style: TextStyle(
-                          fontSize: contentFontSize ?? 14.0, // Default size if not provided
-                          fontFamily: fontFamily ?? Theme.of(context).textTheme.bodyMedium?.fontFamily, // Default font family
-                        ),
-                      ),
-                    ],
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xffECB709),
+                    decoration: TextDecoration.underline,
+                    decorationColor: Color(0xffECB709), // Underline color
+                  ),
+                ),
+                SizedBox(width: 4), // Space between text and icon
+                Icon(
+                  Icons.double_arrow_rounded, // Replace with your desired icon
+                  color: Color(0xffECB709), // Icon color
+                  size: 16, // Icon size
+                ),
+              ],
+            ),
+            if (newSale != null && newSaleAmount != null) // Display new sale if provided
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    newSale,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black, // Black text for nominal
+                    ),
+                  ),
+                  Text(
+                    newSaleAmount,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black, // Black text for nominal
+                    ),
+                  ),
+                ],
+              ),
+            SizedBox(height: 4), // Space between lines
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label1,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black, // Black text for nominal
+                  ),
+                ),
+                Text(
+                  profit,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Black text for nominal
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 4), // Space between lines
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label2,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black, // Black text for nominal
+                  ),
+                ),
+                Text(
+                  trxSuccess,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Black text for nominal
                   ),
                 ),
               ],
@@ -606,10 +699,6 @@ class _AccountPageState extends State<AccountPage> {
       ),
     );
   }
-
-
-
-
 
   Widget _buildAccountOptionsContainer() {
     return Container(
@@ -641,10 +730,19 @@ class _AccountPageState extends State<AccountPage> {
           ),
           _buildButtonMember(),
           const SizedBox(height: 5), // Add space between button and next option
-          _buildAccountOption('Kode Referral dan Mark Up'),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReferallMarkupScreen()),
+              );
+            },
+            child: _buildAccountOption('Kode Referral dan Mark Up'),
+          ),
           _buildAccountOption('Jaringan Downline'),
           _buildAccountOption('Info Komisi'),
           _buildAccountOption('Setelan Jaringan'),
+
         ],
       ),
     );
@@ -664,29 +762,74 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ],
       ),
-      margin: const EdgeInsets.symmetric(vertical: 4), // Margin for container
+      margin: EdgeInsets.zero, // No margin on left and right
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0), // Padding for the title
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Profil Akun',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF353e43),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _buildAccountOption('Info Akun'),
+          _buildAccountOption('Nomor Terdaftar'),
+          _buildAccountOption('Keamanan Akun'),
+          _buildAccountOption('Log Inbox'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutOptionsContainer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xfffaf9f6),
+        borderRadius: BorderRadius.circular(8), // Rounded corners for the container
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2), // Shadow color
+            offset: Offset(0, -0), // Shift the shadow upwards
+            blurRadius: 6.0, // Softening the shadow
+            spreadRadius: 2.0, // Extending the shadow
+          ),
+        ],
+      ),
+      margin: EdgeInsets.zero, // No margin on left and right
       child: Container(
-        height: 200, // Set a fixed height for the card
-        child: Column( // Use Column instead of ListView
+        height: 218, // Set a fixed height for the card
+        child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0), // Padding for the title
-              child: Row( // Use Row to align text left
-                mainAxisAlignment: MainAxisAlignment.start, // Aligns text to the left
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    'Profil Akun',
+                    'Tentang ',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
                       color: Color(0xFF353e43), // Title color
                     ),
                   ),
                 ],
               ),
             ),
-            _buildAccountOption('Info Akun'),
-            _buildAccountOption('Nomor Terdaftar'),
+            _buildAccountOption('Syarat & Ketentuan'),
+            _buildAccountOption('Kebijakan Privasi'),
+            _buildAccountOption('Kunjungin Halaman Web'),
           ],
         ),
       ),
@@ -695,21 +838,22 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildButtonMember() => SizedBox(
     width: 350,
-    height: 45,
+    height: 35,
     child: ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xffecb709), // Background color
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Rounded corners
+          borderRadius: BorderRadius.circular(4), // Rounded corners
         ),
       ),
       child: const Text(
         'Daftarkan Member Baru',
         style: TextStyle(
           color: Colors.white, // Button text color
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
@@ -719,13 +863,27 @@ class _AccountPageState extends State<AccountPage> {
     return Column(
       children: [
         ListTile(
-          title: Text(
-            option,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
-              color: isHighlighted ? Colors.blue : Colors.black,
-            ),
+          title: Row(
+            children: [
+              Container(
+                width: 16, // Small grey box width
+                height: 16, // Small grey box height
+                decoration: BoxDecoration(
+                  color: Colors.grey, // Grey color for the box
+                  borderRadius: BorderRadius.circular(4), // Add radius for rounded corners
+                ),
+              ),
+              SizedBox(width: 10), // Space between the box and the text
+              Text(
+                option,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                  fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+                  color: isHighlighted ? Colors.blue : Colors.black,
+                ),
+              ),
+            ],
           ),
           trailing: Icon(
             Icons.arrow_forward_ios,
@@ -738,5 +896,76 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  Widget _buildLogoutMember() => Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min, // To center the content vertically
+      children: [
+        SizedBox(
+          width: 350,
+          height: 35,
+          child: ElevatedButton(
+            onPressed: () {
+              _showLogoutDialog(context); // Show dialog on button press
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              backgroundColor: const Color(0xfffaf9f6), // Background color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // Rounded corners
+              ),
+            ),
+            child: const Text(
+              'KELUAR',
+              style: TextStyle(
+                color: Color(0XFF353e43), // Button text color
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8), // Space between button and version text
+        const Text(
+          'Versi 0.2.01',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey, // You can change the color as needed
+          ),
+        ),
+      ],
+    ),
+  );
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Keluar'),
+          content: const Text('Apakah Anda yakin ingin keluar?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Tidak'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => MyHomePage(title: '',)),
+                      (Route<dynamic> route) => false,
+                ); // Navigate to MyHomePage
+              },
+              child: const Text('Ya'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
+
+
 

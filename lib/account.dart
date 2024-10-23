@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:white_label/main.dart'; // Adjust according to your file structure
 import 'historyTransaction.dart';
+import 'menuAkun/daftarMember.dart';
 import 'menuAkun/mReferralMarkup.dart';
 import 'menuTransaksi//mutasiMenu.dart';
 import 'menuTransaksi//transactionsiSummary.dart'; // Adjust according to your file structure
@@ -728,7 +729,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
           ),
-          _buildButtonMember(),
+          _buildButtonMember(context),
           const SizedBox(height: 5), // Add space between button and next option
           GestureDetector(
             onTap: () {
@@ -836,21 +837,27 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildButtonMember() => SizedBox(
+  Widget _buildButtonMember(BuildContext context) => SizedBox(
     width: 350,
     height: 35,
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        // Navigasi ke halaman daftarMember
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => daftarMember()),
+        );
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xffecb709), // Background color
+        backgroundColor: const Color(0xffecb709), // Warna background
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4), // Rounded corners
+          borderRadius: BorderRadius.circular(4), // Sudut membulat
         ),
       ),
       child: const Text(
         'Daftarkan Member Baru',
         style: TextStyle(
-          color: Colors.white, // Button text color
+          color: Colors.white, // Warna teks tombol
           fontSize: 18,
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w600,

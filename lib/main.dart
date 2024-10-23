@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:white_label/login/login.dart';
 import 'package:white_label/menuUtama/mBpjs.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: ''), // Set SplashScreen sebagai halaman awal
+      home: const Login(), // Set SplashScreen sebagai halaman awal
     );
   }
 }

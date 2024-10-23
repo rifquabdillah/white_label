@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for TextInputFormatter
 import '../main.dart';
-
+import 'dart:async';
 
 class Otpscreen extends StatefulWidget {
   const Otpscreen({super.key});
@@ -18,16 +18,37 @@ class _OtpState extends State<Otpscreen> {
   bool isOtp = false; // Track if the user is registered
   bool showWarning = false; // Track if the warning message should be shown
 
+  // Timer variables
+  late Timer _timer;
+  int _start = 60; // Countdown starts from 60 seconds
+
   @override
   void initState() {
     super.initState();
-    // Listener to change the text color based on input
+    _startTimer();
+
     _phoneController.addListener(() {
       setState(() {
         textColor = _phoneController.text.isEmpty ? Colors.grey : Colors.black; // Change text color based on input
         // Change button color based on whether the text field is empty
         buttonColor = _phoneController.text.isEmpty ? Colors.grey : Colors.amber;
       });
+    });
+  }
+
+  // Start the timer
+  void _startTimer() {
+    _start = 60; // Reset to 60 seconds
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      if (_start == 0) {
+        setState(() {
+          timer.cancel(); // Stop the timer when it reaches 0
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
     });
   }
 
@@ -146,6 +167,18 @@ class _OtpState extends State<Otpscreen> {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: borderColor), // Border when focused
                       ),
+                      suffix: Container(
+                        width: 80,
+                        alignment: Alignment.center,
+                        child: Text(
+                          _start > 0 ? '$_start' : 'Kirim Ulang',
+                          style: const TextStyle(
+                            color: Colors.amber,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     ),
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(6), // Limit input to 6 characters
@@ -153,7 +186,7 @@ class _OtpState extends State<Otpscreen> {
                     ],
                     textCapitalization: TextCapitalization.characters, // Capitalize all input
                   ),
-                  // Align message to the left
+                  const SizedBox(height: 20), // Space before RichText
                   RichText(
                     text: TextSpan(
                       style: const TextStyle(
@@ -179,14 +212,14 @@ class _OtpState extends State<Otpscreen> {
                             text: 'Kirim Ulang OTP', // This part will be orange
                             style: const TextStyle(
                               color: Color(0xffECB709), // Orange color for this part
-                              fontWeight: FontWeight.bold, // Make this text bold
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Poppins'// Make this text bold
                             ),
                           ),
                         ],
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 30), // Space before the button
                   Center(
                     child: SizedBox(

@@ -18,6 +18,7 @@ import 'menuUtama/mTelkom.dart';
 import 'menuUtama/mTokenListrik.dart' show mTokenListrikScreen;
 import 'menuUtama/mPertagas.dart' show mPertagasScreen;
 import 'menuUtama/mVoucherGame.dart';
+import 'notificationPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   int _selectedIndex = 0;
   final ScrollController _scrollController = ScrollController();
   final int _selectedPromoIndex = 0;
+  bool _isNotificationVisible = false;
 
   // Variabel untuk mengontrol animasi teks
   bool _isFirstText = true;
@@ -64,6 +66,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _toggleText() {
     setState(() {
       _isFirstText = !_isFirstText;
+    });
+  }
+
+  void _toggleNotification() {
+    setState(() {
+      _isNotificationVisible = !_isNotificationVisible; // Toggle the visibility
     });
   }
 
@@ -198,9 +206,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       body: SafeArea(
         child: SingleChildScrollView( // Wrap with SingleChildScrollView to enable scrolling
           controller: _scrollController, // Assign the scroll controller
-          child: Column(
+          child: Stack(
             children: [
-              _buildHomePage(screenSize),
+              Column(
+                children: [
+                  _buildHomePage(screenSize),
+                ],
+              ),
             ],
           ),
         ),
@@ -238,7 +250,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ),
         ),
       ),
-
     );
   }
 
@@ -284,7 +295,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       children: [
         Column(
           children: [
-            _buildProfileCard(), // Profile card remains at the top
+            _buildProfileCard(context), // Profile card remains at the top
             const SizedBox(height: 90), // Optional spacing
             _buildTabBar(), // Tab Bar added here
             const SizedBox(height: 250), // Optional spacing
@@ -385,7 +396,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildProfileCard() {
+  Widget _buildProfileCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0.0),
       child: Container(
@@ -417,16 +428,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
-                                    fontFamily: 'Poppins'
+                                    fontFamily: 'Poppins',
                                   ),
                                 ),
                                 TextSpan(
                                   text: ' - Ferry Febrian N',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     fontSize: 14,
-                                      fontFamily: 'Poppins'
-                                  )
+                                    fontFamily: 'Poppins',
                                   ),
+                                ),
                               ],
                             ),
                           ),
@@ -436,9 +447,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       IconButton(
                         icon: const Icon(Icons.notifications),
                         onPressed: () {
-
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const NotificationPage()),
+                          ); // Navigate to the NotificationPage
                         },
                       ),
+
                     ],
                   ),
                 ),

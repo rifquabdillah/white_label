@@ -2,20 +2,20 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:white_label/account.dart';
 
-
-class daftarMember extends StatefulWidget {
-  const daftarMember({super.key});
+class DaftarMember extends StatefulWidget {
+  const DaftarMember({super.key});
 
   @override
-  _daftarMemberState createState() => _daftarMemberState();
+  _DaftarMemberState createState() => _DaftarMemberState();
 }
 
-class _daftarMemberState extends State<daftarMember> {
+class _DaftarMemberState extends State<DaftarMember> {
   Color textColor = Colors.grey; // Initial text color
   Color borderColor = Colors.black54; // Initial border color
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _referralCodeController = TextEditingController();
+  final TextEditingController _alamatController = TextEditingController();
+  final TextEditingController _markUpController = TextEditingController();
   bool isRegistered = false; // Track if the user is registered
   bool showWarning = false; // Track if the warning message should be shown
 
@@ -23,34 +23,76 @@ class _daftarMemberState extends State<daftarMember> {
   void initState() {
     super.initState();
     // Listener to change the text color based on input
+    // Listener to change the text color based on input for each controller
     _nameController.addListener(() {
       setState(() {
-        textColor = _nameController.text.isEmpty ? Colors.grey : Colors.black; // Change text color based on input
+        textColor = _nameController.text.isEmpty ? Colors.grey : Color(0xff353E43); // Change text color based on input
+      });
+    });
+
+    _phoneController.addListener(() {
+      setState(() {
+        textColor = _phoneController.text.isEmpty ? Colors.grey : Color(0xff353E43);
+      });
+    });
+
+    _alamatController.addListener(() {
+      setState(() {
+        textColor = _alamatController.text.isEmpty ? Colors.grey : Color(0xff353E43);
+      });
+    });
+
+    _markUpController.addListener(() {
+      setState(() {
+        textColor = _markUpController.text.isEmpty ? Colors.grey : Color(0xff353E43);
       });
     });
   }
 
-  void _checkRegistration() {
-    // This function should contain your logic to check if the number is registered
-    // For demonstration, let's assume any input is considered unregistered if it's not "123456789"
-    setState(() {
-      isRegistered = _phoneController.text != "123456789"; // Example logic to check registration
-      borderColor = isRegistered ? Colors.red : Colors.black54; // Change border color to red if unregistered
-    });
+  void _onDaftarPressed() {
+    // Assume registration is successful
+    bool registrationSuccessful = true; // Change this based on your logic
+
+    if (registrationSuccessful) {
+      final snackBar = SnackBar(
+        content: const Text(
+          'Pendaftaran berhasil!',
+          style: TextStyle(color: Color(0xff353E43)), // Optional: Change text color
+        ),
+        backgroundColor: Color(0xFFfdf7e6), // Set the background color here
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Color(0xff353E43), // Optional: Change action text color
+          onPressed: () {
+            // Optional: Code to execute when the action is pressed.
+          },
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AccountPage()), // Replace with your target page
+        );
+      });
+    }
   }
 
-  void _onLoginPressed() {
-    // This function is called when the login button is pressed
-    _checkRegistration(); // Check registration status
-    setState(() {
-      showWarning = isRegistered; // Show warning if the number is unregistered
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _alamatController.dispose();
+    _markUpController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0; // Check if keyboard is open
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xfffaf9f6),
@@ -70,14 +112,14 @@ class _daftarMemberState extends State<daftarMember> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: const Color(0xfffaf9f6), // Outer background
+      backgroundColor: const Color(0xfffaf9f6),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(top: keyboardVisible ? 50 : 100), // Adjust padding based on keyboard visibility
+          padding: EdgeInsets.only(top: keyboardVisible ? 50 : 100),
           child: Center(
             child: Container(
               padding: const EdgeInsets.all(28),
-              width: double.infinity, // Width of the white box
+              width: double.infinity,
               decoration: BoxDecoration(
                 color: const Color(0xfffaf9f6),
                 borderRadius: BorderRadius.circular(10),
@@ -89,7 +131,7 @@ class _daftarMemberState extends State<daftarMember> {
                   const Text(
                     'Daftarkan Member Baru',
                     style: TextStyle(
-                      fontFamily: 'Poppins', // Use Poppins font
+                      fontFamily: 'Poppins',
                       color: Colors.amber,
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -98,7 +140,6 @@ class _daftarMemberState extends State<daftarMember> {
                   const SizedBox(height: 10),
                   const SizedBox(height: 30),
 
-                  // Warning message for unregistered number
                   if (showWarning) ...[
                     const SizedBox(height: 10),
                     const Text(
@@ -106,149 +147,150 @@ class _daftarMemberState extends State<daftarMember> {
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         color: Color(0xffC70000),
-                        fontWeight: FontWeight.w700,// Red color for the warning text
+                        fontWeight: FontWeight.w700,
                         fontSize: 14,
                       ),
                     ),
                   ],
 
-                  // Name Field
                   const Text(
                     'Isi nama sesuai KTP untuk membuka fitur lebih lengkap',
                     style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.black54,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic
+                      fontFamily: 'Poppins',
+                      color: Colors.black54,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   TextField(
-                    controller: _phoneController, // Connect the controller
+                    controller: _nameController,
                     style: TextStyle(
-                      fontFamily: 'Poppins', // Use Poppins font
-                      color: textColor, // Set text color
+                      fontFamily: 'Poppins',
+                      color: textColor, // Use the textColor variable
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Nama Lengkap', // Placeholder text
+                      hintText: 'Nama Lengkap',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Poppins', // Use Poppins font
-                        color: Colors.grey, // Placeholder color
+                        fontFamily: 'Poppins',
+                        color: Colors.grey,
                         fontSize: 16,
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: borderColor), // Underline border
+                        borderSide: BorderSide(color: borderColor),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: borderColor), // Border when focused
+                        borderSide: BorderSide(color: borderColor),
                       ),
                     ),
                   ),
-                  // Phone Field
+
                   const SizedBox(height: 15),
                   const Text(
                     'Gunakan nomor WhatsApp biar gampang dapat promo',
                     style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.black54,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic
+                      fontFamily: 'Poppins',
+                      color: Colors.black54,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   TextField(
-                    controller: _phoneController, // Connect the controller
+                    controller: _phoneController,
                     style: TextStyle(
-                      fontFamily: 'Poppins', // Use Poppins font
-                      color: textColor, // Set text color
+                      fontFamily: 'Poppins',
+                      color: textColor, // Use the textColor variable
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Masukkan Nomor HP yang Aktif', // Placeholder text
+                      hintText: 'Masukkan Nomor HP yang Aktif',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Poppins', // Use Poppins font
-                        color: Colors.grey, // Placeholder color
+                        fontFamily: 'Poppins',
+                        color: Colors.grey,
                         fontSize: 16,
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: borderColor), // Underline border
+                        borderSide: BorderSide(color: borderColor),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: borderColor), // Border when focused
+                        borderSide: BorderSide(color: borderColor),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 15),
                   const Text(
                     'Memudahkan pengiriman ketika ada hadiah promo',
                     style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.black54,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic
+                      fontFamily: 'Poppins',
+                      color: Colors.black54,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   TextField(
-                    controller: _referralCodeController, // Connect the controller
+                    controller: _alamatController,
                     style: TextStyle(
-                      fontFamily: 'Poppins', // Use Poppins font
-                      color: textColor, // Set text color
+                      fontFamily: 'Poppins',
+                      color: textColor, // Use the textColor variable
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'Alamat', // Placeholder text
-                      hintStyle: TextStyle(
-                        fontFamily: 'Poppins', // Use Poppins font
-                        color: Colors.grey, // Placeholder color
+                    decoration: InputDecoration(
+                      hintText: 'Alamat',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.grey,
                         fontSize: 16,
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), // Underline border
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), // Border when focused
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 15),
                   const Text(
                     'Penambahan harga yang akan jadi keuntunganmu',
                     style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.black54,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic
+                      fontFamily: 'Poppins',
+                      color: Colors.black54,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   TextField(
-                    controller: _referralCodeController, // Connect the controller
+                    controller: _markUpController,
                     style: TextStyle(
-                      fontFamily: 'Poppins', // Use Poppins font
-                      color: textColor, // Set text color
+                      fontFamily: 'Poppins',
+                      color: textColor, // Use the textColor variable
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'Mark Up', // Placeholder text
-                      hintStyle: TextStyle(
-                        fontFamily: 'Poppins', // Use Poppins font
-                        color: Colors.grey, // Placeholder color
+                    decoration: InputDecoration(
+                      hintText: 'Mark Up',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.grey,
                         fontSize: 16,
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), // Underline border
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), // Border when focused
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 20),
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        // Action when the entire text is tapped
                         print('Dengan Mendaftar tapped');
                       },
                       child: RichText(
                         text: TextSpan(
                           text: 'Dengan Mendaftar, saya menyetujui ',
                           style: const TextStyle(
-                            fontFamily: 'Poppins', // Use Poppins font
+                            fontFamily: 'Poppins',
                             color: Colors.black45,
                             fontSize: 12,
                           ),
@@ -256,14 +298,12 @@ class _daftarMemberState extends State<daftarMember> {
                             TextSpan(
                               text: 'Ketentuan Layanan',
                               style: const TextStyle(
-                                fontFamily: 'Poppins', // Use Poppins font
-                                color: Colors.amber, // Color for the link
+                                fontFamily: 'Poppins',
+                                color: Colors.amber,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                               recognizer: TapGestureRecognizer()..onTap = () {
-                                // Action when "Ketentuan Layanan" is tapped
-                                // Replace with your link action
                                 print('Ketentuan Layanan tapped');
                               },
                             ),
@@ -272,57 +312,27 @@ class _daftarMemberState extends State<daftarMember> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 0),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Action when the entire text is tapped
-                        print('Kebijakan Privasi tapped');
-                      },
-                      child: RichText(
-                        text: const TextSpan(
-                          text: 'Kebijakan Privasi ',
-                          style: TextStyle(
-                            fontFamily: 'Poppins', // Use Poppins font
-                            color: Colors.amber, // Color for the link
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: 'dari Kementrian Kuota',
-                              style: TextStyle(
-                                fontFamily: 'Poppins', // Use Poppins font
-                                color: Colors.black45,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
+
+                  const SizedBox(height: 20),
                   Center(
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber, // Button color
+                          backgroundColor: Color(0xffECB709), // Button color
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: _onLoginPressed, // Call the onLoginPressed function
+                        onPressed: _onDaftarPressed, // Call the onLoginPressed function
                         child: const Text(
                           'DAFTARKAN MEMBER',
                           style: TextStyle(
-                              fontFamily: 'Poppins', // Use Poppins font
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400
+                            fontFamily: 'Poppins', // Use Poppins font
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),

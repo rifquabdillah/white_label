@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:white_label/transaksipay.dart';
+import '../menuSaldo/mSaldo.dart';
 
 class PulsaPaketScreen extends StatefulWidget {
   const PulsaPaketScreen({super.key});
@@ -11,7 +12,6 @@ class PulsaPaketScreen extends StatefulWidget {
 
 class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   int _selectedPromoIndex = 0;
-  int _activeContentIndex = 0; // Variabel untuk menyimpan konten yang aktif
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true;
   String? _provider; // Tambahkan variabel untuk menyimpan nama provider
@@ -58,11 +58,20 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                     },
                     child: Icon(
                       _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                      color: Colors.grey,
+                      color: Color(0xff909EAE),
                     ),
                   ),
                   const SizedBox(width: 8.0),
-                  const Icon(Icons.add, color: Colors.grey),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to SaldoPage when the add icon is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                      );
+                    },
+                    child: const Icon(Icons.add, color: Color(0xff909EAE)),
+                  ),
                 ],
               ),
             ],

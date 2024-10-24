@@ -789,7 +789,7 @@ class _AccountPageState extends State<AccountPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InfoAkunScreen()),
+                MaterialPageRoute(builder: (context) => infoAkun()),
               );
             },
             child: _buildAccountOption('Info Akun'),
@@ -855,7 +855,7 @@ class _AccountPageState extends State<AccountPage> {
         // Navigasi ke halaman daftarMember
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => daftarMember()),
+          MaterialPageRoute(builder: (context) => DaftarMember()),
         );
       },
       style: ElevatedButton.styleFrom(

@@ -409,7 +409,6 @@ class _MutasiMenuState extends State<MutasiMenu> {
       'Kirim Saldo',
       'Terima Saldo',
       'Tiket Deposit',
-      'Deposit Via Gerai',
       'Tukar Komisi',
       'Lainnya'
     ];
@@ -530,7 +529,7 @@ class _MutasiMenuState extends State<MutasiMenu> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 16), // Space before the apply button
+              SizedBox(height: 5), // Space before the apply button
               Row(
                 mainAxisAlignment: MainAxisAlignment.center, // Center the Row contents
                 children: [

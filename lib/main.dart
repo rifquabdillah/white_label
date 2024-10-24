@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      home: const Login(), // Set SplashScreen sebagai halaman awal
+      home: const MyHomePage(title: ''), // Set SplashScreen sebagai halaman awal
     );
   }
 }
@@ -616,7 +616,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 ),
                 Image(
                   image: AssetImage('assets/kado.png'), // Ganti dengan path gambar Anda
-                  width: 102.46,
+                  width: 110.46,
                   height: 116.9,
                 ),
               ],

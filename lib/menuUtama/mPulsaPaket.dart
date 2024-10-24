@@ -1210,6 +1210,7 @@ Widget _buildInternetCard() {
             child: Column(
               children: products.map((product) {
                 return _buildProductCard(
+                  context, // Pass context here
                   product['namaProduk'] ?? 'N/A',
                   product['masaAktif'] ?? 'N/A',
                   product['kodeProduk'] ?? 'N/A',
@@ -1220,127 +1221,148 @@ Widget _buildInternetCard() {
             ),
           ),
         );
+
       }
     },
   );
 }
 
-Widget _buildProductCard(String namaProduk, String masaAktif, String kodeProduk, String hargaJual, String detailProduk) {
-  return Container(
-    margin: const EdgeInsets.symmetric(vertical: 8.0), // Vertical margin
-    child: SizedBox(
-      width: 400,
-      height: 125,
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), // Rounded corners
-            ),
+Widget _buildProductCard(BuildContext context,String namaProduk, String masaAktif, String kodeProduk, String hargaJual, String detailProduk) {
+  return GestureDetector(
+    onTap: () {
+      // Navigasi ke halaman TransaksiPay
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TransaksiPay(
+            nominal: hargaJual,
+            kodeproduk: kodeProduk,
+            hargaJual: hargaJual,
+            description: 'Deskripsi produk di sini', // Sesuaikan deskripsi ini
+            originalPrice: 'originalPrice',
+            info: detailProduk,
+            transactionType: 'Pulsa',
           ),
-          Card(
-            elevation: 1, // Higher elevation for neon effect
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row( // Row to arrange price on the right
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      );
+    },
+    child: Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0), // Vertical margin
+      child: SizedBox(
+        width: 400,
+        height: 125,
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12), // Rounded corners
+              ),
+            ),
+            Card(
+              elevation: 1, // Higher elevation for neon effect
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row( // Row to arrange price on the right
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: namaProduk,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xff353E43),
+                                  ),
+                                ),
+                                const TextSpan(
+                                  text: ' / ', // Separator line
+                                  style: TextStyle(
+                                    fontSize: 20, // Same font size as namaProduk for consistency
+                                    color: Color(0xff909EAE), // Same color as namaProduk
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '$masaAktif Hari', // Append " hari" to masaAktif
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xff353E43),
+                                    fontWeight: FontWeight.w100, // Regular text
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 5), // Space between name and code/info
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: kodeProduk,
+                                  style: const TextStyle(
+                                    color: Color(0xff353E43),
+                                    fontSize: 15,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                // Space between code and info
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 5), // Space between name and code/info
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: detailProduk,
+                                  style: const TextStyle(
+                                    color: Color(0xff909EAE),
+                                    fontSize: 12,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                // Space between code and info
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Spacer or Expanded to push price to the right
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center, // Vertically centered
+                      crossAxisAlignment: CrossAxisAlignment.end, // Align price to the right
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: namaProduk,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xff353E43),
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' / ', // Separator line
-                                style: TextStyle(
-                                  fontSize: 20, // Same font size as namaProduk for consistency
-                                  color: Color(0xff909EAE), // Same color as namaProduk
-                                ),
-                              ),
-                              TextSpan(
-                                text: '$masaAktif Hari', // Append " hari" to masaAktif
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xff353E43),
-                                  fontWeight: FontWeight.w100, // Regular text
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5), // Space between name and code/info
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: kodeProduk,
-                                style: const TextStyle(
-                                  color: Color(0xff353E43),
-                                  fontSize: 15,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              // Space between code and info
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5), // Space between name and code/info
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: detailProduk,
-                                style: const TextStyle(
-                                  color: Color(0xff909EAE),
-                                  fontSize: 12,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              // Space between code and info
-                            ],
+                        Text(
+                          hargaJual,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'Poppins',
+                            color: Color(0xffECB709),
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  // Spacer or Expanded to push price to the right
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center, // Vertically centered
-                    crossAxisAlignment: CrossAxisAlignment.end, // Align price to the right
-                    children: [
-                      Text(
-                        hargaJual,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'Poppins',
-                          color: Color(0xffECB709),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
 }
+
 
 
 

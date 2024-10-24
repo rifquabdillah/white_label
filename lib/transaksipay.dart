@@ -54,8 +54,9 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         'Saldo ',
                         style: TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF4e5558),
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w300,
+                          color: Color(0xFF353E43),
                         ),
                       ),
                       const SizedBox(width: 10.0),
@@ -63,7 +64,8 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         _isSaldoVisible ? saldo : '********',
                         style: const TextStyle(
                           fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 25.0),
@@ -75,11 +77,11 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         },
                         child: Icon(
                           _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
-                          color: Colors.grey,
+                          color: Color(0xff909EAE),
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
+                      const Icon(Icons.add, color: Color(0xff909EAE)),
                     ],
                   ),
                 ],
@@ -106,7 +108,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
               borderRadius: BorderRadius.circular(8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xffFAF9F6),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: const EdgeInsets.all(16),
@@ -118,8 +120,9 @@ class _TransaksiPayState extends State<TransaksiPay> {
                           ? 'Token PLN Premium SN Full'
                           : 'Pulsa Indosat Promo Mixed with Pulsa Transfer',
                       style: const TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.normal,
+                        fontSize: 14.0,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                     const SizedBox(height: 5.0),
@@ -127,7 +130,8 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       widget.nominal,
                       style: const TextStyle(
                         fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 0.0),
@@ -135,7 +139,9 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       widget.info,
                       style: const TextStyle(
                         fontSize: 14.0,
-                        color: Color(0xffabb4c0),
+                        fontFamily: 'Poppins',
+                        color: Color(0xff909EAE),
+                        fontWeight: FontWeight.w200
                       ),
                     ),
                     const SizedBox(height: 16.0),
@@ -145,7 +151,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       ),
 
                     if (widget.transactionType == 'TokenListrik') ...[
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 0.0),
                       // Only show the Nama Pemilik row if it's not empty
                       if (widget.namaPemilik.isNotEmpty)
                         _buildLabeledRow('Nama Pemilik', widget.namaPemilik),
@@ -183,6 +189,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                           'Kamu hemat 350 untuk transaksi ini',
                           style: TextStyle(
                             fontSize: 12.0,
+                            fontFamily: 'Poppins',
                             color: Colors.green,
                           ),
                         ),
@@ -202,8 +209,9 @@ class _TransaksiPayState extends State<TransaksiPay> {
                     'Pastikan detail sudah sesuai, transaksi yang dikirim tidak bisa dibatalkan',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 9.0,
-                      color: Colors.black,
+                      fontSize: 10.0,
+                      fontFamily: 'Poppins',
+                      color: Color(0xff353E43),
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -255,15 +263,16 @@ class _TransaksiPayState extends State<TransaksiPay> {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.normal,
+                fontSize: 15.0,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w300,
               ),
             ),
             Text(
               value.isNotEmpty ? value : '', // Avoid showing '-' if value is empty
               style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                fontSize: 14.0,
+                fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
                 color: textColor ?? Colors.black,
               ),
             ),

@@ -34,6 +34,7 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                         'Saldo ',
                         style: TextStyle(
                           fontSize: 18.0,
+                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.w300,
                           color: Color(0xFF4e5558),
                         ),

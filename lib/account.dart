@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:white_label/main.dart'; // Adjust according to your file structure
 import 'historyTransaction.dart';
 import 'menuAkun/daftarMember.dart';
+import 'menuAkun/infoAkun.dart';
 import 'menuAkun/mReferralMarkup.dart';
 import 'menuTransaksi//mutasiMenu.dart';
 import 'menuTransaksi//transactionsiSummary.dart'; // Adjust according to your file structure
@@ -783,7 +784,16 @@ class _AccountPageState extends State<AccountPage> {
               ],
             ),
           ),
-          _buildAccountOption('Info Akun'),
+
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => InfoAkunScreen()),
+              );
+            },
+            child: _buildAccountOption('Info Akun'),
+          ),
           _buildAccountOption('Nomor Terdaftar'),
           _buildAccountOption('Keamanan Akun'),
           _buildAccountOption('Log Inbox'),
@@ -876,7 +886,7 @@ class _AccountPageState extends State<AccountPage> {
                 width: 16, // Small grey box width
                 height: 16, // Small grey box height
                 decoration: BoxDecoration(
-                  color: Colors.grey, // Grey color for the box
+                  color: Color(0xff909EAE), // Grey color for the box
                   borderRadius: BorderRadius.circular(4), // Add radius for rounded corners
                 ),
               ),

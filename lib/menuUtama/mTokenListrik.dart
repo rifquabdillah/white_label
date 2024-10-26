@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:white_label/transaksipay.dart';
 
+import '../menuSaldo/mSaldo.dart';
+
 class mTokenListrikScreen extends StatefulWidget {
   const mTokenListrikScreen({super.key});
 
@@ -61,7 +63,16 @@ class _mTokenListrikScreenState extends State<mTokenListrikScreen> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color:Color(0xff909EAE)),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to SaldoPage when the add icon is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                          );
+                        },
+                        child: const Icon(Icons.add, color: Color(0xff909EAE)),
+                      ),
                     ],
                   ),
                 ],

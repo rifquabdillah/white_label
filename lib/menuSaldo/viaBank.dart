@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/menuSaldo/detailSaldoBatal.dart';
+import 'package:white_label/menuSaldo/pembayaranSaldo.dart';
 
+import 'detailSaldoSukses.dart';
 import 'mSaldo.dart';
 
 class transferBankScreen extends StatefulWidget {
@@ -20,9 +23,6 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
     'Tukar Komisi': [],
     'Redeem Poin': [],
   };
-
-  // Track the expanded state of each product
-  final Set<String> _expandedProducts = {};
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +264,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
               focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                borderSide: BorderSide(color: Color(0xff353E43), width: 2.0),
               ),
               hintText: 'Nominal Deposit',
               hintStyle: const TextStyle(color: Colors.grey),
@@ -272,7 +272,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+              color: _phoneController.text.isEmpty ?Color(0xff353E43) : const Color(0xFF363636),
             ),
             onChanged: (value) {},
           ),
@@ -288,7 +288,13 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
       width: 355,
       height: 35,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          // Navigasi ke halaman PembayaranSaldo
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PembayaranSaldo()),
+          );
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xffecb709),
           shape: RoundedRectangleBorder(
@@ -316,14 +322,57 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
           padding: EdgeInsets.only(left: 26.0, right: 16.0),
           child: Text(
             'Riwayat Tiket',
-            style: TextStyle(fontSize: 16.0,
-                fontWeight: FontWeight.w600, color: Color(0xff909EAE)),
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                color: Color(0xff909EAE)),
           ),
         ),
         const SizedBox(height: 10),
-        _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Dalam Proses'),
-        _buildTransactionItem('TD25 - 0812 2126 0284', '18 September 2024 - 18:43:32', 'Sukses'),
-        _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Gagal'),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => detailSaldo(transactionId: 'S10 - 0822 4000 0201'),
+              ),
+            );
+          },
+          child: _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Menunggu'),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => detailSaldo(transactionId: 'TD25 - 0812 2126 0284'),
+              ),
+            );
+          },
+          child: _buildTransactionItem('TD25 - 0812 2126 0284', '18 September 2024 - 18:43:32', 'Berhasil'),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => detailSaldoBatal(transactionId: 'S10 - 0822 4000 0201'),
+              ),
+            );
+          },
+          child: _buildTransactionItem('S10 - 0822 4000 0201', '18 September 2024 - 20:33:24', 'Gagal'),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => detailSaldo(transactionId: 'TD25 - 0812 2126 0284'),
+              ),
+            );
+          },
+          child: _buildTransactionItem('TD25 - 0812 2126 0284', '18 September 2024 - 18:43:32', 'Berhasil'),
+        ),
       ],
     );
   }
@@ -331,9 +380,9 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
   Widget _buildTransactionItem(String nomorTransaksi, String tanggal, String status) {
     // Tentukan warna berdasarkan status
     Color getStatusColor(String status) {
-      if (status == 'Sukses') {
+      if (status == 'Berhasil') {
         return  Color(0xffFAF9F6); // Warna teks untuk status sukses
-      } else if (status == 'Dalam Proses') {
+      } else if (status == 'Menunggu') {
         return  Color(0xffFAF9F6); // Warna teks untuk status dalam proses
       } else if (status == 'Gagal') {
         return  Color(0xffFAF9F6); // Warna teks untuk status gagal
@@ -342,9 +391,9 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
     }
 
     Color getBackgroundColor(String status) {
-      if (status == 'Sukses') {
+      if (status == 'Berhasil') {
         return const Color(0xff198754); // Hijau
-      } else if (status == 'Dalam Proses') {
+      } else if (status == 'Menunggu') {
         return const Color(0xffecb709); // Kuning
       } else if (status == 'Gagal') {
         return const Color(0xffc70000); // Merah

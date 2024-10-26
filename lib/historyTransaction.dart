@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:white_label/main.dart';
 import 'account.dart';
+import 'menuSaldo/mSaldo.dart';
 import 'menuTransaksi//transactionsiSummary.dart'; // Import this for BackdropFilter
 
 class HistoryPage extends StatefulWidget {
@@ -16,84 +17,6 @@ class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController _phoneController = TextEditingController();
   int _selectedIndex = 1;
 
-  // All transactions defined here
-  final List<Map<String, String>> allTransactions = [
-    // Transactions for 18 September 2024
-    {
-      'nomorTransaksi': 'S10 - 0822 4000 0201',
-      'tanggal': '18 September 2024 - 16:40:28',
-      'status': 'Dalam Proses'
-    },
-    {
-      'nomorTransaksi': 'S150 - 0822 4000 0221',
-      'tanggal': '18 September 2024 - 16:40:28',
-      'status': 'Dalam Proses'
-    },
-    {
-      'nomorTransaksi': 'TD25 - 0812 2126 0284',
-      'tanggal': '18 September 2024 - 13:37:28',
-      'status': 'Sukses'
-    },
-    {
-      'nomorTransaksi': 'S10 - 0822 4000 0201',
-      'tanggal': '18 September 2024 - 09:44:13',
-      'status': 'Gagal'
-    },
-
-    // Transactions for 19 September 2024
-    {
-      'nomorTransaksi': 'FF130 - 1143407304',
-      'tanggal': '19 September 2024 - 08:40:26',
-      'status': 'Sukses'
-    },
-    {
-      'nomorTransaksi': 'S200 - 0822 4000 0301',
-      'tanggal': '19 September 2024 - 10:00:15',
-      'status': 'Dalam Proses'
-    },
-    {
-      'nomorTransaksi': 'T300 - 0812 3126 0284',
-      'tanggal': '19 September 2024 - 12:30:45',
-      'status': 'Gagal'
-    },
-    {
-      'nomorTransaksi': 'S400 - 0822 4000 0401',
-      'tanggal': '19 September 2024 - 14:10:00',
-      'status': 'Sukses'
-    },
-    {
-      'nomorTransaksi': 'F500 - 1143407305',
-      'tanggal': '19 September 2024 - 16:20:30',
-      'status': 'Sukses'
-    },
-
-    // Transactions for 20 September 2024
-    {
-      'nomorTransaksi': 'S100 - 0822 4000 0501',
-      'tanggal': '20 September 2024 - 09:15:00',
-      'status': 'Gagal'
-    },
-    {
-      'nomorTransaksi': 'S200 - 0822 4000 0601',
-      'tanggal': '20 September 2024 - 10:45:13',
-      'status': 'Sukses'
-    },
-    {
-      'nomorTransaksi': 'T300 - 0812 3126 0384',
-      'tanggal': '20 September 2024 - 12:00:00',
-      'status': 'Dalam Proses'
-    },
-    {
-      'nomorTransaksi': 'F400 - 1143407404',
-      'tanggal': '20 September 2024 - 14:30:45',
-      'status': 'Gagal'
-    },
-    {
-      'nomorTransaksi': 'FF500 - 1143407405',
-      'tanggal': '20 September 2024 - 16:50:50',
-      'status': 'Sukses'
-    },
-  ];
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
@@ -236,7 +159,16 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           ),
                           const SizedBox(width: 8.0),
-                          const Icon(Icons.add, color: Colors.grey),
+                          GestureDetector(
+                            onTap: () {
+                              // Navigate to SaldoPage when the add icon is tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                              );
+                            },
+                            child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                          ),
                         ],
                       ),
                     ],
@@ -332,12 +264,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 IconButton(
                   icon: const Icon(
                       Icons.search, size: 40.0, color: Color(0xFF353e43)),
-                  onPressed: () {
-                    // Logic to handle search functionality
-                    if (_validatePhoneNumber(_phoneController.text)) {
-                      _searchTransactionsByPhone(_phoneController.text);
-                    }
-                  },
+                  onPressed: () {}
                 ),
                 const SizedBox(width: 2), // Space between icons
               ],
@@ -362,20 +289,6 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ],
     );
-  }
-
-  void _searchTransactionsByPhone(String phoneNumber) {
-    List<Map<String, String>> filteredTransactions = allTransactions.where((
-        transaction) {
-      return transaction['nomorTransaksi']!.contains(phoneNumber);
-    }).toList();
-
-    // Show the filtered results (you can display them in a ListView or another widget)
-    if (filteredTransactions.isNotEmpty) {
-      // Handle displaying the filtered transactions
-    } else {
-      // Handle case where no transactions are found
-    }
   }
 
   bool _validatePhoneNumber(String input) {
@@ -533,50 +446,53 @@ class _HistoryContentState extends State<HistoryContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildFilterButtons(),
-        // New Row for Month-Year and Success Transactions
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Dynamic Month and Year on the left
-              Text(
-                DateFormat('MMMM yyyy').format(DateTime.now()), // Format current month and year
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16.0,
-                  color: Color(0xff353E43),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TransactionSummary()),
-                  );
-                },
-                child: Text(
-                  '${filteredTransactions.where((transaction) => transaction['status'] == 'Sukses').length} Transaksi Sukses >>',
+    return SingleChildScrollView( // Wrap Column in SingleChildScrollView
+      child: Column(
+        children: [
+          _buildFilterButtons(),
+          // New Row for Month-Year and Success Transactions
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Dynamic Month and Year on the left
+                Text(
+                  DateFormat('MMMM yyyy').format(DateTime.now()), // Format current month and year
                   style: const TextStyle(
                     fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     fontSize: 16.0,
-                    color: Color(0xfff0ca4c),
-                    decoration: TextDecoration.underline,
-                    decorationColor: Color(0xfff0ca4c), // Add underline
+                    color: Color(0xff353E43),
                   ),
                 ),
-              ),
-            ],
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TransactionSummary()),
+                    );
+                  },
+                  child: Text(
+                    '${filteredTransactions.where((transaction) => transaction['status'] == 'Sukses').length} Transaksi Sukses >>',
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16.0,
+                      color: Color(0xfff0ca4c),
+                      decoration: TextDecoration.underline,
+                      decorationColor: Color(0xfff0ca4c), // Add underline
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
+          // Use a ListView.builder with a fixed height to allow for scrolling
+          ListView.builder(
             itemCount: filteredTransactions.length,
+            shrinkWrap: true, // Set to true to allow ListView to take only the space it needs
+            physics: NeverScrollableScrollPhysics(), // Disable ListView scrolling
             itemBuilder: (context, index) {
               // Determine the color based on the status
               Color statusColor;
@@ -664,10 +580,11 @@ class _HistoryContentState extends State<HistoryContent> {
               );
             },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
+
 
   Widget _buildFilterButtons() {
     return Padding(

@@ -8,6 +8,8 @@ import 'package:white_label/menuUtama/mBpjs.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
+import 'menuAkun/infoAkun.dart';
+import 'menuSaldo/mSaldo.dart';
 import 'menuUtama/mPDAM.dart';
 import 'menuUtama/mPLN.dart';
 import 'menuUtama/mPascabayar.dart';
@@ -411,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           children: [
             Row(
               children: [
-                _buildProfileIcon(),
+                _buildProfileIcon(context),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Row(
@@ -467,21 +469,31 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildProfileIcon() {
-    return Container(
-      width: 68,
-      height: 68,
-      decoration: const BoxDecoration(
-        color: Color(0xFFc70000),
-        shape: BoxShape.circle,
-      ),
-      child: const Center(
-        child: Text(
-          'FF',
-          style: TextStyle(
-            color: Color(0xffFAF9F6),
-            fontWeight: FontWeight.w500,
-            fontSize: 24,
+  Widget _buildProfileIcon(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // Navigate to infoAkun page
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => infoAkun(), // Replace with your InfoAkun widget
+          ),
+        );
+      },
+      child: Container(
+        width: 68,
+        height: 68,
+        decoration: const BoxDecoration(
+          color: Color(0xFFc70000),
+          shape: BoxShape.circle,
+        ),
+        child: const Center(
+          child: Text(
+            'FF',
+            style: TextStyle(
+              color: Color(0xffFAF9F6),
+              fontWeight: FontWeight.w500,
+              fontSize: 24,
+            ),
           ),
         ),
       ),
@@ -604,7 +616,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 const SizedBox(width: 0),
                 SizedBox(
                   width: 200,
-                  child: _buildActionGrid(),
+                  child: _buildActionGrid(context),
                 ),
               ],
             ),
@@ -704,12 +716,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildActionGrid() {
+  Widget _buildActionGrid(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
           SizedBox(
-            height: 70, // You can adjust this as needed
+            height: 70, // Anda bisa mengatur ini sesuai kebutuhan
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -717,9 +729,30 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               crossAxisSpacing: 0,
               mainAxisSpacing: 0,
               children: [
-                _buildActionButton('assets/topup1.png', 'Top Up'), // Use string for asset path
-                _buildActionButton('assets/topup.png', 'Transfer'), // Update with the correct asset
-                _buildActionButton('assets/qris.png', 'QRIS'), // Update with the correct asset
+                _buildActionButton(
+                  'assets/topup1.png',
+                  'Top Up',
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                    );
+                  },
+                ),
+                _buildActionButton(
+                  'assets/topup.png',
+                  'Transfer',
+                      () {
+                    // Tambahkan navigasi lain jika diperlukan
+                  },
+                ),
+                _buildActionButton(
+                  'assets/qris.png',
+                  'QRIS',
+                      () {
+                    // Tambahkan navigasi lain jika diperlukan
+                  },
+                ),
               ],
             ),
           ),
@@ -728,43 +761,45 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildActionButton(String assetPath, String title) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Keep layout compact
-        children: [
-          Container(
-            width: 35, // Box width
-            height: 35, // Box height
-            decoration: const BoxDecoration(
-              color: Color(0xFFfaf9f6), // Background color
-              shape: BoxShape.rectangle, // Box shape
-              borderRadius: BorderRadius.all(Radius.circular(10)), // Rounded corners
-            ),
-            child: Center(
-              child: Image.asset(
-                assetPath,
-                width: 40, // Adjust the width of the image
-                height: 40, // Adjust the height of the image
-                 // Set color if needed (or use original color)
+  Widget _buildActionButton(String assetPath, String title, VoidCallback onPressed) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Menjaga tata letak tetap kompak
+          children: [
+            Container(
+              width: 35, // Lebar kotak
+              height: 35, // Tinggi kotak
+              decoration: const BoxDecoration(
+                color: Color(0xFFfaf9f6), // Warna latar belakang
+                shape: BoxShape.rectangle, // Bentuk kotak
+                borderRadius: BorderRadius.all(Radius.circular(10)), // Sudut melengkung
+              ),
+              child: Center(
+                child: Image.asset(
+                  assetPath,
+                  width: 40, // Atur lebar gambar
+                  height: 40, // Atur tinggi gambar
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6), // Spacing between icon and text
-          Container(
-            constraints: const BoxConstraints(maxWidth: 60), // Set max width to avoid overflow
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12.0, // Adjust font size here
-                color: Colors.white,
-                fontWeight: FontWeight.w500, // Change color as needed
+            const SizedBox(height: 6), // Jarak antara ikon dan teks
+            Container(
+              constraints: const BoxConstraints(maxWidth: 60), // Lebar maksimum untuk mencegah overflow
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12.0, // Ukuran font
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis, // Mencegah teks overflow
               ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis, // Prevent overflow
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:white_label/transaksipay.dart';
 
+import '../menuSaldo/mSaldo.dart';
+
 class mPertagasScreen extends StatefulWidget {
   const mPertagasScreen({super.key});
 
@@ -59,7 +61,16 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to SaldoPage when the add icon is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                          );
+                        },
+                        child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                      ),
                     ],
                   ),
                 ],

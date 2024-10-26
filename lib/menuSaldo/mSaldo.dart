@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:white_label/menuSaldo/transferBank.dart';
+import 'package:white_label/menuSaldo/reedemPoin.dart';
+import 'package:white_label/menuSaldo/tukarKomisi.dart';
+import 'package:white_label/menuSaldo/viaBank.dart';
+import 'package:white_label/menuSaldo/viaPlasamall.dart';
 
 class SaldoPageScreen extends StatefulWidget {
   const SaldoPageScreen({super.key});
@@ -169,17 +172,36 @@ class _SaldoPageScreenState extends State<SaldoPageScreen> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: GestureDetector(
                   onTap: () {
                     if (productName == 'Transfer Bank via Tiket Deposit') {
-                      // Navigate to TransferBankScreen
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const transferBankScreen(),
+                        ),
+                      );
+                    } else if (productName == 'Alfamart Indomaret via Plasamall') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const viaPlasamallScreen(),
+                        ),
+                      );
+                    } else if (productName == 'Tukar Komisi') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const tukarKomisi(storeName: '',),
+                        ),
+                      );
+                    }else if (productName == 'Redeem Poin') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RedeemPoin(),
                         ),
                       );
                     }
@@ -189,18 +211,49 @@ class _SaldoPageScreenState extends State<SaldoPageScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Poppins',
+                      color: Color(0xff353E43),
                       fontSize: 16,
                     ),
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(
+              GestureDetector(
+                onTap: () {
+                  if (productName == 'Transfer Bank via Tiket Deposit') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const transferBankScreen(),
+                      ),
+                    );
+                  } else if (productName == 'Alfamart Indomaret via Plasamall') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const viaPlasamallScreen(),
+                      ),
+                    );
+                  } else if (productName == 'Tukar Komisi') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const tukarKomisi(storeName: '',),
+                      ),
+                    );
+                  }else if (productName == 'Redeem Poin') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RedeemPoin(),
+                      ),
+                    );
+                  }
+                },
+                child: Icon(
                   Icons.keyboard_arrow_right,
                   size: 40,
                   color: const Color(0xff909EAE),
                 ),
-                onPressed: null, // Disable interaction
               ),
             ],
           ),
@@ -212,6 +265,7 @@ class _SaldoPageScreenState extends State<SaldoPageScreen> {
       ),
     );
   }
+
 
 
   List<Widget> _buildProductDetail(List<Map<String, String>> productDetails) {

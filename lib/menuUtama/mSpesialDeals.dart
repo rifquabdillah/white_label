@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../menuSaldo/mSaldo.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -122,7 +124,16 @@ class _SpecialDealsPageState extends State<SpecialDealsPage> {
               ),
             ),
             const SizedBox(width: 8.0),
-            const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+            GestureDetector(
+              onTap: () {
+                // Navigate to SaldoPage when the add icon is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                );
+              },
+              child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+            ),
           ],
         ),
       ],

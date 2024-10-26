@@ -5,8 +5,10 @@ import 'historyTransaction.dart';
 import 'menuAkun/daftarMember.dart';
 import 'menuAkun/infoAkun.dart';
 import 'menuAkun/mReferralMarkup.dart';
+import 'menuSaldo/mSaldo.dart';
 import 'menuTransaksi//mutasiMenu.dart';
-import 'menuTransaksi//transactionsiSummary.dart'; // Adjust according to your file structure
+import 'menuTransaksi//transactionsiSummary.dart';
+import 'notificationPage.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -126,7 +128,6 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,80 +223,83 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget _buildProfileCard() {
-    return Padding(
-      padding: const EdgeInsets.all(0.0),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFfdf7e6),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                _buildProfileIcon(),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'PX14025',
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                      fontFamily: 'Poppins'
-                                  ),
-                                ),
-                                TextSpan(
-                                    text: ' - Ferry Febrian N',
+      return Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFfdf7e6),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _buildProfileIcon(),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'PX14025',
                                     style: Theme
                                         .of(context)
                                         .textTheme
                                         .bodyLarge
                                         ?.copyWith(
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 14,
-                                      fontFamily: 'Poppins'
-                                    )
-                                ),
-                              ],
+                                        fontFamily: 'Poppins'
+                                    ),
+                                  ),
+                                  TextSpan(
+                                      text: ' - Ferry Febrian N',
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins'
+                                      )
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          _buildMembershipStatus(),
-                          // Add membership status here
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.notifications),
-                        onPressed: () {
-
-                        },
-                      ),
-                    ],
+                            _buildMembershipStatus(),
+                            // Add membership status here
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.notifications),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const NotificationPage()),
+                            ); // Navigate to the NotificationPage
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _buildBalanceSection(context),
-          ],
+                ],
+              ),
+              const SizedBox(height: 10),
+              _buildBalanceSection(context),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildProfileIcon() {
     return Container(
@@ -423,7 +427,7 @@ class _AccountPageState extends State<AccountPage> {
               const SizedBox(width: 0), // Adjust spacing if needed
               SizedBox(
                 width: 200,
-                child: _buildActionGrid(),
+                child: _buildActionGrid(context),
               ),
             ],
           ),
@@ -432,12 +436,12 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildActionGrid() {
+  Widget _buildActionGrid(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
           SizedBox(
-            height: 70, // You can adjust this as needed
+            height: 70, // Anda bisa mengatur ini sesuai kebutuhan
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -445,12 +449,30 @@ class _AccountPageState extends State<AccountPage> {
               crossAxisSpacing: 0,
               mainAxisSpacing: 0,
               children: [
-                _buildActionButton('assets/topup1.png', 'Top Up'),
-                // Use string for asset path
-                _buildActionButton('assets/topup.png', 'Transfer'),
-                // Update with the correct asset
-                _buildActionButton('assets/qris.png', 'QRIS'),
-                // Update with the correct asset
+                _buildActionButton(
+                  'assets/topup1.png',
+                  'Top Up',
+                      () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                    );
+                  },
+                ),
+                _buildActionButton(
+                  'assets/topup.png',
+                  'Transfer',
+                      () {
+                    // Tambahkan navigasi lain jika diperlukan
+                  },
+                ),
+                _buildActionButton(
+                  'assets/qris.png',
+                  'QRIS',
+                      () {
+                    // Tambahkan navigasi lain jika diperlukan
+                  },
+                ),
               ],
             ),
           ),
@@ -459,45 +481,45 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildActionButton(String assetPath, String title) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Keep layout compact
-        children: [
-          Container(
-            width: 35, // Box width
-            height: 35, // Box height
-            decoration: const BoxDecoration(
-              color: Color(0xFFfaf9f6), // Background color
-              shape: BoxShape.rectangle, // Box shape
-              borderRadius: BorderRadius.all(
-                  Radius.circular(10)), // Rounded corners
-            ),
-            child: Center(
-              child: Image.asset(
-                assetPath,
-                width: 40, // Adjust the width of the image
-                height: 40, // Adjust the height of the image
-                // Set color if needed (or use original color)
+  Widget _buildActionButton(String assetPath, String title, VoidCallback onPressed) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Menjaga tata letak tetap kompak
+          children: [
+            Container(
+              width: 35, // Lebar kotak
+              height: 35, // Tinggi kotak
+              decoration: const BoxDecoration(
+                color: Color(0xFFfaf9f6), // Warna latar belakang
+                shape: BoxShape.rectangle, // Bentuk kotak
+                borderRadius: BorderRadius.all(Radius.circular(10)), // Sudut melengkung
+              ),
+              child: Center(
+                child: Image.asset(
+                  assetPath,
+                  width: 40, // Atur lebar gambar
+                  height: 40, // Atur tinggi gambar
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6), // Spacing between icon and text
-          Container(
-            constraints: const BoxConstraints(maxWidth: 60),
-            // Set max width to avoid overflow
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12.0, // Adjust font size here
-                color: Colors.white,
-                fontWeight: FontWeight.w500, // Change color as needed
+            const SizedBox(height: 6), // Jarak antara ikon dan teks
+            Container(
+              constraints: const BoxConstraints(maxWidth: 60), // Lebar maksimum untuk mencegah overflow
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12.0, // Ukuran font
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis, // Mencegah teks overflow
               ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis, // Prevent overflow
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -817,7 +839,7 @@ class _AccountPageState extends State<AccountPage> {
         ],
       ),
       margin: EdgeInsets.zero, // No margin on left and right
-      child: Container(
+      child: SizedBox(
         height: 218, // Set a fixed height for the card
         child: Column(
           children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'menuSaldo/mSaldo.dart';
 import 'menuTransaksi/konfirmasiTransaksi.dart';
 
 class TransaksiPay extends StatefulWidget {
@@ -81,7 +82,16 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Color(0xff909EAE)),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to SaldoPage when the add icon is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                          );
+                        },
+                        child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                      ),
                     ],
                   ),
                 ],

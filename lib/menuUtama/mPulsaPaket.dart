@@ -21,7 +21,6 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     const String saldo = '2.862.590'; // Consider using localization
-
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
@@ -1371,8 +1370,3 @@ Widget _buildProductCard(BuildContext context,String namaProduk, String masaAkti
     ),
   );
 }
-
-
-
-
-

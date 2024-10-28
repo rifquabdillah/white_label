@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'mSaldo.dart';
 
-class detailTukarKomisi extends StatefulWidget {
-  const detailTukarKomisi({super.key, required String transactionId});
+class detailKirimSaldo extends StatefulWidget {
+  const detailKirimSaldo({super.key, required String transactionId});
 
   @override
-  _detailTukarKomisiState createState() => _detailTukarKomisiState();
+  _detailKirimSaldoState createState() => _detailKirimSaldoState();
 }
 
-class _detailTukarKomisiState extends State<detailTukarKomisi> {
+class _detailKirimSaldoState extends State<detailKirimSaldo> {
   bool _isSaldoVisible = true;
   final DateTime transferLimitDateTime = DateTime(2024, 10, 24, 17, 40);
 
@@ -91,8 +91,9 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
           const SizedBox(height: 0),
           _buildNewContent(),
           const SizedBox(height: 10),
-          _buildTicketDetails(),
-          const SizedBox(height: 400),
+          _buildKirimSaldoDetails(),
+          _buildActionButtons(context),
+          const SizedBox(height: 330),
           _buildBackButton(context),// Add this line to call the new method
         ],
       ),
@@ -120,7 +121,7 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
         children: [
           Center(
             child: Text(
-              'Selamat, komisi kamu udah ditambah ke saldo',
+              'Saldo berhasil dikirim sebesar',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w300,
@@ -131,7 +132,7 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
           const SizedBox(height: 5),
           Center(
             child: Text(
-              '100.000',
+              '200.000',
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.w600,
@@ -156,21 +157,22 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
     );
   }
 
-  Widget _buildTicketDetails() {
+  Widget _buildKirimSaldoDetails() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow('Saldo Awal', '2.762.590'),
-          _buildDetailRow('Penambahan dari Komisi', '100.000'),
-          _buildDetailRow('Saldo Akhir', '2.862.590'),
+          _buildDetailRow('Status Pengiriman', 'Sukses', Color(0xff198754)), // Set the color to green
+          _buildDetailRow('Tanggal Pengiriman', '24/10/2024 10:26:28'),
+          _buildDetailRow('Penerima Saldo', '0812 2126 0284'),
+          _buildDetailRow('Nominal Pengiriman', '200.000'),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(String title, String value) {
+  Widget _buildDetailRow(String title, String value, [Color? valueColor]) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0), // Add vertical padding
       child: Row(
@@ -178,23 +180,69 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
         children: [
           Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.w400,
-                fontFamily: 'Poppins',
-                color:Color(0xff909EAE),
-                fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Poppins',
+              color: Color(0xff909EAE),
+              fontSize: 14,
+            ),
           ),
           Text(
             value,
-            style: TextStyle(fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color:Color(0xff353E43),
-                fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+              color: valueColor ?? Color(0xff353E43), // Use provided color or default to dark color
+              fontSize: 14,
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end, // Mengatur semua elemen ke sebelah kanan
+      children: [
+        TextButton.icon(
+          onPressed: () {
+            // Implement sharing functionality here
+          },
+          icon: const Icon(Icons.share_outlined, color: Color(0xffECB709)),
+          label: const Text(
+            'Bagikan',
+            style: TextStyle(color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(width: 8), // Jarak antara tombol Bagikan dan Cetak Faktur
+        Padding(
+          padding: const EdgeInsets.only(right: 10), // Padding untuk menggeser tombol ke kiri
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xffECB709), // Warna tombol
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Ukuran tombol
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // Radius sudut tombol
+              ),
+            ),
+            onPressed: () {
+              // Implement "Cetak Faktur" functionality here
+            },
+            child: const Text(
+              'Cetak Faktur',
+              style: TextStyle(fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                  color: Colors.white), // Mengatur ukuran dan gaya teks
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Tombol kembali ke halaman utama
   Widget _buildBackButton(BuildContext context) {
     return Center(
       child: TextButton(
@@ -216,5 +264,6 @@ class _detailTukarKomisiState extends State<detailTukarKomisi> {
       ),
     );
   }
+
 
 }

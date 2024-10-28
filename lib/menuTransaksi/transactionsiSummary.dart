@@ -179,7 +179,6 @@ class _TransactionPageState extends State<TransactionSummary> {
     );
   }
 
-
   String formatSelectedMonth(String month) {
     // Mapping full month names to abbreviated ones
     final Map<String, String> monthAbbreviations = {

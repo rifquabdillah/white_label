@@ -9,6 +9,7 @@ import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
 import 'menuAkun/infoAkun.dart';
+import 'menuSaldo/kirimSaldo.dart';
 import 'menuSaldo/mSaldo.dart';
 import 'menuUtama/mPDAM.dart';
 import 'menuUtama/mPLN.dart';
@@ -71,11 +72,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
-  void _toggleNotification() {
-    setState(() {
-      _isNotificationVisible = !_isNotificationVisible; // Toggle the visibility
-    });
-  }
 
   @override
   void initState() {
@@ -741,16 +737,29 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 ),
                 _buildActionButton(
                   'assets/topup.png',
-                  'Transfer',
+                  'Kirim',
                       () {
-                    // Tambahkan navigasi lain jika diperlukan
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => kirimSaldo()),
+                        );
                   },
                 ),
                 _buildActionButton(
                   'assets/qris.png',
                   'QRIS',
                       () {
-                    // Tambahkan navigasi lain jika diperlukan
+                    // Show a SnackBar with the warning message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Under Construction',
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w700), // Optional: Change text color to white for better contrast
+                        ),
+                        backgroundColor: Colors.red, // Set the background color to red
+                        duration: const Duration(seconds: 3), // Duration for the SnackBar
+                      ),
+                    );
                   },
                 ),
               ],

@@ -287,7 +287,7 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
           onPressed: () {
             // Implement sharing functionality here
           },
-          icon: const Icon(Icons.share, color: Color(0xffECB709)),
+          icon: const Icon(Icons.share_outlined, color: Color(0xffECB709)),
           label: const Text(
             'Bagikan',
             style: TextStyle(color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
@@ -309,7 +309,7 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
             },
             child: const Text(
               'Cetak Faktur',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white), // Mengatur ukuran dan gaya teks
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Colors.white), // Mengatur ukuran dan gaya teks
             ),
           ),
         ),

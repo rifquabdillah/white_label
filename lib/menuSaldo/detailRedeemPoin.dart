@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import 'mSaldo.dart';
 
 class detailRedeemPoin extends StatefulWidget {
@@ -90,7 +91,9 @@ class _detailRedeemPoinState extends State<detailRedeemPoin> {
           const SizedBox(height: 0),
           _buildNewContent(),
           const SizedBox(height: 10),
-          _buildPoinDetails(),  // Add this line to call the new method
+          _buildPoinDetails(),
+          const SizedBox(height: 400),
+          _buildBackButton(context),// Add this line to call the new method
         ],
       ),
     );
@@ -191,4 +194,27 @@ class _detailRedeemPoinState extends State<detailRedeemPoin> {
       ),
     );
   }
+
+  Widget _buildBackButton(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomePage(title: '')),
+          );
+        },
+        child: const Text(
+          'Kembali ke Beranda',
+          style: TextStyle(
+            color: Color(0xff353E43),
+            fontSize: 14,
+            decoration: TextDecoration.underline,
+            decorationColor: Color(0xff353E43),
+          ),
+        ),
+      ),
+    );
+  }
+
 }

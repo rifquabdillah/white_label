@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import 'mSaldo.dart';
 
 class detailSaldoBatal extends StatefulWidget {
@@ -90,7 +91,9 @@ class _detailSaldoBatalState extends State<detailSaldoBatal> {
           const SizedBox(height: 0),
           _buildNewContent(),
           const SizedBox(height: 10),
-          _buildTicketDetails(),  // Add this line to call the new method
+          _buildTicketDetails(),
+          const SizedBox(height: 400),
+          _buildBackButton(context),// Add this line to call the new method
         ],
       ),
     );
@@ -191,4 +194,27 @@ class _detailSaldoBatalState extends State<detailSaldoBatal> {
       ),
     );
   }
+
+  Widget _buildBackButton(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomePage(title: '')),
+          );
+        },
+        child: const Text(
+          'Kembali ke Beranda',
+          style: TextStyle(
+            color: Color(0xff353E43),
+            fontSize: 14,
+            decoration: TextDecoration.underline,
+            decorationColor: Color(0xff353E43),
+          ),
+        ),
+      ),
+    );
+  }
+
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:white_label/login/login.dart';
 import 'package:white_label/main.dart'; // Adjust according to your file structure
+import 'package:white_label/menuSaldo/downlinePage.dart';
 import 'historyTransaction.dart';
 import 'menuAkun/daftarMember.dart';
 import 'menuAkun/infoAkun.dart';
 import 'menuAkun/mReferralMarkup.dart';
+import 'menuSaldo/kirimSaldo.dart';
 import 'menuSaldo/mSaldo.dart';
 import 'menuTransaksi//mutasiMenu.dart';
 import 'menuTransaksi//transactionsiSummary.dart';
@@ -461,16 +464,29 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 _buildActionButton(
                   'assets/topup.png',
-                  'Transfer',
+                  'Kirim',
                       () {
-                    // Tambahkan navigasi lain jika diperlukan
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => kirimSaldo()),
+                    );
                   },
                 ),
                 _buildActionButton(
                   'assets/qris.png',
                   'QRIS',
                       () {
-                    // Tambahkan navigasi lain jika diperlukan
+                    // Show a SnackBar with the warning message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Under Construction',
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w700), // Optional: Change text color to white for better contrast
+                        ),
+                        backgroundColor: Colors.red, // Set the background color to red
+                        duration: const Duration(seconds: 3), // Duration for the SnackBar
+                      ),
+                    );
                   },
                 ),
               ],
@@ -585,14 +601,23 @@ class _AccountPageState extends State<AccountPage> {
                 trxSuccess: 'Rp. 2.510.210',
               ),
             ),
-            SizedBox(width: 10), // Space between cards
-            _buildFilledCard(
+            SizedBox(width: 10),
+          GestureDetector( // Wrap the "Mutasi Saldo" card with GestureDetector
+          onTap: () {
+            // Navigate to the MutasiMenu screen when the card is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => downlinePage()), // Replace with your mutasi menu widget
+            );
+          },// Space between cards
+            child: _buildFilledCard(
               title: 'Downline',
               label1: 'Komisi',
               profit: 'Rp. 11.100',
               label2: 'Total Downline',
               trxSuccess: '72',
             ),
+          ),
             SizedBox(width: 10), // Space after the last card
           ],
         ),
@@ -992,7 +1017,7 @@ class _AccountPageState extends State<AccountPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => MyHomePage(title: '',)),
+                  MaterialPageRoute(builder: (context) => Login()),
                       (Route<dynamic> route) => false,
                 ); // Navigate to MyHomePage
               },

@@ -54,7 +54,7 @@ class _PromoScreenState extends State<PromoScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),

@@ -26,7 +26,7 @@ class mPascabayarScreen extends StatefulWidget {
 }
 
 class mPascabayarScreenState extends State<mPascabayarScreen> {
-  int _selectedTelkomIndex = 0; // Track selected tab index
+  int _selectedPascabayarIndex = 0; // Track selected tab index
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true; // Controller for balance visibility
 
@@ -69,7 +69,7 @@ class mPascabayarScreenState extends State<mPascabayarScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -105,11 +105,11 @@ class mPascabayarScreenState extends State<mPascabayarScreen> {
           children: [
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
-            BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedTelkomIndex,
-              onBpjsSelected: (index) {
+            PascabayarTabBarWidget(
+              selectedPascabayarIndex: _selectedPascabayarIndex,
+              onPascabayarSelected: (index) {
                 setState(() {
-                  _selectedTelkomIndex = index; // Update selected index
+                  _selectedPascabayarIndex = index; // Update selected index
                 });
               },
             ),
@@ -176,14 +176,14 @@ class mPascabayarScreenState extends State<mPascabayarScreen> {
 }
 
 // Tab bar widget for BPJS items
-class BpjsTabBarWidget extends StatelessWidget {
-  final int selectedBpjsIndex;
-  final ValueChanged<int> onBpjsSelected;
+class PascabayarTabBarWidget extends StatelessWidget {
+  final int selectedPascabayarIndex;
+  final ValueChanged<int> onPascabayarSelected;
 
-  const BpjsTabBarWidget({
+  const PascabayarTabBarWidget({
     super.key,
-    required this.selectedBpjsIndex,
-    required this.onBpjsSelected,
+    required this.selectedPascabayarIndex,
+    required this.onPascabayarSelected,
   });
 
   @override
@@ -218,7 +218,7 @@ class BpjsTabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
+                child: _buildPascabayarTab(selectedPascabayarIndex, onPascabayarSelected, context),
               ),
             ),
           ),
@@ -227,7 +227,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
+  Widget _buildPascabayarTab(int selectedPascabayarIndex, ValueChanged<int> onPascabayarSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
@@ -238,25 +238,25 @@ class BpjsTabBarWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
+          if (selectedPascabayarIndex == 0)
+            _buildPascabayarCards(context)
           // Add more conditions for additional tabs if needed
         ],
       ),
     );
   }
 
-  Widget _buildBpjsCards(BuildContext context) {
-    List<PascabayarItem> bpjsItems = _fetchBpjsItems();
+  Widget _buildPascabayarCards(BuildContext context) {
+    List<PascabayarItem> PascabayarItems = _fetchPascabayarItems();
     return Column(
       children: [
-        for (var item in bpjsItems)
-          _buildBpjsCard(context, item),
+        for (var item in PascabayarItems)
+          _buildPascabayarCard(context, item),
       ],
     );
   }
 
-  Widget _buildBpjsCard(BuildContext context, PascabayarItem item) {
+  Widget _buildPascabayarCard(BuildContext context, PascabayarItem item) {
     return GestureDetector(
       onTap: () {
         // Add navigation or action for BPJS card tap
@@ -316,7 +316,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  List<PascabayarItem> _fetchBpjsItems() {
+  List<PascabayarItem> _fetchPascabayarItems() {
     return [
       PascabayarItem(produk: 'Pascabayar 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
       PascabayarItem(produk: 'Pascabayar 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../menuSaldo/mSaldo.dart';
+import 'mSpesialDealProduct.dart';
 
 void main() {
   runApp(MyApp());
@@ -119,7 +120,7 @@ class _SpecialDealsPageState extends State<SpecialDealsPage> {
                 });
               },
               child: Icon(
-                _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                 color: const Color(0xFFFAF9F6),
               ),
             ),
@@ -234,7 +235,19 @@ class _SpecialDealsPageState extends State<SpecialDealsPage> {
                   color: Color(0xffFAF9F6),
                 ),
               ),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xffFAF9F6)),
+              trailing: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => mSpesialDealProduct()),
+                  );
+                },
+                child: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Color(0xffFAF9F6),
+                ),
+              ),
+
             ),
           ),
         );

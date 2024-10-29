@@ -13,8 +13,6 @@ class downlinePage extends StatefulWidget {
 
 class _downlinePageState extends State<downlinePage> {
   bool _isSaldoVisible = true;
-  int _selectedIndex = 1;
-  final TextEditingController _phoneController = TextEditingController();
   final DateTime transferLimitDateTime = DateTime(2024, 10, 24, 17, 40);
   int _selectedFilterIndex = 0;
 
@@ -341,16 +339,15 @@ class _downlinePageState extends State<downlinePage> {
   }
 
 
-  Widget _buildFilledCard({
+  Future<Widget> _buildFilledCard({
     required String title,
-    String? amount,
     String? newSale, // New parameter for new sale
     String? newSaleAmount, // Amount for new sale
     required String label1,
     required String profit,
     required String label2,
     required String trxSuccess,
-  }) {
+  }) async {
     return Container(
       width: 200, // Set a fixed width for the card
       height: 120, // Set a fixed height for the card

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'detailProsesTransaksi.dart';
+import 'detailTransaksi.dart';
+import 'detailTransaksiGagal.dart';
 import 'mutasiMenu.dart';
 
 class TransactionSummary extends StatefulWidget {
@@ -87,7 +90,7 @@ class _TransactionPageState extends State<TransactionSummary> {
                 });
               },
               child: Icon(
-                _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                 color:Color(0xff909EAE),
               ),
             ),
@@ -442,11 +445,41 @@ class _TransactionPageState extends State<TransactionSummary> {
           const SizedBox(height: 10),
           Row(
             children: [
-              _buildStatusIndicator('Sukses', const Color(0xff198754)),
+              _buildStatusIndicator(
+                'Sukses',
+                '1',
+                const Color(0xff198754),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DetailTransaksi()),
+                  );
+                },
+              ),
               const SizedBox(width: 10),
-              _buildStatusIndicator('Proses', const Color(0xffecb709)),
+              _buildStatusIndicator('Proses',
+                  '0',
+                  const Color(0xffecb709),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DetailProsesTransaksi()),
+                  );
+                },
+
+              ),
               const SizedBox(width: 10),
-              _buildStatusIndicator('Gagal', const Color(0xffc70000)),
+              _buildStatusIndicator(
+                  'Gagal',
+                  '0',
+                  const Color(0xffc70000),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DetailTransaksiGagal()),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -523,27 +556,40 @@ class _TransactionPageState extends State<TransactionSummary> {
     );
   }
 
-  Widget _buildStatusIndicator(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
+  Widget _buildStatusIndicator(String label, String jumlah, Color color, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'Poppins', // Set font family to Poppins
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Poppins',
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 4),
+          Text(
+            jumlah,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ],
+      ),
     );
   }
+
 }

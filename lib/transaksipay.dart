@@ -38,7 +38,6 @@ class _TransaksiPayState extends State<TransaksiPay> {
   @override
   Widget build(BuildContext context) {
     const String saldo = '2.862.590';
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -77,7 +76,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                           });
                         },
                         child: Icon(
-                          _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                          _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                           color: Color(0xff909EAE),
                         ),
                       ),

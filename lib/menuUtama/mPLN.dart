@@ -22,11 +22,11 @@ class mPLNScreen extends StatefulWidget {
   const mPLNScreen({super.key});
 
   @override
-  _BpjsScreenState createState() => _BpjsScreenState();
+  _mPLNScreenState createState() => _mPLNScreenState();
 }
 
-class _BpjsScreenState extends State<mPLNScreen> {
-  int _selectedBpjsIndex = 0; // Track selected tab index
+class _mPLNScreenState extends State<mPLNScreen> {
+  int _selectedPLNIndex = 0; // Track selected tab index
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true; // Controller for balance visibility
 
@@ -69,7 +69,7 @@ class _BpjsScreenState extends State<mPLNScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -105,11 +105,11 @@ class _BpjsScreenState extends State<mPLNScreen> {
           children: [
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
-            BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedBpjsIndex,
-              onBpjsSelected: (index) {
+            PLNTabBarWidget(
+              selectedPLNIndex: _selectedPLNIndex,
+              onPLNSelected: (index) {
                 setState(() {
-                  _selectedBpjsIndex = index; // Update selected index
+                  _selectedPLNIndex = index; // Update selected index
                 });
               },
             ),
@@ -176,14 +176,14 @@ class _BpjsScreenState extends State<mPLNScreen> {
 }
 
 // Tab bar widget for BPJS items
-class BpjsTabBarWidget extends StatelessWidget {
-  final int selectedBpjsIndex;
-  final ValueChanged<int> onBpjsSelected;
+class PLNTabBarWidget extends StatelessWidget {
+  final int selectedPLNIndex;
+  final ValueChanged<int> onPLNSelected;
 
-  const BpjsTabBarWidget({
+  const PLNTabBarWidget({
     super.key,
-    required this.selectedBpjsIndex,
-    required this.onBpjsSelected,
+    required this.selectedPLNIndex,
+    required this.onPLNSelected,
   });
 
   @override
@@ -218,7 +218,7 @@ class BpjsTabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
+                child: _buildPLNTab(selectedPLNIndex, onPLNSelected, context),
               ),
             ),
           ),
@@ -227,7 +227,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
+  Widget _buildPLNTab(int selectedPLNIndex, ValueChanged<int> onPLNSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
@@ -238,25 +238,25 @@ class BpjsTabBarWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
+          if (selectedPLNIndex == 0)
+            _buildPLNCards(context)
           // Add more conditions for additional tabs if needed
         ],
       ),
     );
   }
 
-  Widget _buildBpjsCards(BuildContext context) {
-    List<PlnItem> bpjsItems = _fetchBpjsItems();
+  Widget _buildPLNCards(BuildContext context) {
+    List<PlnItem> PLNItems = _fetchPLNItems();
     return Column(
       children: [
-        for (var item in bpjsItems)
-          _buildBpjsCard(context, item),
+        for (var item in PLNItems)
+          _buildPLNCard(context, item),
       ],
     );
   }
 
-  Widget _buildBpjsCard(BuildContext context, PlnItem item) {
+  Widget _buildPLNCard(BuildContext context, PlnItem item) {
     return GestureDetector(
       onTap: () {
         // Add navigation or action for BPJS card tap
@@ -316,7 +316,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  List<PlnItem> _fetchBpjsItems() {
+  List<PlnItem> _fetchPLNItems() {
     return [
       PlnItem(produk: 'PLN 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
       PlnItem(produk: 'PLN 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),

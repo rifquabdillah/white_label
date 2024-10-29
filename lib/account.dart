@@ -788,7 +788,15 @@ class _AccountPageState extends State<AccountPage> {
             },
             child: _buildAccountOption('Kode Referral dan Mark Up'),
           ),
-          _buildAccountOption('Jaringan Downline'),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => downlinePage()),
+              );
+            },
+            child: _buildAccountOption('Jaringan Downline'),
+          ),
           _buildAccountOption('Info Komisi'),
           _buildAccountOption('Setelan Jaringan'),
 

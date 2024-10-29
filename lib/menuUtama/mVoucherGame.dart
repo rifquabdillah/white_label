@@ -50,7 +50,7 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                         },
                         child: Icon(
                           _isSaldoVisible
-                              ? Icons.remove_red_eye
+                              ? Icons.remove_red_eye_outlined
                               : Icons.visibility_off,
                           color: Colors.grey,
                         ),

@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   int _selectedIndex = 0;
   final ScrollController _scrollController = ScrollController();
   final int _selectedPromoIndex = 0;
-  bool _isNotificationVisible = false;
+  final bool _isNotificationVisible = true;
 
   // Variabel untuk mengontrol animasi teks
   bool _isFirstText = true;
@@ -71,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _isFirstText = !_isFirstText;
     });
   }
-
 
   @override
   void initState() {

@@ -69,7 +69,7 @@ class mTelkomScreenState extends State<mTelkomScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -105,9 +105,9 @@ class mTelkomScreenState extends State<mTelkomScreen> {
           children: [
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
-            BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedTelkomIndex,
-              onBpjsSelected: (index) {
+            TelkomTabBarWidget(
+              selectedTelkomIndex: _selectedTelkomIndex,
+              onTelkomSelected: (index) {
                 setState(() {
                   _selectedTelkomIndex = index; // Update selected index
                 });
@@ -176,14 +176,14 @@ class mTelkomScreenState extends State<mTelkomScreen> {
 }
 
 // Tab bar widget for BPJS items
-class BpjsTabBarWidget extends StatelessWidget {
-  final int selectedBpjsIndex;
-  final ValueChanged<int> onBpjsSelected;
+class TelkomTabBarWidget extends StatelessWidget {
+  final int selectedTelkomIndex;
+  final ValueChanged<int> onTelkomSelected;
 
-  const BpjsTabBarWidget({
+  const TelkomTabBarWidget({
     super.key,
-    required this.selectedBpjsIndex,
-    required this.onBpjsSelected,
+    required this.selectedTelkomIndex,
+    required this.onTelkomSelected,
   });
 
   @override
@@ -218,7 +218,7 @@ class BpjsTabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
+                child: _buildTelkomTab(selectedTelkomIndex, onTelkomSelected, context),
               ),
             ),
           ),
@@ -227,7 +227,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
+  Widget _buildTelkomTab(int selectedTelkomIndex, ValueChanged<int> onTelkomSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
@@ -238,25 +238,25 @@ class BpjsTabBarWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
+          if (selectedTelkomIndex == 0)
+            _buildTelkomCards(context)
           // Add more conditions for additional tabs if needed
         ],
       ),
     );
   }
 
-  Widget _buildBpjsCards(BuildContext context) {
-    List<TelkomItem> bpjsItems = _fetchBpjsItems();
+  Widget _buildTelkomCards(BuildContext context) {
+    List<TelkomItem> bpjsItems = _fetchTelkomItems();
     return Column(
       children: [
         for (var item in bpjsItems)
-          _buildBpjsCard(context, item),
+          _buildTelkomCard(context, item),
       ],
     );
   }
 
-  Widget _buildBpjsCard(BuildContext context, TelkomItem item) {
+  Widget _buildTelkomCard(BuildContext context, TelkomItem item) {
     return GestureDetector(
       onTap: () {
         // Add navigation or action for BPJS card tap
@@ -316,7 +316,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  List<TelkomItem> _fetchBpjsItems() {
+  List<TelkomItem> _fetchTelkomItems() {
     return [
       TelkomItem(produk: 'Telkom 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
       TelkomItem(produk: 'Telkom 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),

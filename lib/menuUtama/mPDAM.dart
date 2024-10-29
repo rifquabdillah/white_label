@@ -26,7 +26,7 @@ class mPDAMScreen extends StatefulWidget {
 }
 
 class mPDAMScreenState extends State<mPDAMScreen> {
-  int _selectedBpjsIndex = 0; // Track selected tab index
+  int _selectedPDAMIndex = 0; // Track selected tab index
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true; // Controller for balance visibility
 
@@ -69,7 +69,7 @@ class mPDAMScreenState extends State<mPDAMScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -105,11 +105,11 @@ class mPDAMScreenState extends State<mPDAMScreen> {
           children: [
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
-            BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedBpjsIndex,
-              onBpjsSelected: (index) {
+            PDAMTabBarWidget(
+              selectedPDAMIndex: _selectedPDAMIndex,
+              onPDAMSelected: (index) {
                 setState(() {
-                  _selectedBpjsIndex = index; // Update selected index
+                  _selectedPDAMIndex = index; // Update selected index
                 });
               },
             ),
@@ -176,14 +176,14 @@ class mPDAMScreenState extends State<mPDAMScreen> {
 }
 
 // Tab bar widget for BPJS items
-class BpjsTabBarWidget extends StatelessWidget {
-  final int selectedBpjsIndex;
-  final ValueChanged<int> onBpjsSelected;
+class PDAMTabBarWidget extends StatelessWidget {
+  final int selectedPDAMIndex;
+  final ValueChanged<int> onPDAMSelected;
 
-  const BpjsTabBarWidget({
+  const PDAMTabBarWidget({
     super.key,
-    required this.selectedBpjsIndex,
-    required this.onBpjsSelected,
+    required this.selectedPDAMIndex,
+    required this.onPDAMSelected,
   });
 
   @override
@@ -218,7 +218,7 @@ class BpjsTabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
+                child: _buildPDAMTab(selectedPDAMIndex, onPDAMSelected, context),
               ),
             ),
           ),
@@ -227,7 +227,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
+  Widget _buildPDAMTab(int selectedPDAMIndex, ValueChanged<int> onPDAMSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
@@ -238,19 +238,19 @@ class BpjsTabBarWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
+          if (selectedPDAMIndex == 0)
+            _buildPDAMCards(context)
           // Add more conditions for additional tabs if needed
         ],
       ),
     );
   }
 
-  Widget _buildBpjsCards(BuildContext context) {
-    List<PDAMItem> bpjsItems = _fetchBpjsItems();
+  Widget _buildPDAMCards(BuildContext context) {
+    List<PDAMItem> PDAMItems = _fetchPDAMItems();
     return Column(
       children: [
-        for (var item in bpjsItems)
+        for (var item in PDAMItems)
           _buildBpjsCard(context, item),
       ],
     );
@@ -316,7 +316,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  List<PDAMItem> _fetchBpjsItems() {
+  List<PDAMItem> _fetchPDAMItems() {
     return [
       PDAMItem(produk: 'PDAM 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
       PDAMItem(produk: 'PDAM 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),

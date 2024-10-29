@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import '../menuSaldo/mSaldo.dart';
 
 // Model for BPJS item
-class BpjsItem {
+class ProductItem {
   final String produk;
-  final String hari;
   final String description;
   final String originalPrice;
   final String info;
 
-  BpjsItem({
+  ProductItem({
     required this.produk,
-    required this.hari,
     required this.description,
     required this.originalPrice,
     required this.info,
@@ -20,15 +18,15 @@ class BpjsItem {
 }
 
 // Main BPJS screen
-class BpjsScreen extends StatefulWidget {
-  const BpjsScreen({super.key});
+class mSpesialDealProduct extends StatefulWidget {
+  const mSpesialDealProduct({super.key});
 
   @override
-  _BpjsScreenState createState() => _BpjsScreenState();
+  mSpesialDealProductState createState() => mSpesialDealProductState();
 }
 
-class _BpjsScreenState extends State<BpjsScreen> {
-  int _selectedBpjsIndex = 0; // Track selected tab index
+class mSpesialDealProductState extends State<mSpesialDealProduct> {
+  int _selectedTelkomIndex = 0; // Track selected tab index
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true; // Controller for balance visibility
 
@@ -84,7 +82,7 @@ class _BpjsScreenState extends State<BpjsScreen> {
                         MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
                       );
                     },
-                    child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                    child: const Icon(Icons.add, color: Color(0xff909EAE)),
                   ),
                 ],
               ),
@@ -107,11 +105,11 @@ class _BpjsScreenState extends State<BpjsScreen> {
           children: [
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
-            BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedBpjsIndex,
-              onBpjsSelected: (index) {
+            SpesialDealProductTabBarWidget(
+              selectedSpesialDealProductIndex: _selectedTelkomIndex,
+              onSpesialDealProductSelected: (index) {
                 setState(() {
-                  _selectedBpjsIndex = index; // Update selected index
+                  _selectedTelkomIndex = index; // Update selected index
                 });
               },
             ),
@@ -138,7 +136,7 @@ class _BpjsScreenState extends State<BpjsScreen> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              hintText: 'Nomor BPJS',
+              hintText: 'Nomor Telepon',
               hintStyle: const TextStyle(
                 color: Colors.grey,
               ),
@@ -178,14 +176,14 @@ class _BpjsScreenState extends State<BpjsScreen> {
 }
 
 // Tab bar widget for BPJS items
-class BpjsTabBarWidget extends StatelessWidget {
-  final int selectedBpjsIndex;
-  final ValueChanged<int> onBpjsSelected;
+class SpesialDealProductTabBarWidget extends StatelessWidget {
+  final int selectedSpesialDealProductIndex;
+  final ValueChanged<int> onSpesialDealProductSelected;
 
-  const BpjsTabBarWidget({
+  const SpesialDealProductTabBarWidget({
     super.key,
-    required this.selectedBpjsIndex,
-    required this.onBpjsSelected,
+    required this.selectedSpesialDealProductIndex,
+    required this.onSpesialDealProductSelected,
   });
 
   @override
@@ -200,7 +198,7 @@ class BpjsTabBarWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    'BPJS',
+                    'PROMO',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -220,7 +218,7 @@ class BpjsTabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
+                child: _buildSpesialDealProductTab(selectedSpesialDealProductIndex, onSpesialDealProductSelected, context),
               ),
             ),
           ),
@@ -229,7 +227,7 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
+  Widget _buildSpesialDealProductTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
@@ -241,24 +239,24 @@ class BpjsTabBarWidget extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
+            _buildSpesialDealProductCards(context)
           // Add more conditions for additional tabs if needed
         ],
       ),
     );
   }
 
-  Widget _buildBpjsCards(BuildContext context) {
-    List<BpjsItem> bpjsItems = _fetchBpjsItems();
+  Widget _buildSpesialDealProductCards(BuildContext context) {
+    List<ProductItem> SpesialDealProductItems = _fetchSpesialDealProductItems();
     return Column(
       children: [
-        for (var item in bpjsItems)
-          _buildBpjsCard(context, item),
+        for (var item in SpesialDealProductItems)
+          _buildSpesialProductItemsCard(context, item),
       ],
     );
   }
 
-  Widget _buildBpjsCard(BuildContext context, BpjsItem item) {
+  Widget _buildSpesialProductItemsCard(BuildContext context, ProductItem item) {
     return GestureDetector(
       onTap: () {
         // Add navigation or action for BPJS card tap
@@ -318,16 +316,16 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  List<BpjsItem> _fetchBpjsItems() {
+  List<ProductItem> _fetchSpesialDealProductItems() {
     return [
-      BpjsItem(produk: 'BPJS 1', hari: 'Senin', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
-      BpjsItem(produk: 'BPJS 2', hari: 'Selasa', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),
-      BpjsItem(produk: 'BPJS 3', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 4', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 5', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 6', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 7', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 8', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
+      ProductItem(produk: 'Promo 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),
+      ProductItem(produk: 'Promo 3', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 4', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 5', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 6', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 7', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
+      ProductItem(produk: 'Promo 8', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
 
 
     ];

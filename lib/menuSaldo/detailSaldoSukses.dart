@@ -55,7 +55,7 @@ class _detailSaldooState extends State<detailSaldo> {
                         });
                       },
                       child: Icon(
-                        _isSaldoVisible ? Icons.remove_red_eye : Icons
+                        _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons
                             .visibility_off,
                         color: const Color(0xff909EAE),
                       ),

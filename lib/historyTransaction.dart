@@ -234,7 +234,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         });
                       },
                       child: Icon(
-                        _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
+                        _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
                         color: const Color(0xff909EAE),
                       ),
                     ),
@@ -343,7 +343,6 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-
   Widget _buildNewContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +424,6 @@ class _HistoryPageState extends State<HistoryPage> {
       ],
     );
   }
-
 
   String _formatPhoneNumber(String input) {
     input = input.replaceAll(RegExp(r'\D'), ''); // Remove non-numeric characters

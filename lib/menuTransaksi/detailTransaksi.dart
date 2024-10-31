@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:white_label/menuSaldo/mSaldo.dart';
+import 'package:white_label/menuTransaksi/cetakFakturToken.dart';
+
+import 'cetakFaktur.dart';
 
 class DetailTransaksi extends StatefulWidget {
   const DetailTransaksi({super.key});
@@ -81,7 +84,7 @@ class _DetailTransaksiState extends State<DetailTransaksi> {
       ),
       body: Container(
         height: 1000,
-        margin: const EdgeInsets.only(top: 2.0, right: 18.0, left: 0.0), // Jarak antara AppBar dan Container
+        margin: const EdgeInsets.only(top: 2.0, right: 0.0, left: 0.0), // Jarak antara AppBar dan Container
         decoration: BoxDecoration(
           color: Color(0xFFFAF9F6), // Set the desired background color
           boxShadow: [
@@ -171,7 +174,10 @@ class _DetailTransaksiState extends State<DetailTransaksi> {
                   const SizedBox(width: 8.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Handle print invoice
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CetakFakturToken()), // Replace with your CetakFaktur widget
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xfffcb12b),
@@ -184,19 +190,15 @@ class _DetailTransaksiState extends State<DetailTransaksi> {
                       style: TextStyle(color: Color(0xffFAF9F6), fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
                     ),
                   ),
+
                 ],
               ),
-
             ],
           ),
         ),
       ),
     );
   }
-
-
-
-
 
   Widget _buildDetailRow(
       String label,

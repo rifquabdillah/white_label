@@ -572,16 +572,16 @@ class _HistoryPageState extends State<HistoryPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildFilterButton('Semua', 0),
-          _buildFilterButton('Proses', 1),
-          _buildFilterButton('Sukses', 2),
-          _buildFilterButton('Gagal', 3),
+          _buildFilterButtonCard('Semua', 0),
+          _buildFilterButtonCard('Proses', 1),
+          _buildFilterButtonCard('Sukses', 2),
+          _buildFilterButtonCard('Gagal', 3),
         ],
       ),
     );
   }
 
-  Widget _buildFilterButton(String label, int index) {
+  Widget _buildFilterButtonCard(String label, int index) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0), // Add margin here
       child: ElevatedButton(

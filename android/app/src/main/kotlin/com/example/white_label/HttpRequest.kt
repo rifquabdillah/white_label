@@ -2,7 +2,11 @@ package com.example.white_label
 
 import android.content.Context
 import android.util.Log
+import com.example.white_label.ApiRoutes
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -14,61 +18,112 @@ class HttpRequest(private val context: Context) {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val apiService: ApiService = retrofit.create(ApiService::class.java)
+    private val apiRoutes: ApiRoutes = retrofit.create(ApiRoutes::class.java)
 
     data class Product(
         val kodeProduk: String,
         val namaProduk: String,
-        val detailProduk: String,
+        val detailProduk: String?,
         val masaAktif: String?,
         val status: Int,
-        val totalKuota: String,
-        val pembagian: String,
+        val totalKuota: String?,
+        val pembagian: String?,
         val deskripsi: String?,
         val hargaJual: Int?,
-        val hargaCoret: Int?
+        val hargaCoret: Int
     )
 
-    // Update the response model to match the "products" object
+    // Update the response model to match the new structure
     data class ProductsResponse(
-        val products: Map<String, Product> // This will map the product ID to the product details
+        val data: Map<String, List<Product>> // Map category names to a list of products
     )
 
-    fun getProducts(callback: (List<Map<String, Any>>) -> Unit) {
-        val call = apiService.getProducts()
+    data class Banners(
+        val penempatan: String,
+        val url: String
+    )
+
+    data class BannersResponse(
+        val banners: List<Banners>
+    )
+
+    fun getProducts(
+        prefix: String,
+        tipe: String,
+        callback: (Map<String, List<Map<String, Any>>>) -> Unit
+    ) {
+        val call = apiRoutes.getProducts(prefix, tipe.uppercase())
         call.enqueue(object : retrofit2.Callback<ProductsResponse> {
             override fun onResponse(
                 call: Call<ProductsResponse>,
-                response: retrofit2.Response<ProductsResponse>
+                response: Response<ProductsResponse>
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { productsResponse ->
-                        Log.d(
-                            "HttpRequest",
-                            "Received Products: ${productsResponse.products}"
-                        ) // Log the raw response
+                        Log.d("HttpRequest", "Received Products: ${productsResponse.data}")
 
-                        // Convert the products map to a list of maps
-                        val productList = productsResponse.products.map { (_, product) ->
-                            val productMap = mapOf(
-                                "kodeProduk" to product.kodeProduk,
-                                "namaProduk" to product.namaProduk,
-                                "detailProduk" to product.detailProduk,
-                                "masaAktif" to (product.masaAktif ?: ""),
-                                "status" to product.status,
-                                "totalKuota" to product.totalKuota,
-                                "pembagian" to product.pembagian,
-                                "deskripsi" to (product.deskripsi ?: "")
-                            )
-                            Log.d(
-                                "HttpRequest",
-                                "Mapping Product: $productMap"
-                            ) // Log each mapped product
-                            productMap
+                        // Convert to a Map<String, List<Map<String, Any>>> structure with null safety for productList
+                        val productsMap = productsResponse.data.mapValues { (_, productList) ->
+                            productList.orEmpty().map { product ->
+                                mapOf(
+                                    "kodeProduk" to product.kodeProduk as Any,
+                                    "namaProduk" to product.namaProduk as Any,
+                                    "detailProduk" to (product.detailProduk ?: "") as Any,
+                                    "masaAktif" to (product.masaAktif ?: "") as Any,
+                                    "status" to product.status as Any,
+                                    "totalKuota" to (product.totalKuota ?: "") as Any,
+                                    "pembagian" to (product.pembagian ?: "") as Any,
+                                    "deskripsi" to (product.deskripsi ?: "") as Any,
+                                    "hargaJual" to product.hargaJual as Any,
+                                    "hargaCoret" to product.hargaCoret as Any
+                                )
+                            }
                         }
 
-                        // Call the callback with the list of maps
-                        callback(productList)
+                        Log.d("HttpRequest", "Mapped Products by Provider: $productsMap")
+
+                        // Call the callback with the structured map
+                        callback(productsMap)
+                    } ?: run {
+                        Log.w("HttpRequest", "Received empty response.")
+                        callback(emptyMap()) // Return empty map if the response is null
+                    }
+                } else {
+                    Log.e("HttpRequest", "Error: ${response.code()} ${response.message()}")
+                    callback(emptyMap()) // Return empty map for error response
+                }
+            }
+
+            override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
+                Log.e("HttpRequest", "Network error: ${t.message}")
+                callback(emptyMap()) // Return empty map on failure
+            }
+        })
+    }
+
+    fun getBanners(callback: (List<Map<String, Any>>) -> Unit) {
+        val call = apiRoutes.getBanners()
+        call.enqueue(object : retrofit2.Callback<BannersResponse> {
+            override fun onResponse(
+                call: Call<BannersResponse>,
+                response: Response<BannersResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { bannerResponse ->
+
+                        Log.d("HttpRequest", "Received Banners: ${bannerResponse.banners}") // Log the raw response
+
+                        // Convert the banners list to a list of maps
+                        val bannerList = bannerResponse.banners.map { banner ->
+                            mapOf(
+                                "penempatan" to banner.penempatan,
+                                "url" to banner.url
+                            )
+                        }
+
+                        Log.d("HttpRequest", "Received Banners as List of Maps: $bannerList") // Log the converted response
+                        callback(bannerList) // Return the list of maps via callback
+
                     } ?: run {
                         // Handle case where body is null (could indicate an empty response)
                         Log.w("HttpRequest", "Received empty response.")
@@ -81,7 +136,7 @@ class HttpRequest(private val context: Context) {
                 }
             }
 
-            override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<BannersResponse>, t: Throwable) {
                 // Handle the failure case, e.g., network error
                 Log.e("HttpRequest", "Network error: ${t.message}")
                 callback(emptyList()) // Return empty list on failure

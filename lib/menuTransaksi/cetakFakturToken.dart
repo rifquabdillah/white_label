@@ -1,6 +1,15 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:printing/printing.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 import 'cetakFaktur.dart';
+
 
 class CetakFakturToken extends StatefulWidget {
   const CetakFakturToken({super.key});
@@ -10,11 +19,68 @@ class CetakFakturToken extends StatefulWidget {
 }
 
 class _CetakFakturTokenState extends State<CetakFakturToken> {
+  final GlobalKey widgetKey = GlobalKey(); // Declare the widgetKey
+
   // Dummy values for dropdowns
   List<String> printers = ['Pilih Printer', 'RD-G58', 'MT-200VL'];
   List<String> paperSizes = ['A4', 'A5', 'Letter'];
   String? selectedPrinter;
   String? selectedPaperSize;
+
+  Future<Uint8List> widgetToImage(Widget widget) async {
+    // Wrap the widget in a RepaintBoundary
+    RenderRepaintBoundary boundary = widgetKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage(pixelRatio: 3.0); // Increase pixel ratio for better quality
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
+  }
+
+  Future<void> _saveAsPdf(BuildContext context) async {
+    final pdf = pw.Document();
+    final image = await widgetToImage(_buildFaktur()); // Capture the widget as an image
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) => pw.Image(pw.MemoryImage(image)),
+    ));
+    final output = await getTemporaryDirectory();
+    final file = File('${output.path}/faktur.pdf');
+    await file.writeAsBytes(await pdf.save());
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Faktur disimpan sebagai PDF')));
+  }
+
+  Future<void> _printFaktur(BuildContext context) async {
+    // Show a loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Create a PDF document
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Center(
+          child: pw.Text('Faktur Anda', style: pw.TextStyle(fontSize: 24)),
+        ),
+      ),
+    );
+
+    // Close the loading dialog
+    Navigator.of(context).pop();
+
+    // Print the PDF document
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+
+    // Optionally, show a success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Faktur berhasil dicetak')),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +98,7 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Cetak Faktur',
+                  'Faktur Transaksi',
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w600,
@@ -56,10 +122,10 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
             _buildContent(),
             const SizedBox(height: 4),
             Container(
-              height: 680, // Set height as required
+              height: 660, // Set height as required
               child: _buildFaktur(),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
             _buildButton(context),
           ],
         ),
@@ -119,6 +185,7 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
     );
   }
 
+// Dropdown Row Builder Function
   Widget _buildDropdownRow({
     required String label,
     String? value,
@@ -168,7 +235,7 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Menampilkan hint jika value kosong, jika tidak tampilkan value
+                      // Display hint text if value is empty, otherwise display value
                       Text(value?.isEmpty ?? true ? hintText : value!,
                           style: const TextStyle(color: Color(0xff353e43))),
                       const Icon(Icons.keyboard_arrow_down_rounded, size: 24, color: Color(0xffECB709)),
@@ -188,8 +255,8 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                               ),
                             ),
                             const Divider(
-                              color: Color(0xFFE0E0E0), // Warna garis pemisah
-                              thickness: 1, // Ketebalan garis pemisah
+                              color: Color(0xFFE0E0E0), // Divider color
+                              thickness: 1, // Divider thickness
                             ),
                           ],
                         ),
@@ -208,7 +275,7 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
   Widget _buildFaktur() {
     return Container(
       width: double.infinity,
-      height: 200,// Fill the available width
+      height: 200, // Fill the available width
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15), // Adjust vertical padding
       decoration: BoxDecoration(
         color: Color(0xffFAF9F6),
@@ -230,45 +297,43 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
             style: TextStyle(
               fontSize: 12.0,
               fontWeight: FontWeight.w200,
-              fontStyle: FontStyle.italic, // Add this line for italic style
+              fontStyle: FontStyle.italic,
               color: Color(0xFF4e5558),
             ),
           ),
-
           const SizedBox(height: 0.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded( // Use Expanded to allow the TextField to take available space
+              Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'HEADER', // Placeholder text
+                    hintText: 'HEADER',
                     hintStyle: TextStyle(
                       color: Color(0xFF909EAE),
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w400,
                       fontSize: 18,
                     ),
-                    // Only display the bottom border
                     border: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.black, // Change this to your desired color
-                        width: 2.0, // Set the width of the bottom border
+                        color: Colors.black,
+                        width: 2.0,
                       ),
                     ),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.black, // Color of the bottom border when enabled
+                        color: Colors.black,
                         width: 2.0,
                       ),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.black, // Color of the bottom border when focused
+                        color: Colors.black,
                         width: 2.0,
                       ),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Add padding for better spacing
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                   ),
                   style: TextStyle(
                     fontSize: 18.0,
@@ -288,10 +353,10 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color(0xff909EAE), // Border color
-                      width: 1.0, // Border width
+                      color: Color(0xff909EAE),
+                      width: 1.0,
                     ),
-                    borderRadius: BorderRadius.circular(8.0), // Rounded corners if desired
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: TextField(
                     decoration: InputDecoration(
@@ -340,19 +405,19 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Nomor Faktur:',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 '#89535525',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -364,19 +429,19 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Tanggal Transaksi',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 '18/09/2024 13:37:28',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -388,19 +453,19 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Nomor Tujuan',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 '32150477777',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -419,9 +484,9 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                 ),
               ),
               const SizedBox(width: 50),
-              Expanded( // Use Expanded to allow the Text to take available space
-                child: Align( // Align the text to the right
-                  alignment: Alignment.centerRight, // Aligns the text to the right
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
                   child: Text(
                     'H. Memed Ramdan',
                     style: TextStyle(
@@ -435,7 +500,6 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               ),
             ],
           ),
-
           const SizedBox(height: 10.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -443,19 +507,19 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Tipe/Daya',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 'R1M/900VA',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -467,19 +531,19 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Nominal',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 'Rp. 100.000',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -491,24 +555,23 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
               Text(
                 'Jumlah KWh',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF909EAE),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 '68,5',
                 style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF353E43),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins'
+                  fontSize: 14.0,
+                  color: Color(0xFF353E43),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
           ),
-          // Dropdown for Biaya Admin PPOB
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -521,28 +584,23 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                   fontFamily: 'Poppins',
                 ),
               ),
-              DropdownButton<String>(
-                value: 'Option 1', // Initial value
-                items: <String>['Option 1', 'Option 2', 'Option 3']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value,
-                        style: TextStyle(
-                          color: Color(0xFF353E43),
-                          fontSize: 14.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                        )),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  // Handle dropdown change
-                },
+              SizedBox(
+                width: 180, // Adjust the width as needed
+                child: _buildDropdownRow(
+                  label: '', // Empty label since it's already displayed
+                  value: 'Option 1', // Default selected value
+                  hintText: 'Select an option', // Placeholder text
+                  items: <String>['Pilih Nominal Admin', 'Nominal 1', 'Nominal 2'], // Dropdown items
+                  onChanged: (String? newValue) {
+                    // Handle the selection change here
+                    print('Selected: $newValue'); // Replace with your logic
+                  },
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 30),
+
+          const SizedBox(height: 10.0),
           Text(
             'Berapa harga jual untuk transaksi ini?',
             style: TextStyle(
@@ -669,6 +727,7 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
     );
   }
 
+
   Widget _buildButton(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -707,29 +766,27 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
                       const Divider(),
                       const SizedBox(height: 8),
                       Align(
-                        alignment: Alignment.centerLeft, // Atur posisi ke kiri
+                        alignment: Alignment.centerLeft,
                         child: const Text(
                           'Pilih jenis berkas untuk disimpan',
                           style: TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
                         ),
                       ),
-
                       const SizedBox(height: 16),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // Atur agar konten dimulai dari kiri
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _buildFileTypeButton(Icons.image, '.jpg'),
                           const SizedBox(width: 12),
                           _buildFileTypeButton(Icons.picture_as_pdf, '.pdf'),
                         ],
                       ),
-
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle save action
+                            _saveAsPdf(context); // Call save as PDF
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xffECB709),
@@ -773,7 +830,6 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
             child: const Icon(Icons.save_alt_rounded, color: Color(0xffECB709), size: 24),
           ),
         ),
-
         const SizedBox(width: 8.0),
         GestureDetector(
           onTap: () {
@@ -801,16 +857,13 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
             ),
           ),
         ),
-
         const SizedBox(width: 20.0),
         SizedBox(
           width: 200,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CetakFaktur()),
-              );
+            onPressed: () async {
+              await _printFaktur(context); // Call the print function
+              // Remove navigation to CetakFaktur
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xfffcb12b),
@@ -820,40 +873,30 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
             ),
             child: const Text(
               'Cetak Faktur',
-              style: TextStyle(color: Color(0xffFAF9F6), fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+              style: TextStyle(
+                color: Color(0xffFAF9F6),
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Poppins',
+              ),
             ),
           ),
         ),
+
+
       ],
     );
   }
 
-  Widget _buildFileTypeButton(IconData icon, String label) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Color(0xff909EAE)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xff909EAE),
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600
-            ),
-          ),
-        ],
+  Widget _buildFileTypeButton(IconData icon, String fileType) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        // Handle file type selection
+      },
+      icon: Icon(icon),
+      label: Text(fileType),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xffECB709),
       ),
     );
   }
-
-
-
 }

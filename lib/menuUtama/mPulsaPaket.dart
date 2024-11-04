@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:white_label/backend/nativeChannel.dart';
 import 'package:white_label/transaksipay.dart';
 
+import '../menuSaldo/mSaldo.dart';
+
 class PulsaPaketScreen extends StatefulWidget {
   const PulsaPaketScreen({super.key,});
 
@@ -10,9 +12,20 @@ class PulsaPaketScreen extends StatefulWidget {
   _PulsaPaketScreenState createState() => _PulsaPaketScreenState();
 }
 
+class Product {
+  final String kodeProduk;
+  final List<String> namaProduk;
+  final String hargaJual;
+
+  Product({required this.kodeProduk, required this.namaProduk, required this.hargaJual});
+}
+
 class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
-  int _selectedPromoIndex = 0;
-  int _activeContentIndex = 0; // Variabel untuk menyimpan konten yang aktif
+  Map<String, List<Map<String, dynamic>>>? _fetchedData;
+  bool isDataFetched = false; // Untuk melacak apakah data sudah di-fetch
+  String? selectedFilter;
+  bool isNumberFilled = false; // Asumsikan ini mengatur status nomor yang diisi
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true;
   final Map<String, String> prefixProviderMap = {
@@ -58,15 +71,42 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   };
   late Map<String, String> selectedProvider = {'null': 'null'};
   Set<String> _activeFilters = {};
+  late FocusNode _focusNode;
+  static const String saldo = '2.862.590'; // Consider using localization// Initial height percentage for TabBarWidget
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+
+    // Listen for focus changes to adjust the TabBar height
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        // When keyboard is shown
+        setState(() {
+// Adjust as necessary for your layout
+        });
+      } else {
+        // When keyboard is hidden
+        setState(() {
+// Fullscreen
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-    const String saldo = '2.862.590'; // Consider using localization
-
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false, // Prevent overflow when keyboard appears
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -87,7 +127,7 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                   ),
                   const SizedBox(width: 10.0),
                   Text(
-                    _isSaldoVisible ? saldo : '********',
+                    saldo,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -97,17 +137,21 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isSaldoVisible = !_isSaldoVisible;
+                        // Toggle visibility of saldo
                       });
                     },
-                    child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye : Icons
-                          .visibility_off,
-                      color: Colors.grey,
-                    ),
+                    child: const Icon(Icons.remove_red_eye, color: Color(0xff909EAE)),
                   ),
                   const SizedBox(width: 8.0),
-                  const Icon(Icons.add, color: Colors.grey),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                      );
+                    },
+                    child: const Icon(Icons.add, color: Color(0xff909EAE)),
+                  ),
                 ],
               ),
             ],
@@ -120,120 +164,93 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPhoneNumberField(screenSize),
-            const SizedBox(height: 8.0),
-            // Beri jarak
-            if (!selectedProvider.containsKey('null')) // Tampilkan provider jika ada
-              Padding(
-                padding: const EdgeInsets.only(left: 26.0),
-                child: Text(
-                  ' ${selectedProvider.values.first.toString()}',
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Poppins',
-                    color: Color(0xff909EAE),
+      body: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildPhoneNumberField(screenSize),
+              const SizedBox(height: 8.0),
+              // Check if a provider is selected
+              if (selectedProvider.isNotEmpty && !selectedProvider.containsKey('null'))
+                Padding(
+                  padding: const EdgeInsets.only(left: 26.0),
+                  child: Text(
+                    selectedProvider.values.first.toString(),
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Poppins',
+                      color: Color(0xff909EAE),
+                    ),
                   ),
                 ),
+              const SizedBox(height: 8.0),
+              Expanded(
+                child: TabBarWidget(
+                  selectedPromoIndex: 0, // Update as needed
+                  onPromoSelected: (index) {
+                    setState(() {
+                      // Update selected promo index
+                    });
+                  },
+                  tabTitles: ['Pulsa', 'SMS/Nelpon', 'Internet'],
+                  isPhoneNumberEmpty: _phoneController.text.isEmpty,
+                  selectedProvider: selectedProvider,
+                  activeFilters: {}, // Replace with actual filters if needed
+                ),
               ),
-            const SizedBox(height: 8.0),
-            // Beri jarak
-            // Selalu tampilkan TabBarWidget, tapi kontennya bergantung pada nomor ponsel
-            // Inside your build method in PulsaPaketScreen
-            Expanded(
-              child: TabBarWidget(
-                selectedPromoIndex: _selectedPromoIndex,
-                onPromoSelected: (index) {
-                  setState(() {
-                    _selectedPromoIndex = index;
-                  });
-                },
-                tabTitles: ['Pulsa', 'SMS/Nelpon', 'Internet'],
-                isPhoneNumberEmpty: _phoneController.text.isEmpty,
-                selectedProvider: selectedProvider,
-                activeFilters: _activeFilters, // Pass active filters here
-              ),
-            ),
-
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26.0, right: 16.0),
-          child: TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0XFFfaf9f6),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
-              ),
-              hintText: 'Masukkan nomor handphone',
-              hintStyle: const TextStyle(color: Colors.grey),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Color(0xFFecb709)),
-                    onPressed: () {
-                      // Handle voice input logic here
-                    },
-                  ),
-                  const SizedBox(width: 2),
-                  IconButton(
-                    icon: const Icon(Icons.contacts, color: Color(0xFFecb709)),
-                    onPressed: () {
-                      // Handle opening contacts logic here
-                    },
-                  ),
-                ],
-              ),
-            ),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(
-                  0xFF363636),
-            ),
-            onChanged: (value) {
-              setState(() {
-                if (value.length >= 4) {
-                  String prefix = value.substring(0, 4);
-                  if (prefixProviderMap.containsKey(prefix)) {
-                    selectedProvider = {prefix: prefixProviderMap[prefix]!};
-                  } else {
-                    selectedProvider = {'null': 'null'};
-                  }
-                } else {
-                  selectedProvider = {'null': 'null'};
-                }
-              });
-            },
+  Widget _buildPhoneNumberField(Size screenSize)  {
+    return Padding(
+      padding: const EdgeInsets.only(left: 26.0, right: 16.0),
+      child: TextField(
+        focusNode: _focusNode,
+        controller: _phoneController,
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0XFFfaf9f6),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
           ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          hintText: 'Masukkan nomor handphone',
+          hintStyle: const TextStyle(color: Colors.grey),
         ),
-      ],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
+          color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+        ),
+        onChanged: (value) {
+          // Logic to update the selected provider as user types
+          if (value.length >= 4) {
+            String prefix = value.substring(0, 4);
+            // Mencari nama provider dari prefix
+            String? providerName = prefixProviderMap[prefix]; // Ambil nama provider dari map
+            selectedProvider = providerName != null ? {prefix: providerName} : {'null': 'null'}; // Set provider yang sesuai
+            setState(() {});
+          } else {
+            selectedProvider = {'null': 'null'};
+          }
+        },
+
+      ),
     );
   }
 }
 
-class TabBarWidget extends StatelessWidget {
+
+  class TabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
   final List<String> tabTitles;
@@ -248,13 +265,37 @@ class TabBarWidget extends StatelessWidget {
     required this.tabTitles,
     required this.isPhoneNumberEmpty,
     required this.selectedProvider,
-    required this.activeFilters, // Pass active filters here
+    required this.activeFilters,
   });
+
+  @override
+  _TabBarWidgetState createState() => _TabBarWidgetState();
+}
+
+class _TabBarWidgetState extends State<TabBarWidget> {
+  String? selectedFilter; // To keep track of the selected filter
+  Map<String, List<Product>> filteredProducts = {}; // Declare filteredProducts
+  late ScrollController _scrollController; // Declare ScrollController
+  bool isNumberFilled = false;
+  // tambahkan variabel untuk melacak apakah nomor sudah diisi
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController(); // Initialize the ScrollController
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Dispose the ScrollController
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: tabTitles.length,
+      length: widget.tabTitles.length,
       child: Container(
         color: const Color(0xfffaf9f6),
         child: Column(
@@ -276,32 +317,23 @@ class TabBarWidget extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Poppins',
                 ),
-                tabs: tabTitles.map((title) => Tab(text: title)).toList(),
+                tabs: widget.tabTitles.map((title) => Tab(text: title)).toList(),
               ),
             ),
             Expanded(
               child: Container(
                 color: const Color(0xfffdf7e6),
                 child: TabBarView(
-                  children: isPhoneNumberEmpty
+                  children: widget.isPhoneNumberEmpty
                       ? [
                     _buildEmptyContent(),
                     _buildEmptyContent(),
                     _buildEmptyContent(),
                   ]
                       : [
-                    _buildPulsaTabContent(
-                        selectedPromoIndex,
-                        onPromoSelected,
-                        selectedProvider),
-                    _buildSmsTelponTabContent(
-                        selectedPromoIndex,
-                        onPromoSelected,
-                        selectedProvider),
-                    _buildInternetTabContent(
-                        selectedPromoIndex,
-                        onPromoSelected,
-                        selectedProvider),
+                    _buildPulsaTabContent(),
+                    _buildSmsTelponTabContent(),
+                    _buildInternetTabContent(),
                   ],
                 ),
               ),
@@ -322,110 +354,117 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPulsaTabContent(int selectedPromoIndex,
-      ValueChanged<int> onPromoSelected,
-      Map<String, String>? selectedProvider) {
-    // Similar to _buildPulsaTabContent but with different promo buttons for Internet
+  Widget _buildPulsaTabContent() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildPulsaTabContent")
+          _buildFilterButtons("_buildPulsaTabContent", isPulsa: true), // Set isPulsa to true
         ],
       ),
     );
   }
 
-
-  Widget _buildSmsTelponTabContent(int selectedPromoIndex,
-      ValueChanged<int> onPromoSelected,
-      Map<String, String>? selectedProvider) {
-    // Similar to _buildPulsaTabContent but with different promo buttons for Internet
+  Widget _buildSmsTelponTabContent() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildSmsTelponTabContent")
+          _buildFilterButtons("_buildSmsTelponTabContent"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInternetTabContent() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          _buildFilterButtons("_buildInternetTabContent"),
         ],
       ),
     );
   }
 
   Future<Map<String, List<Map<String, dynamic>>>> _fetchData(String methodName) async {
-    return await NativeChannel.instance.getPulsaPaketProduk(
-      '${selectedProvider?.keys.first}',
+    // Fetch data from the API
+    var result = await NativeChannel.instance.getPulsaPaketProduk(
+      '${widget.selectedProvider?.keys.first}',
       methodName,
     );
-  }
 
-  Widget _buildInternetTabContent(int selectedPromoIndex,
-      ValueChanged<int> onPromoSelected,
-      Map<String, String>? selectedProvider) {
-    // Similar to _buildPulsaTabContent but with different promo buttons for Internet
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          _buildFilterButtons("_buildInternetTabContent")
-        ],
-      ),
-    );
+    // Assuming the result is already in the required format
+    return result; // Return the fetched result
   }
 
 
-  Widget _buildFilterButtons(String methodName) {
+
+  Widget _buildFilterButtons(String methodName, {bool isPulsa = false}) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
       future: _fetchData(methodName),
       builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
-
         final data = snapshot.data ?? {};
 
-        return Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal, // Enable horizontal scrolling
-            child: Row(
-              children: data.keys.map((key) {
-                return _buildFilterButtonCard(key, data.keys.toList().indexOf(key));
-              }).toList(),
+        // Cek apakah nomor baru saja diisi
+        if (isNumberFilled && selectedFilter == null && data.isNotEmpty) {
+          setState(() {
+            selectedFilter = data.keys.first; // Aktifkan tombol pertama
+          });
+        }
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Row(
+                  children: data.keys.map((key) {
+                    return _buildFilterButtonCard(key);
+                  }).toList(),
+                ),
+              ),
             ),
-          ),
+            if (selectedFilter != null && data.containsKey(selectedFilter))
+              isPulsa ? _buildDataPulsaCard(data[selectedFilter]!) : _buildDataCard(data[selectedFilter]!),
+          ],
         );
       },
     );
   }
 
-  Widget _buildFilterButtonCard(String label, int index) {
-    // Check if the current button is the active one
-    bool isActive = activeFilters.isNotEmpty && activeFilters.first == label;
 
+  Widget _buildFilterButtonCard(String label) {
+    bool isActive = selectedFilter == label;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0), // Increased margin for better spacing
+      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           elevation: 2,
-          backgroundColor: isActive ? Color(0xffC70000) : Color(0xffFAF9F6), // Change color based on state
+          backgroundColor: isActive ? Color(0xffC70000) : Color(0xffFAF9F6),
         ),
         onPressed: () {
-          // Update the active filter to allow only one active filter at a time
-          if (!isActive) {
-            activeFilters.clear(); // Clear previous active filters
-            activeFilters.add(label); // Set the current label as the active filter
-          }
-          onPromoSelected(index); // Notify parent about the selection change
+          setState(() {
+            selectedFilter = isActive ? null : label;
+          });
+
+          _scrollController.jumpTo(
+            _scrollController.position.pixels + 100,
+          );
         },
         child: Text(
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isActive ? Colors.white : Colors.black, // Change text color based on state
+            color: isActive ? Colors.white : Colors.black,
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
           ),
@@ -434,154 +473,225 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildDataCard(List<Map<String, dynamic>> data) {
+    // Print to debug the incoming data
+    print('data: $data');
 
-
-
-
-
-  Widget _buildProductCard(BuildContext context, String namaProduk,
-      String masaAktif, String kodeProduk, int hargaJual,
-      String detailProduk) {
-    return GestureDetector(
-      onTap: () {
-        // Navigasi ke halaman TransaksiPay
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                TransaksiPay(
-                  nominal: hargaJual.toString(),
-                  // If nominal is an int, leave it as is.
-                  kodeproduk: kodeProduk,
-                  hargaJual: hargaJual.toString(),
-                  // Convert to string here
-                  description: 'Deskripsi produk di sini',
-                  originalPrice: 'originalPrice',
-                  info: detailProduk,
-                  transactionType: 'Pulsa',
-                ),
+    // Check if the data list is empty
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'No data available',  // Display message when there's no data
+            style: TextStyle(fontSize: 14.0),
           ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8.0), // Vertical margin
-        child: SizedBox(
-          width: 400,
-          height: 200,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
+        ),
+      );
+    }
+    return Container( // Use a container to control the height
+      height: MediaQuery.of(context).size.height * 0.6, // Set a height to allow scrolling
+      child: ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          final item = data[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    nominal: item['namaProduk'] ?? 'Unknown',
+                    kodeproduk: item['kodeProduk'] ?? 'Unknown',
+                    hargaJual: item['hargaJual'].toString(), // Convert to String
+                    description: item['detailProduk'] ?? 'No description available',
+                    originalPrice: item['hargaCoret']?.toString() ?? '0', // Convert to String
+                    info: item['masaAktif'] ?? 'No active period available',
+                    transactionType: 'Pulsa',
+                  ),
                 ),
+              );
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card
+              decoration: BoxDecoration(
+                color: Colors.transparent, // Pastikan warna transparan untuk container
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1), // Warna bayangan
+                    offset: Offset(0, 4), // Posisi bayangan
+                    blurRadius: 8.0, // Mengaburkan bayangan
+                    spreadRadius: 2.0, // Menyebarkan bayangan
+                  ),
+                ],
               ),
-              Card(
-                elevation: 1, // Higher elevation for neon effect
+              child: Card(
+                elevation: 2,
+                color: const Color(0xffFAF9F6), // Warna latar belakang card
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row( // Row to arrange price on the right
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: namaProduk,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Poppins',
-                                      color: Color(0xff353E43),
-                                    ),
-                                  ),
-                                  const TextSpan(
-                                    text: ' / ', // Separator line
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Color(
-                                          0xff909EAE), // Same color as namaProduk
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: '$masaAktif Hari',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: 'Poppins',
-                                      color: Color(0xff353E43),
-                                      fontWeight: FontWeight
-                                          .w100, // Regular text
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            // Space between name and code/info
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: kodeProduk,
-                                    style: const TextStyle(
-                                      color: Color(0xff353E43),
-                                      fontSize: 15,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            // Space between name and code/info
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: detailProduk,
-                                    style: const TextStyle(
-                                      color: Color(0xff909EAE),
-                                      fontSize: 12,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Spacer or Expanded to push price to the right
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        // Vertically centered
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        // Align price to the right
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between items
                         children: [
-                          Text(
-                            hargaJual.toString(),
-                            // Convert hargaJual to string for display
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontFamily: 'Poppins',
-                              color: Color(0xffECB709),
-                              fontWeight: FontWeight.w700,
+                          Expanded( // Allow the product name to take available space
+                            child: Text(
+                              item['namaProduk'] ?? 'Unknown', // Display product name
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
                             ),
                           ),
+                          const SizedBox(width: 8), // Space between product name and original price
+                          Text(
+                            ' ${item['hargaCoret']?.toString() ?? '0'}', // Display original price
+                            style: const TextStyle(fontSize: 14, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
+                          ),
                         ],
+                      ),
+
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+                        children: [
+                          Text(
+                            ' ${item['kodeProduk'] ?? 'Unknown'}', // Display product code
+                            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                          ),
+                          const SizedBox(width: 8), // Space between kodeProduk and the dash
+                          const Text(
+                            '-', // Dash as a separator
+                            style: TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                          ),
+                          const SizedBox(width: 8), // Space between the dash and hargaJual
+                          Text(
+                            ' ${item['hargaJual'].toString()}', // Display selling price
+                            style: const TextStyle(fontSize: 14, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        ' ${item['detail'] ?? 'No active period available'}', // Display active period
+                        style: const TextStyle(fontSize: 12, color: Color(0xff909EAE)),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+
+          );
+        },
       ),
     );
   }
+
+
+  Widget _buildDataPulsaCard(List<Map<String, dynamic>> data) {
+    print('data: $data');
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Jumlah kolom (2 kolom)
+          crossAxisSpacing: 8.0, // Jarak horizontal antar item
+          mainAxisSpacing: 8.0, // Jarak vertikal antar item
+          childAspectRatio: 3 / 2, // Rasio aspek untuk setiap item
+        ),
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          final item = data[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    nominal: item['namaProduk'] ?? 'Unknown',
+                    kodeproduk: item['kodeProduk'] ?? 'Unknown',
+                    hargaJual: item['hargaJual'].toString(),
+                    description: item['detailProduk'] ?? 'No description available',
+                    originalPrice: item['hargaCoret']?.toString() ?? '0',
+                    info: item['masaAktif'] ?? 'No active period available',
+                    transactionType: 'Pulsa',
+                  ),
+                ),
+              );
+            },
+            child: Card(
+              margin: const EdgeInsets.all(4.0),
+              elevation: 2,
+              color: Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          ' ${item['hargaCoret']?.toString() ?? '0'}',
+                          style: const TextStyle(fontSize: 12, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          ' ${item['kodeProduk'] ?? 'Unknown'}',
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          '-',
+                          style: TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          ' ${item['hargaJual'].toString()}',
+                          style: const TextStyle(fontSize: 12, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      ' ${item['detail'] ?? 'No active period available'}',
+                      style: const TextStyle(fontSize: 10, color: Color(0xff909EAE)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../menuSaldo/mSaldo.dart';
 
 class VoucherGameScreen extends StatefulWidget {
   @override
@@ -6,83 +7,246 @@ class VoucherGameScreen extends StatefulWidget {
 }
 
 class _VoucherGameScreenState extends State<VoucherGameScreen> {
-  bool _isSaldoVisible = true; // State to manage balance visibility
+  bool _isSaldoVisible = true;
+  late PageController _pageController;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.8);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    const String saldo = '2.862.590'; // Menyimpan saldo
+    final screenSize = MediaQuery.of(context).size;
+    const String saldo = '2.862.590'; // Consider using localization
 
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        child: Stack(
-          children: [
-            AppBar(
-              backgroundColor: const Color(0XFFfaf9f6),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: AppBar(
+          backgroundColor: const Color(0XFFfaf9f6),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      const Text(
-                        'Saldo ',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF4e5558),
-                        ),
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(
-                        _isSaldoVisible ? saldo : '********',
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 25.0),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSaldoVisible = !_isSaldoVisible; // Toggle visibility
-                          });
-                        },
-                        child: Icon(
-                          _isSaldoVisible
-                              ? Icons.remove_red_eye_outlined
-                              : Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color: Colors.grey),
-                    ],
+                  const Text(
+                    'Saldo ',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF4e5558),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    _isSaldoVisible ? saldo : '********',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 25.0),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isSaldoVisible = !_isSaldoVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      color: const Color(0xff909EAE),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                      );
+                    },
+                    child: const Icon(Icons.add, color: Color(0xff909EAE)),
                   ),
                 ],
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              toolbarHeight: 60,
-              elevation: 0, // Menghilangkan bayangan
-            ),
-          ],
+            ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
       ),
-      body: _buildGridOptions(),
+      body: Column(
+        children: [
+          _buildSearchGameField(screenSize), // Fixed search field at the top
+          Expanded(
+            child: SingleChildScrollView( // Wrap the scrollable content in a SingleChildScrollView
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20.0),
+                    _buildBannerGameCarousel(), // Banner Game Carousel
+                    const SizedBox(height: 20.0), // Add some spacing
+                    _buildGridOptions(), // Grid options
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildSearchGameField(Size screenSize) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xffFAF9F6),
+        borderRadius: BorderRadius.circular(0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 0,
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0XFFfaf9f6),
+                    border: InputBorder.none,
+                    hintText: 'Cari Judul Game',
+                    hintStyle: const TextStyle(
+                      color: Color(0xff909EAE),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Poppins',
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 0.0),
+              IconButton(
+                onPressed: () {
+                  // Action when icon pressed
+                },
+                icon: const Icon(Icons.search_rounded),
+                color: const Color(0xff353E43),
+                iconSize: 28.0,
+                padding: const EdgeInsets.all(0.0),
+                constraints: const BoxConstraints(),
+                splashRadius: 20.0,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          Container(
+            height: 2.0,
+            color: Color(0xff353E43),
+          ),
+          const SizedBox(height: 16.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBannerGameCarousel() {
+    return Container(
+      height: 210,
+      decoration: BoxDecoration(
+        color: Color(0xffFDF7E6),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: PageView.builder(
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                Color bannerColor = Color(0xff34C759);
+                return _buildBannerGame('Banner ${index + 1}', bannerColor);
+              },
+              controller: _pageController,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBannerGame(String text, Color color) {
+    return Container(
+      width: 155,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4.0,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Color(0xffFAF9F6),
+              fontFamily: 'Poppins',
+              fontSize: 24,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildGridOptions() {
     const List<Map<String, dynamic>> options = [
-      {'title': 'PUBGM', 'image': 'assets/pubg.jpg'},
-      {'title': 'Mobile Legends', 'image': 'assets/ml.jpg'},
+      {'title': 'PUBG Mobile', 'image': 'assets/pubg.jpg'},
+      {'title': 'Mobile Legends', 'image': 'assets/mlbb.png'},
       {'title': 'Free Fire', 'image': 'assets/ff.jpg'},
-      {'title': 'Lainnya', 'image': ''}, // You can specify an image if needed
+      {'title': 'Point Blank', 'image': 'assets/pb.png'},
+      {'title': 'Call of Duty M', 'image': 'assets/codm.png'},
+      {'title': 'Honor of Kings', 'image': 'assets/hok.png'},
+      {'title': 'Genshin Impact', 'image': 'assets/genshin.jpeg'},
+      {'title': 'Honkai Star Rail', 'image': 'assets/honkai.jpeg'},
+      {'title': 'LoL: Wild Rift', 'image': 'assets/lol.png'},
     ];
 
     return Container(
@@ -91,14 +255,16 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
       child: GridView.builder(
         itemCount: options.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // Adjust as needed
-          childAspectRatio: 0.75, // Adjust to maintain the aspect ratio of items
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+          crossAxisCount: 3,
+          childAspectRatio: 0.75,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 5,
         ),
         itemBuilder: (context, index) {
           return _buildGridItem(options[index]['title'], options[index]['image']);
         },
+        shrinkWrap: true, // Allow GridView to be sized to its children
+        physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
       ),
     );
   }
@@ -106,58 +272,85 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
   Widget _buildGridItem(String title, String imagePath) {
     return GestureDetector(
       onTap: () {
-        // Handle the tap event, e.g., navigate to a detail screen
+        // Handle the tap event
       },
-      child: Container(
-        width: 100, // Fixed width for uniformity
-        height: 130, // Fixed height for uniformity
-        decoration: BoxDecoration(
-          color: const Color(0xffFDF7E6),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15), // Shadow color
-              spreadRadius: 2, // Spread radius
-              blurRadius: 5, // Blur radius
-              offset: const Offset(0, 3), // Offset for shadow (x, y)
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 92,
+            height: 92,
+            decoration: BoxDecoration(
+              color: const Color(0xffFDF7E6),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Center items vertically
-          children: [
-            // Use a Container to maintain a consistent size for the image
-            Container(
-              width: 80, // Fixed image width
-              height: 80, // Fixed image height
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Stack(
+                children: [
+                  Opacity(
+                    opacity: 0.8,
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Color(0xff353E43).withOpacity(0.9),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 37,
+            left: 16,
+            right: 16,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 70),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(1),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: imagePath.isNotEmpty
-                    ? Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                )
-                    : Container(color: Colors.grey[300]), // Placeholder for no image
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 10.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
-            const SizedBox(height: 8), // Space between image and text
-            Text(
-              title,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.black54,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-
 }

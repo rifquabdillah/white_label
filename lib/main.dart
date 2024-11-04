@@ -7,6 +7,7 @@ import 'package:white_label/login/login.dart';
 import 'package:white_label/menuUtama/mBpjs.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
+import 'backend/nativeChannel.dart';
 import 'historyTransaction.dart';
 import 'menuAkun/infoAkun.dart';
 import 'menuSaldo/kirimSaldo.dart';
@@ -18,12 +19,13 @@ import 'menuUtama/mPromoScreen.dart';
 import 'menuUtama/mPulsaPaket.dart' show PulsaPaketScreen;
 import 'menuUtama/mSpesialDeals.dart';
 import 'menuUtama/mTelkom.dart';
-import 'menuUtama/mTokenListrik.dart' show mTokenListrikScreen;
+import 'menuUtama/mTokenListrik.dart' show TokenListrikScreen, mTokenListrikScreen;
 import 'menuUtama/mPertagas.dart' show mPertagasScreen;
 import 'menuUtama/mVoucherGame.dart';
 import 'notificationPage.dart';
 
 void main() {
+  NativeChannel.instance.initialize();
   runApp(const MyApp());
 }
 
@@ -738,10 +740,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   'assets/topup.png',
                   'Kirim',
                       () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => kirimSaldo()),
-                        );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => kirimSaldo()),
+                    );
                   },
                 ),
                 _buildActionButton(
@@ -874,7 +876,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         page = const PulsaPaketScreen();
         break;
       case 'Token Listrik':
-        page = const mTokenListrikScreen();
+        page = const TokenListrikScreen();
         break;
       case 'Pertagas':
         page = const mPertagasScreen();
@@ -1383,7 +1385,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 Text(
                   nomorTransaksi,
                   style: const TextStyle(fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                    fontSize: 12,
                   ),
                 ),
                 Text(tanggal, style: const TextStyle(color: Colors.grey)),

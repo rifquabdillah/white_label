@@ -41,6 +41,15 @@ class MainActivity : FlutterActivity() {
                         }
 
                     }
+
+                    "_buildTokenListrikTabContent" -> {
+                        httpRequest.getProducts(
+                            provider!!,
+                            "tokenpln") { response ->
+                            result.success(response)
+                        }
+
+                    }
                     else -> {
                         result.notImplemented() // Method not implemented
                     }

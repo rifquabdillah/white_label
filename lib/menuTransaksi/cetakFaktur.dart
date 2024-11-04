@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 
 class CetakFaktur extends StatefulWidget {
   const CetakFaktur({super.key});
@@ -201,7 +202,6 @@ class _CetakfakturState extends State<CetakFaktur> {
       ],
     );
   }
-
 
 
   Widget _buildFaktur() {

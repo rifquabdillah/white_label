@@ -176,7 +176,7 @@ class _DetailTransaksiState extends State<DetailTransaksi> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CetakFakturToken()), // Replace with your CetakFaktur widget
+                        MaterialPageRoute(builder: (context) => const CetakFaktur()), // Replace with your CetakFaktur widget
                       );
                     },
                     style: ElevatedButton.styleFrom(

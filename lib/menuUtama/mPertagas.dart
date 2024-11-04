@@ -69,7 +69,7 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
                             MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
                           );
                         },
-                        child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                        child: const Icon(Icons.add, color:  Color(0xff909EAE)),
                       ),
                     ],
                   ),
@@ -122,26 +122,28 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
               filled: true,
               fillColor: const Color(0XFFfaf9f6),
               border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
               ),
               focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
               ),
-              hintText: 'Nomor Meteran',
+              hintText: 'Nomor Pertagas',
               hintStyle: const TextStyle(
-                color: Colors.grey,
+                color: Color(0xff909EAE),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400
               ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
+                    icon: const Icon(Icons.mic, color: Color(0xffECB709)),
                     onPressed: () {
                       // Tambahkan logika untuk menangani input suara di sini
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
+                    icon: const Icon(Icons.contacts, color: Color(0xffECB709)),
                     onPressed: () {
                       // Tambahkan logika untuk membuka kontak di sini
                     },
@@ -154,7 +156,7 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
               fontWeight: _phoneController.text.isEmpty
                   ? FontWeight.normal
                   : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+              color: _phoneController.text.isEmpty ? Color(0xff909EAE) : const Color(0xFF363636),
             ),
             onChanged: (value) {
               setState(() {
@@ -190,18 +192,18 @@ class TabBarWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    'Token Listrik',
+                    'Pertagas',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Colors.black,
+                      color: Color(0xff353E43),
                     ),
                   ),
                 ),
                 Container(
                   height: 3,
                   width: double.infinity,
-                  color: Colors.orange,
+                  color: Color(0xffECB709),
                 ),
               ],
             ),
@@ -292,9 +294,9 @@ class TabBarWidget extends StatelessWidget {
                 description: 'Deskripsi produk di sini', // You can change this to the relevant description
                 originalPrice: originalPrice,
                 info: info,
-                transactionType: 'TokenListrik',
+                transactionType: 'Pertagas',
                 namaPemilik: 'Chandra Yadi', // New field
-                tipeMeteran: 'RT!', // New field
+                tipeMeteran: 'RT1', // New field
               ),
             ),
           );
@@ -310,7 +312,7 @@ class TabBarWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.2), // Warna bayangan
+                    color: Color(0xffECB709).withOpacity(0.2), // Warna bayangan
                     spreadRadius: 0, // Mengatur radius penyebaran
                     blurRadius: 2, // Mengatur blur
                     offset: const Offset(0, 0), // Posisi bayangan
@@ -333,15 +335,15 @@ class TabBarWidget extends StatelessWidget {
                             nominal,
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: isClosed ? Colors.black : Colors.black, // Warna teks berubah jadi hitam jika closed
+                              fontWeight: FontWeight.w700,
+                              color: isClosed ? Color(0xff353E43)  : Color(0xff353E43) , // Warna teks berubah jadi hitam jika closed
                             ),
                           ),
                           Text(
                             originalPrice,
                             style: TextStyle(
                               fontSize: 14,
-                              color: isClosed ? Colors.black : Colors.grey, // Warna teks berubah jadi hitam jika closed
+                              color: isClosed ? Color(0xff353E43) : Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
                               fontWeight: FontWeight.normal,
                               decoration: TextDecoration.lineThrough,
                             ),
@@ -357,15 +359,15 @@ class TabBarWidget extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,
-                                color: isClosed ? Colors.black : Colors.grey, // Warna teks berubah jadi hitam jika closed
+                                color: isClosed ? Color(0xff353E43) :  Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
                               ),
                             ),
                             TextSpan(
                               text: hargaJual,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: isClosed ? Colors.black : Colors.orange, // Warna teks berubah jadi hitam jika closed
-                                fontWeight: FontWeight.bold,
+                                color: isClosed ?Color(0xff353E43) : Color(0xffECB709), // Warna teks berubah jadi hitam jika closed
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -376,7 +378,7 @@ class TabBarWidget extends StatelessWidget {
                         info,
                         style: TextStyle(
                           fontSize: 8,
-                          color: isClosed ? Colors.black : Colors.grey, // Warna teks berubah jadi hitam jika closed
+                          color: isClosed ? Color(0xff353E43) : Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
                         ),
                       ),
                     ],
@@ -391,7 +393,7 @@ class TabBarWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Color(0xffC70000),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Text(
@@ -399,7 +401,7 @@ class TabBarWidget extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -427,7 +429,7 @@ class TabBarWidget extends StatelessWidget {
                     'Close',
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 10,
                     ),
                   ),
@@ -445,7 +447,7 @@ class TabBarWidget extends StatelessWidget {
         onPromoSelected(index);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedPromoIndex == index ? Colors.red : Colors.white,
+        backgroundColor: selectedPromoIndex == index ? Color(0xffC70000) : Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -456,7 +458,10 @@ class TabBarWidget extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-            color: selectedPromoIndex == index ? Colors.white : Colors.black, fontWeight: FontWeight.w400  // Ubah warna teks jika aktif
+            color: selectedPromoIndex == index ? Colors.white : Color(0xff353E43),
+            fontFamily: 'Poppins',
+            fontSize: 12,
+            fontWeight: FontWeight.w600  // Ubah warna teks jika aktif
         ),
       ),
     );

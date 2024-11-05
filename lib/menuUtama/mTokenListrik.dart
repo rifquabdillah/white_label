@@ -388,7 +388,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                     description: item['detailProduk'] ?? 'No description available',
                     originalPrice: item['hargaCoret']?.toString() ?? '0', // Convert to String
                     info: item['masaAktif'] ?? 'No active period available',
-                    transactionType: 'Pulsa',
+                    transactionType: 'TokenListrik',
                   ),
                 ),
               );

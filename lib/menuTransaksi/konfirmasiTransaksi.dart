@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import the intl package
 
 import '../main.dart';
 import 'cetakFaktur.dart';
@@ -19,7 +20,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.pop(context); // Navigate back when tapped
+            Navigator.pop(context); // Kembali ke halaman sebelumnya
           },
         ),
       ),
@@ -37,18 +38,23 @@ class _TransaksiPayState extends State<TransaksiPay> {
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    // Get the current date and time in the desired format (no seconds included)
+                    String now = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => KonfirmasiTransaksi(), // Navigasi ke halaman KonfirmasiTransaksi
+                        builder: (context) => KonfirmasiTransaksi(
+                          kodeProduk: '', // Example product code
+                          namaProduk: '', // Example product name
+                          nomorTujuan: '', // Example destination number
+                          tglTransaksi: now, // Pass the formatted date and time
+                          hargaJual: '', // Example price
+                        ),
                       ),
                     );
                   },
                   child: const Text('KIRIM TRANSAKSI BERHASIL'),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('KIRIM TRANSAKSI GAGAL'),
                 ),
               ],
             ),
@@ -60,19 +66,26 @@ class _TransaksiPayState extends State<TransaksiPay> {
 }
 
 class KonfirmasiTransaksi extends StatefulWidget {
+  final String kodeProduk;
+  final String namaProduk;
+  final String nomorTujuan;
+  final String tglTransaksi;
+
+  KonfirmasiTransaksi({
+    required this.kodeProduk,
+    required this.namaProduk,
+    required this.nomorTujuan,
+    required this.tglTransaksi,
+    required String hargaJual,
+  });
+
   @override
   _KonfirmasiTransaksiState createState() => _KonfirmasiTransaksiState();
 }
 
 class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
-  String _hargaJual = '7.000'; // Variabel hargaJual
-  bool isTokenListrik = true; // Set true if transaction type is Token Listrik
-
-  // Data untuk transaksi
-  final Map<String, dynamic> transaksiData = {
-    'pulsa': {'kodeProduk': 'IP5', 'namaProduk': 'Indosat Promo Mixed'},
-    'token': {'kodeProduk': 'TLK20', 'namaProduk': 'Token Listrik'},
-  };
+  String _hargaJual = '7.000';
+  bool isTokenListrik = true;
 
   @override
   Widget build(BuildContext context) {
@@ -97,53 +110,7 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFfaf9f6),
-                borderRadius: BorderRadius.circular(0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 3,
-                    blurRadius: 4,
-                    offset: const Offset(0, 0),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    spreadRadius: 3,
-                    blurRadius: 4,
-                    offset: const Offset(0, -0),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.only(bottom: 20),
-              margin: const EdgeInsets.all(0),
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/logo_sukses.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'ALHAMDULILLAH!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Transaksi kamu sudah berhasil dikirim dan sedang diproses',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
+            _buildHeader(),
             const SizedBox(height: 4),
             _buildTransactionDetails(context),
             const SizedBox(height: 20),
@@ -156,11 +123,55 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
     );
   }
 
-  Widget _buildTransactionDetails(BuildContext context) {
-    // Dapatkan data produk berdasarkan jenis transaksi
-    String kodeProduk = isTokenListrik ? transaksiData['token']['kodeProduk'] : transaksiData['pulsa']['kodeProduk'];
-    String namaProduk = isTokenListrik ? transaksiData['token']['namaProduk'] : transaksiData['pulsa']['namaProduk'];
+  Widget _buildHeader() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFfaf9f6),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 3,
+            blurRadius: 4,
+            offset: const Offset(0, 0),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            spreadRadius: 3,
+            blurRadius: 4,
+            offset: const Offset(0, -0),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Image.asset(
+            'assets/logo_sukses.png',
+            width: 100,
+            height: 100,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'ALHAMDULILLAH!',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Transaksi kamu sudah berhasil dikirim dan sedang diproses',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildTransactionDetails(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -179,13 +190,13 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
             ),
           ),
           const SizedBox(height: 10),
-          _buildTransactionDetailRow('Tanggal Transaksi', '23/09/2024 13:00:21'),
+          _buildTransactionDetailRow('Tanggal Transaksi', DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.tglTransaksi))),
           const SizedBox(height: 8),
-          _buildTransactionDetailRow('Kode Produk', kodeProduk), // Menggunakan kode produk yang diambil dari data
+          _buildTransactionDetailRow('Kode Produk', widget.kodeProduk),
           const SizedBox(height: 8),
-          _buildTransactionDetailRow('Nama Produk', namaProduk), // Menggunakan nama produk yang diambil dari data
+          _buildTransactionDetailRow('Nama Produk', widget.namaProduk),
           const SizedBox(height: 8),
-          _buildTransactionDetailRow('Nomor Tujuan', '0856 2244 866'),
+          _buildTransactionDetailRow('Nomor Tujuan', widget.nomorTujuan),
           _buildTransactionDetailRowWithEdit(context, 'Harga Jual', _hargaJual, isBold: true, color: Colors.orange),
         ],
       ),
@@ -229,11 +240,11 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
             color: Color(0xff909EAE),
           ),
         ),
-        const SizedBox(width: 150), // Jarak antara teks dan ikon
+        const SizedBox(width: 150),
         IconButton(
-          icon: Icon(Icons.edit, color: Color(0xffECB709)), // Ikon edit
+          icon: Icon(Icons.edit, color: Color(0xffECB709)),
           onPressed: () {
-            _editHarga(context, value); // Panggil fungsi edit harga
+            _editHarga(context, value);
           },
         ),
         Row(
@@ -268,17 +279,16 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog tanpa menyimpan perubahan
+                Navigator.of(context).pop();
               },
               child: const Text('Batal'),
             ),
             ElevatedButton(
               onPressed: () {
-                String newHarga = _controller.text;
                 setState(() {
-                  _hargaJual = newHarga; // Update _hargaJual dengan harga baru
+                  _hargaJual = _controller.text;
                 });
-                Navigator.of(context).pop(); // Tutup dialog setelah menyimpan perubahan
+                Navigator.of(context).pop();
               },
               child: const Text('Simpan'),
             ),
@@ -290,46 +300,29 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
 
   Widget _buildActionButtons(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end, // Mengatur semua elemen ke sebelah kanan
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        TextButton.icon(
-          onPressed: () {
-            // Implement sharing functionality here
-          },
-          icon: const Icon(Icons.share_outlined, color: Color(0xffECB709)),
-          label: const Text(
-            'Bagikan',
-            style: TextStyle(color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
-          ),
-        ),
-        const SizedBox(width: 8), // Jarak antara tombol Bagikan dan Cetak Faktur
+        const SizedBox(width: 8),
         Padding(
-          padding: const EdgeInsets.only(right: 10), // Padding untuk menggeser tombol ke kiri
+          padding: const EdgeInsets.only(right: 10),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xffECB709), // Warna tombol
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Ukuran tombol
+              backgroundColor: const Color(0xffECB709),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12), // Radius sudut tombol
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             onPressed: () {
-              // Check the transaction type and navigate accordingly
               if (isTokenListrik) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CetakFakturToken()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFakturToken()));
               } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CetakFaktur()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFaktur()));
               }
             },
             child: const Text(
-              'Cetak Faktur',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Colors.white), // Mengatur ukuran dan gaya teks
+              'Buat Faktur',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Colors.white),
             ),
           ),
         ),
@@ -342,18 +335,18 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
       onPressed: () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MyHomePage(title: '',)), // Ganti dengan halaman MyHomePage
+          MaterialPageRoute(builder: (context) => MyHomePage(title: '',)),
         );
       },
       child: const Text(
         'Kembali ke Beranda',
         style: TextStyle(
-            color: Color(0xff353E43),
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w300,// Warna hitam untuk teks
-            decoration: TextDecoration.underline,
-            decorationColor: Color(0xff353E43)// Garis bawah (underline) untuk teks
+          color: Color(0xff353E43),
+          fontSize: 14,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w300,
+          decoration: TextDecoration.underline,
+          decorationColor: Color(0xff353E43),
         ),
       ),
     );

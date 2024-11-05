@@ -220,7 +220,13 @@ class _TransaksiPayState extends State<TransaksiPay> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => KonfirmasiTransaksi(),
+                              builder: (context) => KonfirmasiTransaksi(
+                                kodeProduk: widget.kodeproduk,
+                                namaProduk: widget.nominal,
+                                nomorTujuan: '0856 2244 866', // Update as needed
+                                tglTransaksi: DateTime.now().toString(), // Current date-time
+                                hargaJual: widget.hargaJual,
+                              ),
                             ),
                           );
                         },
@@ -269,7 +275,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
-                color: textColor ?? Color(0xff353E43),
+                color: textColor ?? const Color(0xff353E43),
               ),
             ),
           ],

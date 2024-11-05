@@ -99,9 +99,9 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 0.0),
                     _buildBannerGameCarousel(), // Banner Game Carousel
-                    const SizedBox(height: 20.0), // Add some spacing
+                    const SizedBox(height: 0.0), // Add some spacing
                     _buildGridOptions(), // Grid options
                   ],
                 ),

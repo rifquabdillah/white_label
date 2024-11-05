@@ -207,7 +207,7 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize)  {
+  Widget _buildPhoneNumberField(Size screenSize) {
     return Padding(
       padding: const EdgeInsets.only(left: 26.0, right: 16.0),
       child: TextField(
@@ -225,6 +225,23 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
           ),
           hintText: 'Masukkan nomor handphone',
           hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.mic, color: Colors.grey), // Icon for voice input
+                onPressed: () {
+                  // Logic for voice input can be added here
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.contacts_sharp, color: Colors.grey), // Icon for contacts
+                onPressed: () {
+                  // Logic to open contacts can be added here
+                },
+              ),
+            ],
+          ),
         ),
         style: TextStyle(
           fontSize: 18,
@@ -243,7 +260,6 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
             selectedProvider = {'null': 'null'};
           }
         },
-
       ),
     );
   }

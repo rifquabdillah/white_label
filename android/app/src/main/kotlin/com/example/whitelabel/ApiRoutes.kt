@@ -1,6 +1,5 @@
-package com.example.white_label
+package com.example.whitelabel
 
-import com.example.white_label.HttpRequest
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

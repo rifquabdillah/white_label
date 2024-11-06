@@ -1,8 +1,7 @@
-package com.example.white_label
+package com.example.whitelabel
 
 import android.content.Context
 import android.util.Log
-import com.example.white_label.ApiRoutes
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import retrofit2.Call

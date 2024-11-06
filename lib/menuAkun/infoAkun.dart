@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -43,6 +46,27 @@ class _infoAkunState extends State<infoAkun> {
       showWarning = isSave; // Show warning if the number is unregistered
     });
   }
+
+  File? _profileImage; // Untuk menyimpan gambar profil yang dipilih
+
+  Future<void> _pickImage() async {
+    // Minta izin untuk akses penyimpanan
+    var status = await Permission.photos.request();
+    if (status.isGranted) {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _profileImage = File(pickedFile.path);
+        });
+      }
+    } else {
+      // Izin ditolak, Anda bisa memberi tahu pengguna
+      print("Permission to access photos is denied");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,46 +165,56 @@ class _infoAkunState extends State<infoAkun> {
   }
 
   Widget _buildProfileIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 30.0), // Add left padding
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: const BoxDecoration(
-          color: Color(0xFFc70000),
-          shape: BoxShape.circle,
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            const Center(
-              child: Text(
-                'FF',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 32,
+    return GestureDetector(
+      onTap: _pickImage, // Menjalankan fungsi _pickImage saat ditekan
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30.0),
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: const Color(0xFFc70000),
+            shape: BoxShape.circle,
+            image: _profileImage != null
+                ? DecorationImage(
+              image: FileImage(_profileImage!), // Tampilkan gambar profil
+              fit: BoxFit.cover,
+            )
+                : null, // Jika tidak ada gambar, tampilkan latar belakang merah
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_profileImage == null)
+                const Center(
+                  child: Text(
+                    'FF',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 32,
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  decoration: const BoxDecoration(
+                    color: Color(0xff909EAE),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_outlined,
+                    size: 18,
+                    color: Color(0xFF353E43),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 0, // Adjusts the position of the icon
-              right: 0, // Adjusts the position of the icon
-              child: Container(
-                width: 25, // Increased width for the camera icon background
-                height: 25, // Increased height for the camera icon background
-                decoration: BoxDecoration(
-                  color: Color(0xff909EAE), // Background for the camera icon
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.camera_alt_outlined, // Camera icon
-                  size: 18, // Size of the camera icon
-                  color: Color(0xFF353E43), // Color of the camera icon
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

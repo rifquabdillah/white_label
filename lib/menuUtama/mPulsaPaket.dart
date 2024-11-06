@@ -79,19 +79,30 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
     super.initState();
     _focusNode = FocusNode();
 
+    // Set the phone number callback
+    NativeChannel.instance.setPhoneNumberCallback(updatePhoneNumber);
+    NativeChannel.instance.setSpeechRecognitionCallback(updatePhoneNumber);
+
     // Listen for focus changes to adjust the TabBar height
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         // When keyboard is shown
         setState(() {
-// Adjust as necessary for your layout
+          // Adjust as necessary for your layout
         });
       } else {
         // When keyboard is hidden
         setState(() {
-// Fullscreen
+          // Fullscreen
         });
       }
+    });
+  }
+
+  void updatePhoneNumber(String phoneNumber) {
+    setState(() {
+      _phoneController.text = phoneNumber; // Update the TextField with the cleaned number
+      _updateSelectedProvider(phoneNumber); // Update the provider based on the cleaned number // Update the TextField with the selected phone number
     });
   }
 
@@ -230,14 +241,14 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.mic, color: Colors.grey), // Icon for voice input
-                onPressed: () {
-                  // Logic for voice input can be added here
+                onPressed: () async {
+                  await NativeChannel.instance.startSpeechRecognition();
                 },
               ),
               IconButton(
                 icon: const Icon(Icons.contacts_sharp, color: Colors.grey), // Icon for contacts
-                onPressed: () {
-                  // Logic to open contacts can be added here
+                onPressed: () async {
+                  await NativeChannel.instance.getContact();
                 },
               ),
             ],
@@ -249,24 +260,26 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
           color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
         ),
         onChanged: (value) {
-          // Logic to update the selected provider as user types
-          if (value.length >= 4) {
-            String prefix = value.substring(0, 4);
-            // Mencari nama provider dari prefix
-            String? providerName = prefixProviderMap[prefix]; // Ambil nama provider dari map
-            selectedProvider = providerName != null ? {prefix: providerName} : {'null': 'null'}; // Set provider yang sesuai
-            setState(() {});
-          } else {
-            selectedProvider = {'null': 'null'};
-          }
+          _updateSelectedProvider(value);
         },
       ),
     );
   }
+
+  void _updateSelectedProvider(String value) {
+    if (value.length >= 4) {
+      String prefix = value.substring(0, 4);
+      String? providerName = prefixProviderMap[prefix];
+      selectedProvider = providerName != null ? {prefix: providerName} : {'null': 'null'};
+    } else {
+      selectedProvider = {'null': 'null'};
+    }
+    setState(() {});
+  }
 }
 
 
-  class TabBarWidget extends StatefulWidget {
+class TabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
   final List<String> tabTitles;

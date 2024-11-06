@@ -1,4 +1,4 @@
-package com.example.white_label
+package com.example.whitelabel
 
 import android.Manifest
 import android.content.Context

@@ -22,9 +22,14 @@ import 'menuUtama/mTelkom.dart';
 import 'menuUtama/mTokenListrik.dart' show TokenListrikScreen, mTokenListrikScreen;
 import 'menuUtama/mPertagas.dart' show mPertagasScreen;
 import 'menuUtama/mVoucherGame.dart';
+import 'menuVoucher/actPerdana.dart';
+import 'menuVoucher/injectSatuan.dart';
+import 'menuVoucher/voucherFisik.dart';
+import 'menuVoucher/voucherMasal.dart';
 import 'notificationPage.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   NativeChannel.instance.initialize();
   runApp(const MyApp());
 }
@@ -74,6 +79,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
+  Future<void> _checkPermission() async {
+    bool isGranted = await NativeChannel.instance.checkPermission();
+    if (!isGranted) {
+      // Handle permission denial if needed, e.g., show a message to the user
+      print("Permission not granted. Requesting permission...");
+    } else {
+      print("Permission granted.");
+    }
+  }
+
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this); // Inisialisasi TabController
@@ -85,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     Timer.periodic(const Duration(seconds: 2), (timer) {
       _toggleText();
     });
+
+    _checkPermission();
   }
 
   void _startAutoScroll() {
@@ -1041,29 +1058,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   Widget _buildGridItemVoucher(String title, MaterialColor color) {
     return GestureDetector(
-      onTap: () {
-        if (title == 'Pulsa & Paket') {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const PulsaPaketScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(0.0, 1.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        }
-      },
+      onTap: () => _onGridItemVoucherTapped(title), // Memanggil _onGridItemTapped
       child: Column(
         children: [
           Container(
@@ -1083,6 +1078,47 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _onGridItemVoucherTapped(String title) {
+    late final Widget page;
+
+    switch (title) {
+      case 'Inject Satuan':
+        page = InjectVoucherSatuanScreen();
+        break;
+      case 'Masal':
+        page = VoucherMasalScreen(); // Gantilah dengan halaman yang sesuai
+        break;
+      case 'Act Perdana':
+        page = ActPerdanaScreen(); // Gantilah dengan halaman yang sesuai
+        break;
+      case 'Voucher Fisik':
+        page = VoucherFisikScreen(); // Gantilah dengan halaman yang sesuai
+        break;
+      default:
+        return; // Tidak ada tindakan jika title tidak cocok
+    }
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => page,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }

@@ -7,21 +7,49 @@ class NativeChannel {
   // Single instance of NativeChannel
   static final NativeChannel instance = NativeChannel._privateConstructor();
 
-  static const PULSA_PAKET_PLATFORM =
-  MethodChannel('com.example.white_label/pulsa_paket_produk_channel');
+  static const PULSA_PAKET_PLATFORM = MethodChannel('com.example.whitelabel/pulsa_paket_produk_channel');
+  static const UTILS_CHANNEL = MethodChannel('com.example.whitelabel/utils');
 
+  // Initialize NativeChannel and set up method call handler
   void initialize() {
-    // Any initialization logic can go here, if needed
     print('NativeChannel initialized');
+    UTILS_CHANNEL.setMethodCallHandler(_handleMethodCall);
+  }
+
+  /// Check permissions on the native side
+  Future<bool> checkPermission() async {
+    try {
+      final bool isGranted = await UTILS_CHANNEL.invokeMethod('checkPermission');
+      return isGranted;
+    } on PlatformException catch (e) {
+      print('Failed to check permission: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Request image from the gallery if permissions are granted
+  Future<String?> pickImageFromGallery() async {
+    bool hasPermission = await checkPermission();
+    if (hasPermission) {
+      try {
+        final String? imagePath = await UTILS_CHANNEL.invokeMethod('pickImageFromGallery');
+        print('Image path from native: $imagePath');
+        return imagePath;
+      } on PlatformException catch (e) {
+        print('Failed to pick image: ${e.message}');
+        return null;
+      }
+    } else {
+      print('Permissions not granted');
+      return null;
+    }
   }
 
   Future<Map<String, List<Map<String, dynamic>>>> getPulsaPaketProduk(
       String prefix, String namaMethod) async {
     try {
-      // Log the received prefix
       print('Received prefix: $prefix');
 
-      // Invoke the method channel and expect a Map response
       final Map<dynamic, dynamic> result = await PULSA_PAKET_PLATFORM.invokeMethod(
         namaMethod,
         {
@@ -29,10 +57,8 @@ class NativeChannel {
         },
       );
 
-      // Log the raw returned result
       print('Raw result from native platform: $result');
 
-      // Map the dynamic result to a strongly typed Map<String, List<Map<String, dynamic>>>
       final Map<String, List<Map<String, dynamic>>> mappedResult = result.map((key, value) {
         return MapEntry(
           key as String,
@@ -42,9 +68,72 @@ class NativeChannel {
 
       return mappedResult;
     } on PlatformException catch (e) {
-      // Log the error message if the method invocation fails
       print('Failed to get data: ${e.message}');
       throw 'Failed to get data: ${e.message}';
+    }
+  }
+
+  // New function to open contact picker and get the contact number
+  void setPhoneNumberCallback(Function(String) callback) {
+    _phoneNumberCallback = callback;
+  }
+
+  void setSpeechRecognitionCallback(Function(String) callback) {
+    _speechRecognitionCallback = callback;
+  }
+
+  Function(String)? _speechRecognitionCallback;
+  Function(String)? _phoneNumberCallback; // To hold the callback
+
+  Future<void> getContact() async {
+    try {
+      await UTILS_CHANNEL.invokeMethod('getContact');
+    } on PlatformException catch (e) {
+      print('Failed to pick contact: ${e.message}');
+    }
+  }
+
+  // Method call handler to receive data from the native side
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'contactPicked':
+        final String? phoneNumber = call.arguments as String?;
+        print('Phone number received from native: $phoneNumber');
+        // Clean the phone number
+        if (phoneNumber != null) {
+          String cleanedNumber = _cleanPhoneNumber(phoneNumber);
+          print('Cleaned phone number: $cleanedNumber');
+          // Call the callback function to update the phone number
+          if (_phoneNumberCallback != null) {
+            _phoneNumberCallback!(cleanedNumber); // Update the phone number in Flutter
+          }
+        }
+        break;
+      default:
+        print('Method not implemented: ${call.method}');
+    }
+  }
+
+  // Function to clean the phone number
+  String _cleanPhoneNumber(String phoneNumber) {
+    // Replace +62 with 0
+    String cleanedNumber = phoneNumber.replaceAll('+62', '0');
+    // Remove all non-numeric characters
+    cleanedNumber = cleanedNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    return cleanedNumber;
+  }
+
+  Future<dynamic> startSpeechRecognition() async {
+    try {
+      final String? recognizedText = await UTILS_CHANNEL.invokeMethod('startSpeechRecognition');
+      print('Recognized text from native: $recognizedText');
+      if (_speechRecognitionCallback != null) {
+        _speechRecognitionCallback!(recognizedText!);
+      }
+      return recognizedText;
+    } on PlatformException catch (e) {
+      print('Failed to recognize speech: ${e.message}');
+      return null;
     }
   }
 }

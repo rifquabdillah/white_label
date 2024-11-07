@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class CetakFaktur extends StatefulWidget {
@@ -14,6 +17,164 @@ class _CetakfakturState extends State<CetakFaktur> {
   List<String> paperSizes = ['A4', 'A5', 'Letter'];
   String? selectedPrinter;
   String? selectedPaperSize;
+  final TextEditingController _headerController = TextEditingController();
+  final TextEditingController _hargaJualController = TextEditingController();
+  final TextEditingController _keteranganController = TextEditingController();
+  final TextEditingController _noFakturController = TextEditingController();
+  final TextEditingController _produkController = TextEditingController();
+  final TextEditingController _kodeProdukController = TextEditingController();
+  final TextEditingController _nomorTujuanController = TextEditingController();
+  final TextEditingController _kodeSNController = TextEditingController();
+
+
+
+  @override
+  void dispose() {
+    // Dispose controllers when widget is destroyed
+    _headerController.dispose();
+    _hargaJualController.dispose();
+    _keteranganController.dispose();
+    _noFakturController.dispose();
+    _produkController.dispose();
+    _nomorTujuanController.dispose();
+    _kodeSNController.dispose();
+    super.dispose();
+  }
+
+  // Fungsi untuk membuat PDF faktur
+  Future<void> _generatePdf(Map<String, String> fakturData) async {
+    final pdf = pw.Document();
+
+    // Mendapatkan tanggal transaksi saat ini
+    String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+
+    // Menambahkan halaman dengan penataan posisi dan ukuran
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) {
+        return pw.Stack(
+          children: [
+            pw.Positioned(
+              top: 20, // Mengatur posisi dari atas halaman
+              left: 20, // Mengatur posisi dari kiri halaman
+              child: pw.Text(
+                '${fakturData['Header']}',
+                style: pw.TextStyle(
+                  fontSize: 32, // Mengatur ukuran font
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+            ),
+            pw.Positioned(
+              top: 100,
+              left: 20,
+              child: pw.Text(
+                '${fakturData['Nomor Faktur']}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 120, // Posisi setelah elemen sebelumnya
+              left: 20,
+              child: pw.Text(
+                '$currentDate',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 140,
+              left: 100,
+              child: pw.Text(
+                'FAKTUR TRANSAKSI',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 160,
+              left: 20,
+              child: pw.Text(
+                'Kode Produk: ${fakturData['Kode Produk']}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 180,
+              left: 20,
+              child: pw.Text(
+                'Keterangan: ${fakturData['Produk']}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 200,
+              left: 20,
+              child: pw.Text(
+                'Nomor Tujuan: ${fakturData['Nomor Tujuan']}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            pw.Positioned(
+              top: 220,
+              left: 20,
+              child: pw.Text(
+                'Kode SN: ${fakturData['Kode SN']}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+            ),
+            // Menambahkan tanggal transaksi di bawah nomor faktur
+
+          ],
+        );
+      },
+    ));
+
+    // Menyimpan PDF ke file sementara
+    final output = await pdf.save();
+
+    // Menampilkan PDF dengan menggunakan plugin printing
+    await Printing.layoutPdf(onLayout: (_) => output);
+  }
+
+  // Fungsi untuk menampilkan pratinjau PDF
+  void _showPrintPreview(Map<String, String> fakturData) async {
+    await _generatePdf(fakturData);
+  }
+
+  // Fungsi untuk mencetak data faktur
+  void _printFaktur() {
+    // Memeriksa apakah printer dan ukuran kertas sudah dipilih
+    if (selectedPrinter == null || selectedPaperSize == null) {
+      // Jika belum, tampilkan pesan
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Harap pilih printer dan ukuran kertas terlebih dahulu.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Ambil data dari _buildFaktur
+      String headerText = _headerController.text.isEmpty ? 'HEADER' : _headerController.text;
+      String noFakturText = _noFakturController.text.isEmpty ? '#89535525' : _noFakturController.text;
+      String kodeProdukText = _produkController.text.isEmpty ? 'TD25' : _produkController.text;
+      String produkText = _produkController.text.isEmpty ? 'Telkomsel Data Nominal 5 GB / 30 Hari' : _produkController.text;
+      String nomorTujuanText = _nomorTujuanController.text.isEmpty ? '0812 2126 0284' : _nomorTujuanController.text;
+      String kodeSNText = _kodeSNController.text.isEmpty ? '03589200001570588332' : _kodeSNController.text;
+      String hargaJualText = _hargaJualController.text.isEmpty ? 'Harga tidak tersedia' : _hargaJualController.text;
+
+      // Kumpulkan semua data dalam Map
+      Map<String, String> fakturData = {
+        'Header': headerText,
+        'Nomor Faktur': noFakturText,
+        'Kode Produk': kodeProdukText,
+        'Produk': produkText,
+        'Nomor Tujuan': nomorTujuanText,
+        'Kode SN': kodeSNText,
+        'Harga Jual': hargaJualText,
+      };
+
+      // Tampilkan pratinjau cetak
+      _showPrintPreview(fakturData);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +224,6 @@ class _CetakfakturState extends State<CetakFaktur> {
       ),
     );
   }
-
 
   Widget _buildContent() {
     return Container(
@@ -203,368 +363,286 @@ class _CetakfakturState extends State<CetakFaktur> {
     );
   }
 
-
   Widget _buildFaktur() {
-  return Container(
-    width: double.infinity,
-    height: 200,// Fill the available width
-    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15), // Adjust vertical padding
-    decoration: BoxDecoration(
-      color: Color(0xffFAF9F6),
-      borderRadius: BorderRadius.circular(0.0),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          spreadRadius: 1,
-          blurRadius: 5,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Berikan keterangan di atas faktur',
-          style: TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w200,
-            fontStyle: FontStyle.italic, // Add this line for italic style
-            color: Color(0xFF4e5558),
+    return Container(
+      width: double.infinity,
+      height: 600, // Adjust the height as needed
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15),
+      decoration: BoxDecoration(
+        color: Color(0xffFAF9F6),
+        borderRadius: BorderRadius.circular(0.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
-        ),
-
-        const SizedBox(height: 0.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded( // Use Expanded to allow the TextField to take available space
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'HEADER', // Placeholder text
-                  hintStyle: TextStyle(
-                    color: Color(0xFF909EAE),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 18,
-                  ),
-                  // Only display the bottom border
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Change this to your desired color
-                      width: 2.0, // Set the width of the bottom border
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Berikan keterangan di atas faktur',
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w200,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF4e5558),
+            ),
+          ),
+          const SizedBox(height: 0.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _headerController,
+                  decoration: InputDecoration(
+                    hintText: 'HEADER',
+                    hintStyle: TextStyle(
+                      color: Color(0xFF909EAE),
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                    ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
                     ),
                   ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when enabled
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when focused
-                      width: 2.0,
-                    ),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Add padding for better spacing
-                ),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Color(0xFF353E43),
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Nomor Faktur:',
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Color(0xFF909EAE),
-                fontWeight: FontWeight.w300,
-                fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              '#89535525',
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Tanggal Transaksi',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF909EAE),
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              '18/09/2024 13:37:28',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Kode Produk',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF909EAE),
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              'TD25',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Nama Produk',
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Color(0xFF909EAE),
-                fontWeight: FontWeight.w300,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            const SizedBox(width: 50),
-            Expanded( // Use Expanded to allow the Text to take available space
-              child: Align( // Align the text to the right
-                alignment: Alignment.centerRight, // Aligns the text to the right
-                child: Text(
-                  'Telkomsel Data Nominal 5 GB / 30 Hari',
-                  maxLines: 2, // Allow the text to use up to 2 lines
-                  overflow: TextOverflow.visible, // This will allow the text to overflow instead of being cut off
                   style: TextStyle(
-                    fontSize: 13.0,
+                    fontSize: 18.0,
+                    color: Color(0xFF353E43),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Nomor Faktur:',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+              Text(
+                _noFakturController.text.isEmpty ? '#89535525' : _noFakturController.text,
+                style: TextStyle(
+                    fontSize: 14.0,
                     color: Color(0xFF353E43),
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ),
+                    fontFamily: 'Poppins'
                 ),
               ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Nomor Tujuan',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF909EAE),
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              '0812 2126 0284',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Status',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF909EAE),
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              'SUKSES',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Kode SN',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF909EAE),
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-            Text(
-              '03589200001570588332',
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFF353E43),
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 30),
-        Text(
-          'Berapa harga jual untuk transaksi ini?',
-          style: TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w200,
-            fontStyle: FontStyle.italic, // Add this line for italic style
-            color: Color(0xFF4e5558),
+            ],
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded( // Use Expanded to allow the TextField to take available space
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Masukan Harga Jual', // Placeholder text
-                  hintStyle: TextStyle(
-                    color: Color(0xFF909EAE),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 18,
-                  ),
-                  // Only display the bottom border
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Change this to your desired color
-                      width: 2.0, // Set the width of the bottom border
-                    ),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when enabled
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when focused
-                      width: 2.0,
-                    ),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Add padding for better spacing
-                ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Tanggal Transaksi',
                 style: TextStyle(
-                  fontSize: 18.0,
-                  color: Color(0xFF353E43),
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'Berikan keterangan di bawah faktur',
-          style: TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w200,
-            fontStyle: FontStyle.italic, // Add this line for italic style
-            color: Color(0xFF4e5558),
+              Text(
+                '18/09/2024 13:37:28',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF353E43),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+            ],
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded( // Use Expanded to allow the TextField to take available space
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Keterangan', // Placeholder text
-                  hintStyle: TextStyle(
-                    color: Color(0xFF909EAE),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 18,
-                  ),
-                  // Only display the bottom border
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Change this to your desired color
-                      width: 2.0, // Set the width of the bottom border
-                    ),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when enabled
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black, // Color of the bottom border when focused
-                      width: 2.0,
-                    ),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Add padding for better spacing
-                ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Kode Produk',
                 style: TextStyle(
-                  fontSize: 18.0,
-                  color: Color(0xFF353E43),
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
                 ),
               ),
+              Text(
+                _kodeProdukController.text.isEmpty ? 'TD25' : _kodeProdukController.text,
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF353E43),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Nama Produk',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Color(0xFF909EAE),
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    _produkController.text.isEmpty
+                        ? 'Telkomsel Data Nominal 5 GB / 30 Hari'
+                        : _produkController.text,
+                    maxLines: 2,
+                    overflow: TextOverflow.visible,
+                    style: TextStyle(
+                      fontSize: 13.0,
+                      color: Color(0xFF353E43),
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Nomor Tujuan',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+              Text(
+                _nomorTujuanController.text.isEmpty ? '0812 2126 0284' : _nomorTujuanController.text,
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF353E43),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Status',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+              Text(
+                'SUKSES',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF353E43),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Kode SN',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF909EAE),
+                    fontWeight: FontWeight.w300,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+              Text(
+                _kodeSNController.text.isEmpty ? '03589200001570588332' : _kodeSNController.text,
+                style: TextStyle(
+                    fontSize: 14.0,
+                    color: Color(0xFF353E43),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins'
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
+          Text(
+            'Berapa harga jual untuk transaksi ini?',
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w200,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF4e5558),
             ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _hargaJualController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Harga Jual',
+                    hintStyle: TextStyle(
+                      color: Color(0xFF909EAE),
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                    ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Color(0xFF353E43),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
       Row(
       children: [
         Checkbox(
@@ -722,10 +800,7 @@ class _CetakfakturState extends State<CetakFaktur> {
           width: 200,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CetakFaktur()),
-              );
+              _printFaktur(); // Panggil fungsi untuk mencetak faktur
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xfffcb12b),
@@ -739,6 +814,7 @@ class _CetakfakturState extends State<CetakFaktur> {
             ),
           ),
         ),
+
       ],
     );
   }

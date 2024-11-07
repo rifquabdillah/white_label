@@ -315,7 +315,7 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
             ),
             onPressed: () {
               if (isTokenListrik) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFakturToken()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFaktur()));
               } else {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFaktur()));
               }

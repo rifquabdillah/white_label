@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:white_label/backend/nativeChannel.dart';
 import 'package:white_label/transaksipay.dart';
-
 import '../menuSaldo/mSaldo.dart';
 
 class PulsaPaketScreen extends StatefulWidget {
@@ -70,7 +69,6 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
     '0889': 'SMARTFREN',
   };
   late Map<String, String> selectedProvider = {'null': 'null'};
-  Set<String> _activeFilters = {};
   late FocusNode _focusNode;
   static const String saldo = '2.862.590'; // Consider using localization// Initial height percentage for TabBarWidget
 
@@ -111,7 +109,6 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
     _focusNode.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -240,13 +237,13 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: const Icon(Icons.mic, color: Colors.grey), // Icon for voice input
+                icon: const Icon(Icons.mic, color: Color(0xffECB709)), // Icon for voice input
                 onPressed: () async {
                   await NativeChannel.instance.startSpeechRecognition();
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.contacts_sharp, color: Colors.grey), // Icon for contacts
+                icon: const Icon(Icons.contacts_sharp, color: Color(0xffECB709)), // Icon for contacts
                 onPressed: () async {
                   await NativeChannel.instance.getContact();
                 },
@@ -278,7 +275,6 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
   }
 }
 
-
 class TabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
@@ -306,7 +302,6 @@ class _TabBarWidgetState extends State<TabBarWidget> {
   Map<String, List<Product>> filteredProducts = {}; // Declare filteredProducts
   late ScrollController _scrollController; // Declare ScrollController
   bool isNumberFilled = false;
-  // tambahkan variabel untuk melacak apakah nomor sudah diisi
 
   @override
   void initState() {
@@ -426,7 +421,6 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     // Assuming the result is already in the required format
     return result; // Return the fetched result
   }
-
 
   Widget _buildFilterButtons(String methodName, {bool isPulsa = false}) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
@@ -615,7 +609,6 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       ),
     );
   }
-
 
   Widget _buildDataPulsaCard(List<Map<String, dynamic>> data) {
     print('data: $data');

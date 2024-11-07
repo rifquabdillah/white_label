@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Align, Alignment, AppBar, Border, BorderRadius, BorderSide, BoxDecoration, BoxShadow, BuildContext, Checkbox, Color, Colors, Column, Container, CrossAxisAlignment, Divider, EdgeInsets, ElevatedButton, Expanded, FontStyle, FontWeight, GestureDetector, Icon, IconButton, IconData, Icons, InputDecoration, MainAxisAlignment, MainAxisSize, Navigator, Offset, Padding, PopupMenuButton, PopupMenuItem, PreferredSize, Radius, RoundedRectangleBorder, Row, Scaffold, Size, SizedBox, Stack, State, StatefulWidget, Text, TextEditingController, TextField, TextInputType, TextOverflow, TextStyle, UnderlineInputBorder, ValueChanged, Widget, showModalBottomSheet;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -12,168 +12,114 @@ class CetakFaktur extends StatefulWidget {
 }
 
 class _CetakfakturState extends State<CetakFaktur> {
-  // Dummy values for dropdowns
   List<String> printers = ['Pilih Printer', 'RD-G58', 'MT-200VL'];
   List<String> paperSizes = ['A4', 'A5', 'Letter'];
   String? selectedPrinter;
   String? selectedPaperSize;
   final TextEditingController _headerController = TextEditingController();
   final TextEditingController _hargaJualController = TextEditingController();
-  final TextEditingController _keteranganController = TextEditingController();
   final TextEditingController _noFakturController = TextEditingController();
   final TextEditingController _produkController = TextEditingController();
   final TextEditingController _kodeProdukController = TextEditingController();
   final TextEditingController _nomorTujuanController = TextEditingController();
   final TextEditingController _kodeSNController = TextEditingController();
 
-
-
-  @override
-  void dispose() {
-    // Dispose controllers when widget is destroyed
-    _headerController.dispose();
-    _hargaJualController.dispose();
-    _keteranganController.dispose();
-    _noFakturController.dispose();
-    _produkController.dispose();
-    _nomorTujuanController.dispose();
-    _kodeSNController.dispose();
-    super.dispose();
-  }
-
-  // Fungsi untuk membuat PDF faktur
-  Future<void> _generatePdf(Map<String, String> fakturData) async {
+  Future<void> _printFaktur() async {
     final pdf = pw.Document();
+    String currentDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(DateTime.now());
 
-    // Mendapatkan tanggal transaksi saat ini
-    String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
-    // Menambahkan halaman dengan penataan posisi dan ukuran
-    pdf.addPage(pw.Page(
-      build: (pw.Context context) {
-        return pw.Stack(
-          children: [
-            pw.Positioned(
-              top: 20, // Mengatur posisi dari atas halaman
-              left: 20, // Mengatur posisi dari kiri halaman
-              child: pw.Text(
-                '${fakturData['Header']}',
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.all(20),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'F21 Cell',
                 style: pw.TextStyle(
-                  fontSize: 32, // Mengatur ukuran font
+
+                  fontSize: 24,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
-            ),
-            pw.Positioned(
-              top: 100,
-              left: 20,
-              child: pw.Text(
-                '${fakturData['Nomor Faktur']}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 120, // Posisi setelah elemen sebelumnya
-              left: 20,
-              child: pw.Text(
-                '$currentDate',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 140,
-              left: 100,
-              child: pw.Text(
-                'FAKTUR TRANSAKSI',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 160,
-              left: 20,
-              child: pw.Text(
-                'Kode Produk: ${fakturData['Kode Produk']}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 180,
-              left: 20,
-              child: pw.Text(
-                'Keterangan: ${fakturData['Produk']}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 200,
-              left: 20,
-              child: pw.Text(
-                'Nomor Tujuan: ${fakturData['Nomor Tujuan']}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            pw.Positioned(
-              top: 220,
-              left: 20,
-              child: pw.Text(
-                'Kode SN: ${fakturData['Kode SN']}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-            ),
-            // Menambahkan tanggal transaksi di bawah nomor faktur
+              pw.SizedBox(height: 4),
+              pw.Text(
+                '#89535525',
+                style: pw.TextStyle(
 
-          ],
-        );
-      },
-    ));
+                  fontSize: 12,
+                ),
+              ),
+              pw.Text(
+                currentDate + ' (WIB)',
+                style: pw.TextStyle(
 
-    // Menyimpan PDF ke file sementara
+                  fontSize: 12,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                child: pw.Text(
+                  'FAKTUR TRANSAKSI',
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              _buildTextRow('NO TUJUAN', '0812 2126 0284'),
+              _buildTextRow('KODE PRODUK', 'TD25'),
+              _buildTextRow('KETERANGAN', 'Telkomsel Data Nominal\n5 GB / 30 Hari'),
+              _buildTextRow('STATUS', 'SUKSES'),
+              _buildTextRow('KODE SN', '03589200001570588332'),
+              _buildTextRow('HARGA', 'Rp. 28.000,-'),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                child: pw.Text(
+                  'Have a good day!',
+                  style: pw.TextStyle(
+
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
     final output = await pdf.save();
-
-    // Menampilkan PDF dengan menggunakan plugin printing
     await Printing.layoutPdf(onLayout: (_) => output);
   }
 
-  // Fungsi untuk menampilkan pratinjau PDF
-  void _showPrintPreview(Map<String, String> fakturData) async {
-    await _generatePdf(fakturData);
-  }
-
-  // Fungsi untuk mencetak data faktur
-  void _printFaktur() {
-    // Memeriksa apakah printer dan ukuran kertas sudah dipilih
-    if (selectedPrinter == null || selectedPaperSize == null) {
-      // Jika belum, tampilkan pesan
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Harap pilih printer dan ukuran kertas terlebih dahulu.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } else {
-      // Ambil data dari _buildFaktur
-      String headerText = _headerController.text.isEmpty ? 'HEADER' : _headerController.text;
-      String noFakturText = _noFakturController.text.isEmpty ? '#89535525' : _noFakturController.text;
-      String kodeProdukText = _produkController.text.isEmpty ? 'TD25' : _produkController.text;
-      String produkText = _produkController.text.isEmpty ? 'Telkomsel Data Nominal 5 GB / 30 Hari' : _produkController.text;
-      String nomorTujuanText = _nomorTujuanController.text.isEmpty ? '0812 2126 0284' : _nomorTujuanController.text;
-      String kodeSNText = _kodeSNController.text.isEmpty ? '03589200001570588332' : _kodeSNController.text;
-      String hargaJualText = _hargaJualController.text.isEmpty ? 'Harga tidak tersedia' : _hargaJualController.text;
-
-      // Kumpulkan semua data dalam Map
-      Map<String, String> fakturData = {
-        'Header': headerText,
-        'Nomor Faktur': noFakturText,
-        'Kode Produk': kodeProdukText,
-        'Produk': produkText,
-        'Nomor Tujuan': nomorTujuanText,
-        'Kode SN': kodeSNText,
-        'Harga Jual': hargaJualText,
-      };
-
-      // Tampilkan pratinjau cetak
-      _showPrintPreview(fakturData);
-    }
+  pw.Widget _buildTextRow(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            '$label : ',
+            style: pw.TextStyle(
+              fontSize: 12,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+          pw.Expanded(
+            child: pw.Text(
+              value,
+              style: pw.TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -214,7 +160,7 @@ class _CetakfakturState extends State<CetakFaktur> {
         children: [
           _buildContent(), // Call the content widget
           const SizedBox(height: 4), // Space of 4 pixels
-          Container(
+          SizedBox(
             height: 579, // Set the desired height directly here
             child: _buildFaktur(), // Call the faktur widget without Expanded
           ),

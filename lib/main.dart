@@ -69,10 +69,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   final ScrollController _scrollController = ScrollController();
   final int _selectedPromoIndex = 0;
   final bool _isNotificationVisible = true;
-
-  // Variabel untuk mengontrol animasi teks
   bool _isFirstText = true;
-
   void _toggleText() {
     setState(() {
       _isFirstText = !_isFirstText;
@@ -344,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar() {
-    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(color: Color(0xff353E430), fontFamily: 'Poppins', fontWeight: FontWeight.w700, fontSize: 14); // Unselected text color set to black
+    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(color: Color(0xff353e430), fontFamily: 'Poppins', fontWeight: FontWeight.w700, fontSize: 14); // Unselected text color set to black
     final selectedTextStyle = textStyle?.copyWith(fontWeight: FontWeight.w700, color: Colors.white, fontFamily: 'Poppins',); // Selected text color set to white
     return DefaultTabController(
       length: 3, // Number of tabs

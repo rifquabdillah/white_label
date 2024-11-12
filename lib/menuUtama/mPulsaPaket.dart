@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
 import '../menuSaldo/mSaldo.dart';
 
@@ -205,7 +206,8 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                   tabTitles: ['Pulsa', 'SMS/Nelpon', 'Internet'],
                   isPhoneNumberEmpty: _phoneController.text.isEmpty,
                   selectedProvider: selectedProvider,
-                  activeFilters: {}, // Replace with actual filters if needed
+                  activeFilters: {},
+                  phoneNumber: _phoneController.text
                 ),
               ),
             ],
@@ -282,6 +284,7 @@ class TabBarWidget extends StatefulWidget {
   final bool isPhoneNumberEmpty;
   final Map<String, String>? selectedProvider;
   final Set<String> activeFilters;
+  final String phoneNumber;  // Updated parameter name
 
   const TabBarWidget({
     super.key,
@@ -291,6 +294,7 @@ class TabBarWidget extends StatefulWidget {
     required this.isPhoneNumberEmpty,
     required this.selectedProvider,
     required this.activeFilters,
+    required this.phoneNumber,  // Updated constructor
   });
 
   @override
@@ -411,11 +415,32 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     );
   }
 
-  Future<Map<String, List<Map<String, dynamic>>>> _fetchData(String methodName) async {
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData(
+      String methodName,
+      String? catatan
+      ) async {
     // Fetch data from the API
-    var result = await NativeChannel.instance.getPulsaPaketProduk(
-      '${widget.selectedProvider?.keys.first}',
-      methodName,
+    var tipe = '';
+    switch (methodName) {
+      case '_buildPulsaTabContent':
+        tipe = 'PULSA';
+        break;
+
+      case '_buildSmsTelponTabContent':
+        tipe = 'NELPSMS';
+        break;
+
+      case '_buildInternetTabContent':
+        tipe = 'INTERNET';
+        break;
+    }
+
+    print("tipe: $tipe");
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+        '${widget.selectedProvider?.keys.first}',
+        tipe,
+        catatan
     );
 
     // Assuming the result is already in the required format
@@ -424,7 +449,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
 
   Widget _buildFilterButtons(String methodName, {bool isPulsa = false}) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-      future: _fetchData(methodName),
+      future: _fetchData(methodName, null),
       builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -456,7 +481,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
               ),
             ),
             if (selectedFilter != null && data.containsKey(selectedFilter))
-              isPulsa ? _buildDataPulsaCard(data[selectedFilter]!) : _buildDataCard(data[selectedFilter]!),
+              isPulsa ? _buildDataPulsaCard(selectedFilter, data[selectedFilter]!) : _buildDataCard(selectedFilter, data[selectedFilter]!),
           ],
         );
       },
@@ -494,11 +519,33 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     );
   }
 
-  Widget _buildDataCard(List<Map<String, dynamic>> data) {
+  String? extractPembagian(String inputString, String key) {
+    // Step 1: Remove the trailing '|'
+    if (inputString.endsWith('|')) {
+      inputString = inputString.substring(0, inputString.length - 1);
+    }
+
+    // Step 2: Split the string by '|'
+    List<String> pairs = inputString.split('|');
+
+    // Step 3: Iterate through each pair to find the key and return its value
+    for (String pair in pairs) {
+      List<String> keyValue = pair.split('=');
+      if (keyValue.length == 2 && keyValue[0] == key) {
+        return keyValue[1];  // Return the value of the specific key
+      }
+    }
+
+    // Return null or empty string if the key is not found
+    return null;
+  }
+
+
+  Widget _buildDataCard(String? key, List<Map<String, dynamic>> data) {
     // Print to debug the incoming data
     print('data: $data');
 
-    // Check if the data list is empty
+    // Check if the data flist is empty
     if (data.isEmpty) {
       return Card(
         margin: const EdgeInsets.all(0.0),
@@ -524,13 +571,26 @@ class _TabBarWidgetState extends State<TabBarWidget> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TransaksiPay(
-                    nominal: item['namaProduk'] ?? 'Unknown',
-                    kodeproduk: item['kodeProduk'] ?? 'Unknown',
-                    hargaJual: item['hargaJual'].toString(), // Convert to String
-                    description: item['detailProduk'] ?? 'No description available',
-                    originalPrice: item['hargaCoret']?.toString() ?? '0', // Convert to String
-                    info: item['masaAktif'] ?? 'No active period available',
-                    transactionType: 'Pulsa',
+                    params: {
+                      'Key': key,
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Masa Aktif': item['masaAktif'] ?? 'Unknown',
+                      'Detail': item['detail'] ?? 'Gada Detail',
+                      'Kode Produk': item['kodeProduk'],
+                      'Kuota Utama': extractPembagian(item['pembagian'], 'utama') ?? '',
+                      'Kuota Khusus 4G': extractPembagian(item['pembagian'], '4g') ?? '',
+                      'Kuota Malam': extractPembagian(item['pembagian'], 'malam') ?? '',
+                      'Kuota App': extractPembagian(item['pembagian'], 'apps') ?? '',
+                      'Deskripsi': 'Ganteng' ?? 'blabla',
+                      'Kuota Lokal': extractPembagian(item['pembagian'], 'lokal') ?? '',
+                      'Kuota OMG': extractPembagian(item['pembagian'], 'omg') ?? '',
+                      'Kuota Nelpon Sesama': extractPembagian(item['pembagian'], 'nelpsama') ?? '',
+                      'Kuota Nelpon Semua': extractPembagian(item['pembagian'], 'nelpsemua') ?? '',
+                      'Kuota SMS Sesama': extractPembagian(item['pembagian'], 'smssama') ?? '',
+                      'Kuota SMS Semua': extractPembagian(item['pembagian'], 'smssemua') ?? '',
+                      'Nomor Tujuan': widget.phoneNumber,
+                      'Harga Produk': item['hargaJual'].toString()
+                    },
                   ),
                 ),
               );
@@ -610,7 +670,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     );
   }
 
-  Widget _buildDataPulsaCard(List<Map<String, dynamic>> data) {
+  Widget _buildDataPulsaCard(String? key, List<Map<String, dynamic>> data) {
     print('data: $data');
     if (data.isEmpty) {
       return Card(
@@ -644,16 +704,17 @@ class _TabBarWidgetState extends State<TabBarWidget> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TransaksiPay(
-                    nominal: item['namaProduk'] ?? 'Unknown',
-                    kodeproduk: item['kodeProduk'] ?? 'Unknown',
-                    hargaJual: item['hargaJual'].toString(),
-                    description: item['detailProduk'] ?? 'No description available',
-                    originalPrice: item['hargaCoret']?.toString() ?? '0',
-                    info: item['masaAktif'] ?? 'No active period available',
-                    transactionType: 'Pulsa',
+                    params: {
+                      'Key': key,
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tujuan': widget.phoneNumber,
+                      'Harga Produk': item['hargaJual'].toString() // Map kosong, sesuaikan sesuai kebutuhan
+                    },
                   ),
                 ),
               );
+
             },
             child: Card(
               margin: const EdgeInsets.all(4.0),

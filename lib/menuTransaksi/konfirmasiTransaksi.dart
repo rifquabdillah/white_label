@@ -5,78 +5,12 @@ import '../main.dart';
 import 'cetakFaktur.dart';
 import 'cetakFakturToken.dart';
 
-class TransaksiPay extends StatefulWidget {
-  @override
-  _TransaksiPayState createState() => _TransaksiPayState();
-}
-
-class _TransaksiPayState extends State<TransaksiPay> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFfdf7e6),
-      appBar: AppBar(
-        title: const Text('Transaksi Pay'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.pop(context); // Kembali ke halaman sebelumnya
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              'Detail Transaksi',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Get the current date and time in the desired format (no seconds included)
-                    String now = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => KonfirmasiTransaksi(
-                          kodeProduk: '', // Example product code
-                          namaProduk: '', // Example product name
-                          nomorTujuan: '', // Example destination number
-                          tglTransaksi: now, // Pass the formatted date and time
-                          hargaJual: '', // Example price
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('KIRIM TRANSAKSI BERHASIL'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class KonfirmasiTransaksi extends StatefulWidget {
-  final String kodeProduk;
-  final String namaProduk;
-  final String nomorTujuan;
-  final String tglTransaksi;
+  final Map<String, dynamic> params;
 
-  KonfirmasiTransaksi({
-    required this.kodeProduk,
-    required this.namaProduk,
-    required this.nomorTujuan,
-    required this.tglTransaksi,
-    required String hargaJual,
+  const KonfirmasiTransaksi({
+    super.key,
+    required this.params,
   });
 
   @override

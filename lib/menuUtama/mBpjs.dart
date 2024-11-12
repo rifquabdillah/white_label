@@ -1,25 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/produk.dart';
+import 'package:white_label/transaksipay.dart';
 
 import '../menuSaldo/mSaldo.dart';
 
-// Model for BPJS item
-class BpjsItem {
-  final String produk;
-  final String hari;
-  final String description;
-  final String originalPrice;
-  final String info;
-
-  BpjsItem({
-    required this.produk,
-    required this.hari,
-    required this.description,
-    required this.originalPrice,
-    required this.info,
-  });
-}
-
-// Main BPJS screen
 class BpjsScreen extends StatefulWidget {
   const BpjsScreen({super.key});
 
@@ -28,9 +12,9 @@ class BpjsScreen extends StatefulWidget {
 }
 
 class _BpjsScreenState extends State<BpjsScreen> {
-  int _selectedBpjsIndex = 0; // Track selected tab index
+  int _selectedBpjsIndex = 0;
   final TextEditingController _phoneController = TextEditingController();
-  bool _isSaldoVisible = true; // Controller for balance visibility
+  bool _isSaldoVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +51,7 @@ class _BpjsScreenState extends State<BpjsScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isSaldoVisible = !_isSaldoVisible; // Toggle visibility
+                        _isSaldoVisible = !_isSaldoVisible;
                       });
                     },
                     child: Icon(
@@ -78,10 +62,9 @@ class _BpjsScreenState extends State<BpjsScreen> {
                   const SizedBox(width: 8.0),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to SaldoPage when the add icon is tapped
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
                       );
                     },
                     child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
@@ -97,7 +80,7 @@ class _BpjsScreenState extends State<BpjsScreen> {
             },
           ),
           toolbarHeight: 60,
-          elevation: 0, // Remove shadow
+          elevation: 0,
         ),
       ),
       body: Padding(
@@ -105,15 +88,16 @@ class _BpjsScreenState extends State<BpjsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhoneNumberField(screenSize), // Phone number input field
+            _buildPhoneNumberField(screenSize),
             const SizedBox(height: 0),
             BpjsTabBarWidget(
               selectedBpjsIndex: _selectedBpjsIndex,
               onBpjsSelected: (index) {
                 setState(() {
-                  _selectedBpjsIndex = index; // Update selected index
+                  _selectedBpjsIndex = index;
                 });
               },
+              phoneController: _phoneController, // Diteruskan ke widget tab bar
             ),
           ],
         ),
@@ -177,15 +161,16 @@ class _BpjsScreenState extends State<BpjsScreen> {
   }
 }
 
-// Tab bar widget for BPJS items
 class BpjsTabBarWidget extends StatelessWidget {
   final int selectedBpjsIndex;
   final ValueChanged<int> onBpjsSelected;
+  final TextEditingController phoneController;
 
   const BpjsTabBarWidget({
     super.key,
     required this.selectedBpjsIndex,
     required this.onBpjsSelected,
+    required this.phoneController, // Terima controller dari kelas utama
   });
 
   @override
@@ -217,11 +202,20 @@ class BpjsTabBarWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                color: const Color(0xfffdf7e6),
-                child: _buildBpjsTab(selectedBpjsIndex, onBpjsSelected, context),
-              ),
+            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+              future: _fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error fetching data'));
+                } else if (snapshot.hasData) {
+                  final data = snapshot.data!['Pembayaran BPJS'] ?? [];
+                  return _buildDataCard(context, data);
+                } else {
+                  return Center(child: Text('No data available'));
+                }
+              },
             ),
           ),
         ],
@@ -229,107 +223,128 @@ class BpjsTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBpjsTab(int selectedBpjsIndex, ValueChanged<int> onBpjsSelected, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          if (selectedBpjsIndex == 0)
-            _buildBpjsCards(context)
-          // Add more conditions for additional tabs if needed
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBpjsCards(BuildContext context) {
-    List<BpjsItem> bpjsItems = _fetchBpjsItems();
-    return Column(
-      children: [
-        for (var item in bpjsItems)
-          _buildBpjsCard(context, item),
-      ],
-    );
-  }
-
-  Widget _buildBpjsCard(BuildContext context, BpjsItem item) {
-    return GestureDetector(
-      onTap: () {
-        // Add navigation or action for BPJS card tap
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+  Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: item.produk,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff353E43),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(item.description),
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    item.originalPrice,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                      color: Color(0xffECB709),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey), // Add arrow icon if needed
-                ],
-              ),
-              const SizedBox(height: 4.0),
-            ],
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
           ),
         ),
-      ),
+      );
+    }
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        final item = data[index];
+        return GestureDetector(
+          onTap: () {
+            if (phoneController.text.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Peringatan'),
+                    content: const Text('Silakan isi nomor BPJS terlebih dahulu.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'nominal': item['namaProduk'] ?? 'Unknown',
+                      'kodeProduk': item['kodeProduk'] ?? 'Unknown',
+                      'periodeBayar': item['periodeBayar'].toString(),
+                      'description': item['detailProduk'] ?? 'No description available',
+                      'transactionType': 'BPJS',
+                      'selectedData': {
+                        // Isi data yang sesuai untuk BPJS di sini, misalnya:
+                        'NomorPeserta': item['nomorPeserta'] ?? 'Tidak tersedia',
+                        'PeriodeBayar': item['periodeBayar'] ?? 'Tidak tersedia',
+                        'Poin': item['poin'] ?? '-',
+                      },
+                    },
+                  ),
+                ),
+              );
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  offset: Offset(0, 4),
+                  blurRadius: 8.0,
+                  spreadRadius: 2.0,
+                ),
+              ],
+            ),
+            child: Card(
+              elevation: 2,
+              color: const Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item['kodeProduk'] ?? 'No description available',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      ' ${item['detail'] ?? 'No active period available'}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: 'Poppins',),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  List<BpjsItem> _fetchBpjsItems() {
-    return [
-      BpjsItem(produk: 'BPJS 1', hari: 'Senin', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
-      BpjsItem(produk: 'BPJS 2', hari: 'Selasa', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),
-      BpjsItem(produk: 'BPJS 3', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 4', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 5', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 6', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 7', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      BpjsItem(produk: 'BPJS 8', hari: 'Rabu', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-
-
-    ];
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+        null,
+        'TAGIHANBPJS',
+        null
+    );
+    return result;
   }
 }
+

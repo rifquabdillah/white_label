@@ -9,6 +9,7 @@ class NativeChannel {
 
   static const PULSA_PAKET_PLATFORM = MethodChannel('com.example.whitelabel/pulsa_paket_produk_channel');
   static const UTILS_CHANNEL = MethodChannel('com.example.whitelabel/utils');
+  static const PRODUK_PLATFORM = MethodChannel('com.example.whitelabel/produk');
 
   // Initialize NativeChannel and set up method call handler
   void initialize() {
@@ -44,6 +45,36 @@ class NativeChannel {
       return null;
     }
   }
+
+  Future<Map<String, List<Map<String, dynamic>>>> getProduk(
+      String? prefix, String tipeProduk, String? catatan) async {
+    try {
+      final Map<dynamic, dynamic> result = await PRODUK_PLATFORM.invokeMethod(
+        'fetchProduk',
+        {
+          'prefix': prefix,
+          'tipe': tipeProduk,
+          'catatan': catatan
+        },
+      );
+
+      final Map<String, List<Map<String, dynamic>>> mappedResult = result.map((
+          key, value) {
+        return MapEntry(
+          key as String,
+          (value as List)
+              .map((item) => Map<String, dynamic>.from(item as Map))
+              .toList(),
+        );
+      });
+
+      return mappedResult;
+    } on PlatformException catch (e) {
+      print('Failed to get data: ${e.message}');
+      throw 'Failed to get data: ${e.message}';
+    }
+  }
+
 
   Future<Map<String, List<Map<String, dynamic>>>> getPulsaPaketProduk(
       String prefix, String namaMethod) async {

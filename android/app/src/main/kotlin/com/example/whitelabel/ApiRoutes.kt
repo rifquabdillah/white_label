@@ -7,8 +7,9 @@ import retrofit2.http.Query
 interface ApiRoutes {
     @GET("products")
     fun getProducts(
-        @Query("prefix") prefix: String,
-        @Query("tipe") tipe: String
+        @Query("prefix") prefix: String?,
+        @Query("tipe") tipe: String,
+        @Query("catatan") catatan: String?
     ): Call<HttpRequest.ProductsResponse>
 
     @GET("banners")

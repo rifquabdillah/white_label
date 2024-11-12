@@ -109,7 +109,6 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
     );
   }
 
-
   Widget _buildPhoneNumberField(Size screenSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +167,6 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
     );
   }
 }
-
 
 class TabBarWidget extends StatelessWidget {
   final int selectedPromoIndex;
@@ -279,7 +277,7 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPertagasOptionCard(BuildContext context, String nominal, String kodeproduk, String hargaJual, String originalPrice, String info, {bool isNew = false, bool isClosed = false}) {
+  Widget _buildPertagasOptionCard(BuildContext context, String nominal, String kodeProduk, String hargaJual, String originalPrice, String info, {bool isNew = false, bool isClosed = false}) {
     return GestureDetector(
       onTap: () {
         // Navigate to the TransaksiPay page jika tidak ditutup
@@ -288,15 +286,18 @@ class TabBarWidget extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => TransaksiPay(
-                nominal: nominal,
-                kodeproduk: kodeproduk,
-                hargaJual: hargaJual,
-                description: 'Deskripsi produk di sini', // You can change this to the relevant description
-                originalPrice: originalPrice,
-                info: info,
-                transactionType: 'Pertagas',
-                namaPemilik: 'Chandra Yadi', // New field
-                tipeMeteran: 'RT1', // New field
+                params: {
+                  'nominal': nominal,
+                  'kodeProduk': kodeProduk,
+                  'hargaJual': hargaJual,
+                  'description': 'Deskripsi produk di sini', // Change this as necessary
+                  'originalPrice': originalPrice,
+                  'info': info,
+                  'transactionType': 'Pertagas',
+                  'namaPemilik': 'Chandra Yadi', // New field
+                  'tipeMeteran': 'RT1', // New field
+                  'selectedData': {}, // New field
+                },
               ),
             ),
           );
@@ -355,7 +356,7 @@ class TabBarWidget extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: kodeproduk,
+                              text: kodeProduk,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,

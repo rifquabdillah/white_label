@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val PULSA_PAKET_PRODUK_CHANNEL = "com.example.whitelabel/pulsa_paket_produk_channel"
     private val UTILS_CHANNEL = "com.example.whitelabel/utils"
+    private val PRODUK_CHANNEL = "com.example.whitelabel/produk"
 
     private val PICK_CONTACT_REQUEST_CODE = 1
     private val SPEECH_REQUEST_CODE = 2
@@ -65,24 +66,21 @@ class MainActivity : FlutterActivity() {
                 }
             }
 
-        // Channel untuk PULSA_PAKET_PRODUK
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PULSA_PAKET_PRODUK_CHANNEL)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PRODUK_CHANNEL)
             .setMethodCallHandler { call, result ->
-                val provider = call.argument<String>("prefix")
+
+                val prefix = call.argument<String?>("prefix")
+                val tipe = call.argument<String>("tipe")
+                val catatan = call.argument<String?>("catatan")
+
                 when (call.method) {
-                    "_buildPulsaTabContent" -> {
-                        httpRequest.getProducts(provider!!, "pulsa") { response ->
-                            result.success(response)
-                        }
-                    }
-                    "_buildSmsTelponTabContent" -> {
-                        httpRequest.getProducts(provider!!, "nelpsms") { response ->
-                            result.success(response)
-                        }
-                    }
-                    "_buildInternetTabContent" -> {
-                        httpRequest.getProducts(provider!!, "internet") { response ->
-                            result.success(response)
+                    "fetchProduk" -> {
+                        if (tipe != null) {
+                            httpRequest.getProducts(prefix ?: "", tipe, catatan ?: "") { response ->
+                                result.success(response)
+                            }
+                        } else {
+                            result.error("500", "Tipe Produk Kosong", "Fucked Up")
                         }
                     }
                     else -> result.notImplemented()

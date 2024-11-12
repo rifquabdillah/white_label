@@ -1,31 +1,13 @@
 import 'package:flutter/material.dart';
-import 'menuSaldo/mSaldo.dart';
+
 import 'menuTransaksi/konfirmasiTransaksi.dart';
 
 class TransaksiPay extends StatefulWidget {
-  final String nominal;
-  final String kodeproduk;
-  final String namaPemilik;
-  final String tipeMeteran;
-  final String dayaMeteran;
-  final String hargaJual;
-  final String description;
-  final String originalPrice;
-  final String info;
-  final String transactionType;
+  final Map<String, dynamic> params;
 
   const TransaksiPay({
     super.key,
-    required this.nominal,
-    required this.kodeproduk,
-    this.namaPemilik = 'Kastari',
-    this.tipeMeteran = 'R1M',
-    this.dayaMeteran = '990VA',
-    required this.hargaJual,
-    required this.description,
-    required this.originalPrice,
-    required this.info,
-    required this.transactionType,
+    required this.params,
   });
 
   @override
@@ -34,20 +16,6 @@ class TransaksiPay extends StatefulWidget {
 
 class _TransaksiPayState extends State<TransaksiPay> {
   bool _isSaldoVisible = true;
-
-  String getTransactionName() {
-    switch (widget.transactionType) {
-      case 'TokenListrik':
-        return 'Token PLN Premium SN Full';
-      case 'Pulsa':
-        return 'Pulsa Indosat Promo Mixed with Pulsa Transfer';
-      case 'Pertagas':
-        return 'Token Pertagas';
-    // Add more cases if needed
-      default:
-        return 'Unknown Product';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +65,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       const SizedBox(width: 8.0),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SaldoPageScreen()),
-                          );
+                          // Navigate to saldo page
                         },
                         child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
                       ),
@@ -135,49 +100,52 @@ class _TransaksiPayState extends State<TransaksiPay> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 5.0),
                     Text(
-                      getTransactionName(),
+                      widget.params['Key'] ?? '',
                       style: const TextStyle(
                         fontSize: 14.0,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w300,
                       ),
                     ),
-                    const SizedBox(height: 5.0),
-                    Text(
-                      widget.nominal,
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w700,
-                      ),
+                    const SizedBox(height: 8.0), // Space between Key and Nama-Masa Aktif row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.params['Nama'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 8.0), // Space after Nama
+                        const Text(
+                          '|',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w300,
+                            color: Color(0xff909EAE),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0), // Space after separator
+                        Text(
+                          widget.params['Masa Aktif'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: 'Poppins',
+                            color: Color(0xff353E43),
+                            fontWeight: FontWeight.w200,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 0.0),
-                    Text(
-                      widget.info,
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        fontFamily: 'Poppins',
-                        color: Color(0xff909EAE),
-                        fontWeight: FontWeight.w200,
-                      ),
-                    ),
+
                     const SizedBox(height: 16.0),
-
-                    if (widget.kodeproduk.isNotEmpty)
-                      _buildLabeledRow('Kode Produk', widget.kodeproduk.replaceAll(' - ', '')),
-
-                    if (widget.transactionType == 'TokenListrik') ...[
-                      const SizedBox(height: 0.0),
-                      if (widget.namaPemilik.isNotEmpty) _buildLabeledRow('Nama Pemilik', widget.namaPemilik),
-                      if (widget.tipeMeteran.isNotEmpty) _buildLabeledRow('Tipe Meteran', widget.tipeMeteran),
-                      if (widget.dayaMeteran.isNotEmpty) _buildLabeledRow('Daya Meteran', widget.dayaMeteran),
-                    ],
-
-                    _buildLabeledRow('Poin', '-'),
-                    _buildLabeledRow('Nomor Tujuan', '0856 2244 866', isBold: true),
-                    _buildLabeledRow('Harga Produk', widget.hargaJual, isBold: true, textColor: const Color(0xffecb709)),
-
+                    _buildDynamicDataRows(),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -217,18 +185,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => KonfirmasiTransaksi(
-                                kodeProduk: widget.kodeproduk,
-                                namaProduk: widget.nominal,
-                                nomorTujuan: '0856 2244 866', // Update as needed
-                                tglTransaksi: DateTime.now().toString(), // Current date-time
-                                hargaJual: widget.hargaJual,
-                              ),
-                            ),
-                          );
+                          // Perform action on button press
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -241,7 +198,40 @@ class _TransaksiPayState extends State<TransaksiPay> {
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        child: const Text('KIRIM TRANSAKSI'),
+                          child: SizedBox(
+                            width: 350,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => KonfirmasiTransaksi(
+                                      // Passing the necessary data to the KonfirmasiTransaksi page
+                                      kodeProduk: widget.params['kodeProduk'] ?? '',
+                                      namaProduk: widget.params['Nama'] ?? '',
+                                      nomorTujuan: widget.params['Nomor Tujuan'] ?? 'Unknown', // Adjust this based on your logic
+                                      tglTransaksi: DateTime.now().toString(),
+                                      hargaJual: widget.params['hargaJual'] ?? '',
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xffecb709),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              child: const Text('KIRIM TRANSAKSI'),
+                            ),
+                          )
+
                       ),
                     ),
                   ),
@@ -253,6 +243,23 @@ class _TransaksiPayState extends State<TransaksiPay> {
         ),
       ),
     );
+  }
+
+  Widget _buildDynamicDataRows() {
+    List<Widget> rows = [];
+    widget.params.forEach((key, value) {
+      if (value.runtimeType != int && value != null && value.isNotEmpty) {
+        if (key != 'Key' && key != 'Nama' && key != 'Masa Aktif' && key != 'Detail') {
+          if (key == 'Deskripsi') {
+            // Handle Deskripsi as clickable text
+            rows.add(_buildClickableLabeledRow(key, value));
+          } else {
+            rows.add(_buildLabeledRow(key, value));
+          }
+        }
+      }
+    });
+    return Column(children: rows);
   }
 
   Widget _buildLabeledRow(String label, String value, {bool isBold = false, Color? textColor}) {
@@ -277,6 +284,82 @@ class _TransaksiPayState extends State<TransaksiPay> {
                 fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
                 color: textColor ?? const Color(0xff353E43),
               ),
+            ),
+          ],
+        ),
+        const Divider(thickness: 1),
+      ],
+    );
+  }
+
+// Special handler for Deskripsi to make it clickable
+  Widget _buildClickableLabeledRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 15.0,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                // Define the action for when Deskripsi is clicked
+                // You can navigate, show a dialog, or any other action
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Deskripsi Details'),
+                      content: Text(value),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+                child: GestureDetector(
+                  onTap: () {
+                    // Define the action for when the text is clicked
+                    // You can navigate, show a dialog, or any other action
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Cek Detail'),
+                          content: const Text('Here are the details...'), // You can customize the content here
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    'Cek Detail',
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffECB709), // Indicate it is clickable
+                      decoration: TextDecoration.underline,
+                      decorationColor: Color(0xffECB709),// Underline the text
+                    ),
+                  ),
+                )
+
             ),
           ],
         ),

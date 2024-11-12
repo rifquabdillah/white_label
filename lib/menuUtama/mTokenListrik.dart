@@ -35,7 +35,6 @@ class _TokenListrikScreenState extends State<TokenListrikScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     const String saldo = '2.862.590'; // Consider using localization
-
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
@@ -177,8 +176,7 @@ class _TokenListrikScreenState extends State<TokenListrikScreen> {
         ),
       ],
     );
-  }
-}
+  }}
 
 class TokenTabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
@@ -351,7 +349,6 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
     );
   }
 
-
   Widget _buildDataCard(List<Map<String, dynamic>> data) {
     // Print to debug the incoming data
     print('data: $data');
@@ -382,16 +379,20 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TransaksiPay(
-                    nominal: item['namaProduk'] ?? 'Unknown',
-                    kodeproduk: item['kodeProduk'] ?? 'Unknown',
-                    hargaJual: item['hargaJual'].toString(), // Convert to String
-                    description: item['detailProduk'] ?? 'No description available',
-                    originalPrice: item['hargaCoret']?.toString() ?? '0', // Convert to String
-                    info: item['masaAktif'] ?? 'No active period available',
-                    transactionType: 'TokenListrik',
+                    params: {
+                      'nominal': item['namaProduk'] ?? 'Unknown',
+                      'kodeProduk': item['kodeProduk'] ?? 'Unknown',
+                      'hargaJual': item['hargaJual'].toString(), // Convert to String
+                      'description': item['detailProduk'] ?? 'No description available',
+                      'originalPrice': item['hargaCoret']?.toString() ?? '0', // Convert to String
+                      'info': item['masaAktif'] ?? 'No active period available',
+                      'transactionType': 'TokenLisrik',
+                      'selectedData': {}, // Map kosong, sesuaikan sesuai kebutuhan
+                    },
                   ),
                 ),
               );
+
             },
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card

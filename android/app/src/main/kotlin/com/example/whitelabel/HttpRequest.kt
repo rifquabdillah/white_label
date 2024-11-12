@@ -47,11 +47,12 @@ class HttpRequest(private val context: Context) {
     )
 
     fun getProducts(
-        prefix: String,
+        prefix: String?,
         tipe: String,
+        catatan: String?,
         callback: (Map<String, List<Map<String, Any>>>) -> Unit
     ) {
-        val call = apiRoutes.getProducts(prefix, tipe.uppercase())
+        val call = apiRoutes.getProducts(prefix, tipe, catatan)
         call.enqueue(object : retrofit2.Callback<ProductsResponse> {
             override fun onResponse(
                 call: Call<ProductsResponse>,

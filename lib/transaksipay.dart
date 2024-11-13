@@ -122,8 +122,8 @@ class _TransaksiPayState extends State<TransaksiPay> {
                           ),
                         ),
                         const SizedBox(width: 8.0), // Space after Nama
-                        const Text(
-                          '|',
+                         Text(
+                          _bodoh(),
                           style: TextStyle(
                             fontSize: 15.0,
                             fontFamily: 'Poppins',
@@ -203,19 +203,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                             height: 50,
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => KonfirmasiTransaksi(
-                                      // Passing the necessary data to the KonfirmasiTransaksi page
-                                      kodeProduk: widget.params['kodeProduk'] ?? '',
-                                      namaProduk: widget.params['Nama'] ?? '',
-                                      nomorTujuan: widget.params['Nomor Tujuan'] ?? 'Unknown', // Adjust this based on your logic
-                                      tglTransaksi: DateTime.now().toString(),
-                                      hargaJual: widget.params['hargaJual'] ?? '',
-                                    ),
-                                  ),
-                                );
+
                               },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
@@ -245,6 +233,14 @@ class _TransaksiPayState extends State<TransaksiPay> {
     );
   }
 
+  String _bodoh() {
+    if (widget.params['Kode Produk']?.contains('BYRBPJS') ?? false) {
+      return '';
+    } else {
+      return '|';
+    }
+  }
+
   Widget _buildDynamicDataRows() {
     List<Widget> rows = [];
     widget.params.forEach((key, value) {
@@ -261,6 +257,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
     });
     return Column(children: rows);
   }
+
 
   Widget _buildLabeledRow(String label, String value, {bool isBold = false, Color? textColor}) {
     return Column(

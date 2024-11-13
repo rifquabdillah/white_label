@@ -127,13 +127,22 @@ class _SpecialDealsPageState extends State<SpecialDealsPage> {
             const SizedBox(width: 8.0),
             GestureDetector(
               onTap: () {
-                // Navigate to SaldoPage when the add icon is tapped
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                  MaterialPageRoute(builder: (context) => SaldoPageScreen()),
                 );
               },
-              child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffFAF9F6), // Warna latar belakang abu-abu
+                  borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Color(0xffECB709),
+                  size: 18,
+                ),
+              ),
             ),
           ],
         ),

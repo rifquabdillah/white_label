@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:white_label/menuSaldo/mSaldo.dart';
 import 'detailProsesTransaksi.dart';
 import 'detailTransaksi.dart';
 import 'detailTransaksiGagal.dart';
@@ -95,7 +96,25 @@ class _TransactionPageState extends State<TransactionSummary> {
               ),
             ),
             const SizedBox(width: 8.0),
-            const Icon(Icons.add, color: Color(0xff909EAE)),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF909EAE), // Warna latar belakang abu-abu
+                  borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Color(0xffFAF9F6),
+                  size: 18,
+                ),
+              ),
+            ),
           ],
         ),
       ),

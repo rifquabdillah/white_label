@@ -246,7 +246,17 @@ class _HistoryPageState extends State<HistoryPage> {
                           MaterialPageRoute(builder: (context) => SaldoPageScreen()),
                         );
                       },
-                      child: const Icon(Icons.add, color: Color(0xff909EAE)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFF909EAE), // Warna latar belakang abu-abu
+                          borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: Color(0xffFAF9F6),
+                          size: 18,
+                        ),
+                      ),
                     ),
                   ],
                 ),

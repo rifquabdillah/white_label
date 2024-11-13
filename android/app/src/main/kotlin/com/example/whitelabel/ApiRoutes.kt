@@ -14,4 +14,10 @@ interface ApiRoutes {
 
     @GET("banners")
     fun getBanners(): Call<HttpRequest.BannersResponse>
+
+    @GET("tagihan")
+    fun getTagihan(
+        @Query("kodeProduk") kodeProduk: String,
+        @Query("data") data: String
+    ): Call<HttpRequest.TagihanResponse>
 }

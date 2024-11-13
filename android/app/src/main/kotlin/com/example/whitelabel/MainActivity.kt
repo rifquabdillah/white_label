@@ -11,14 +11,17 @@ import androidx.core.content.ContextCompat
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import jdk.jpackage.internal.Log
 
 class MainActivity : FlutterActivity() {
     private val PULSA_PAKET_PRODUK_CHANNEL = "com.example.whitelabel/pulsa_paket_produk_channel"
     private val UTILS_CHANNEL = "com.example.whitelabel/utils"
     private val PRODUK_CHANNEL = "com.example.whitelabel/produk"
+    private val TAGIHAN_CHANNEL = "com.example.whitelabel/tagihan"
 
     private val PICK_CONTACT_REQUEST_CODE = 1
     private val SPEECH_REQUEST_CODE = 2
@@ -84,6 +87,23 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                     else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TAGIHAN_CHANNEL)
+            .setMethodCallHandler { call, result ->
+
+                val kodeProduk = call.argument<String>("kodeProduk")
+                val data = call.argument<String>("data")
+
+                Log.e("TAGIHAN_CHANNEL", "Received kodeProduk: $kodeProduk, data: $data")
+
+                when (call.method) {
+                    "fetchTagihan" -> {
+                        httpRequest.getTagihan(kodeProduk!!, data!!) { response ->
+                            result.success(response)
+                        }
+                    } else -> result.notImplemented()
                 }
             }
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/nativeChannel.dart';
 import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
 
@@ -18,7 +19,9 @@ class _BpjsScreenState extends State<BpjsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
     const String saldo = '2.862.590';
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
@@ -55,7 +58,8 @@ class _BpjsScreenState extends State<BpjsScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons
+                          .visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -67,7 +71,17 @@ class _BpjsScreenState extends State<BpjsScreen> {
                         MaterialPageRoute(builder: (context) => SaldoPageScreen()),
                       );
                     },
-                    child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF909EAE), // Warna latar belakang abu-abu
+                        borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color: Color(0xffFAF9F6),
+                        size: 18,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -97,7 +111,8 @@ class _BpjsScreenState extends State<BpjsScreen> {
                   _selectedBpjsIndex = index;
                 });
               },
-              phoneController: _phoneController, // Diteruskan ke widget tab bar
+              phoneController: _phoneController,
+              phoneNumber: _phoneController.text// Diteruskan ke widget tab bar
             ),
           ],
         ),
@@ -106,72 +121,102 @@ class _BpjsScreenState extends State<BpjsScreen> {
   }
 
   Widget _buildPhoneNumberField(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0),
-          child: TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0XFFfaf9f6),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+    return Padding(
+      padding: const EdgeInsets.only(left: 26.0, right: 16.0),
+      child: TextField(
+        controller: _phoneController,
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0XFFfaf9f6),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          hintText: 'Masukkan nomor handphone',
+          hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.mic, color: Color(0xffECB709)),
+                // Icon for voice input
+                onPressed: () async {
+                  await NativeChannel.instance.startSpeechRecognition();
+                },
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+              IconButton(
+                icon: const Icon(
+                    Icons.contacts_sharp, color: Color(0xffECB709)),
+                // Icon for contacts
+                onPressed: () async {
+                  await NativeChannel.instance.getContact();
+                },
               ),
-              hintText: 'Nomor BPJS',
-              hintStyle: const TextStyle(
-                color: Colors.grey,
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to handle voice input
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to open contacts
-                    },
-                  ),
-                ],
-              ),
-            ),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
-            ),
-            onChanged: (value) {
-              setState(() {});
-            },
+            ],
           ),
         ),
-      ],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: _phoneController.text.isEmpty
+              ? FontWeight.normal
+              : FontWeight.w600,
+          color: _phoneController.text.isEmpty ? Colors.grey : const Color(
+              0xFF363636),
+        ),
+      ),
     );
   }
 }
 
-class BpjsTabBarWidget extends StatelessWidget {
+class BpjsTabBarWidget extends StatefulWidget {
   final int selectedBpjsIndex;
   final ValueChanged<int> onBpjsSelected;
   final TextEditingController phoneController;
+  final String phoneNumber;
 
   const BpjsTabBarWidget({
     super.key,
     required this.selectedBpjsIndex,
     required this.onBpjsSelected,
-    required this.phoneController, // Terima controller dari kelas utama
+    required this.phoneController,
+    required this.phoneNumber
   });
+
+  @override
+  _BpjsTabBarWidgetState createState() => _BpjsTabBarWidgetState();
+}
+
+class _BpjsTabBarWidgetState extends State<BpjsTabBarWidget> {
+  late Future<Map<String, List<Map<String, dynamic>>>> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _fetchData();
+  }
+
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+      null,
+      'TAGIHANBPJS',
+      null,
+    );
+    return result;
+  }
+
+  // Method to fetch the tagihan details
+  Future<Map<String, dynamic>> _fetchTagihan() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchTagihan(
+        'BYRBPJS',
+        'kodeproduk:ASRBPJSKSH/tanggal:20241107154828/idpel1:002084934205/idpel2:/idpel3:/nominal:105000/admin:2500/id_outlet:SP390394/pin:------/ref1:CEK90335191/ref2:462139944/ref3:/status:00/keterangan:Success/fee:-1550/saldo_terpotong:105950/sisa_saldo:8063531/total_bayar:107500/no_va_keluarga:8888802084934205/jml_keluarga:3/no_hp:/no_ref:/nama_pelanggan:AL%20KANZAKI%20ROKHMANI/periode:1'
+    );
+    return result; // Return the fetched result
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +248,7 @@ class BpjsTabBarWidget extends StatelessWidget {
           ),
           Expanded(
             child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-              future: _fetchData(),
+              future: _dataFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -237,13 +282,14 @@ class BpjsTabBarWidget extends StatelessWidget {
         ),
       );
     }
+
     return ListView.builder(
       itemCount: data.length,
       itemBuilder: (context, index) {
         final item = data[index];
         return GestureDetector(
-          onTap: () {
-            if (phoneController.text.isEmpty) {
+          onTap: () async {
+            if (widget.phoneController.text.isEmpty) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -262,22 +308,26 @@ class BpjsTabBarWidget extends StatelessWidget {
                 },
               );
             } else {
+              // Fetch the tagihan details when "OK" button is pressed
+              final tagihanData = await _fetchTagihan();
+
+              // Pass the retrieved data to the TransaksiPay screen
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => TransaksiPay(
                     params: {
-                      'nominal': item['namaProduk'] ?? 'Unknown',
-                      'kodeProduk': item['kodeProduk'] ?? 'Unknown',
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'] ?? 'Unknown',
+                      'Nomor Tagihan': widget.phoneNumber, // Correct variable
                       'periodeBayar': item['periodeBayar'].toString(),
+                      'Nama Pelanggan': 'Wisnu Akhiri Ramadhan',
+                      'Jumlah Keluarga': '1 Orang',
+                      'Tagihan': '35.000',
+                      'Admin': '1.100',
+                      'Total Tagihan': '36.100',
                       'description': item['detailProduk'] ?? 'No description available',
-                      'transactionType': 'BPJS',
-                      'selectedData': {
-                        // Isi data yang sesuai untuk BPJS di sini, misalnya:
-                        'NomorPeserta': item['nomorPeserta'] ?? 'Tidak tersedia',
-                        'PeriodeBayar': item['periodeBayar'] ?? 'Tidak tersedia',
-                        'Poin': item['poin'] ?? '-',
-                      },
+                      'selectedData': tagihanData, // Pass the fetched tagihan data
                     },
                   ),
                 ),
@@ -323,10 +373,6 @@ class BpjsTabBarWidget extends StatelessWidget {
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontFamily: 'Poppins'),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      ' ${item['detail'] ?? 'No active period available'}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300, fontFamily: 'Poppins',),
-                    ),
                   ],
                 ),
               ),
@@ -336,15 +382,4 @@ class BpjsTabBarWidget extends StatelessWidget {
       },
     );
   }
-
-  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
-    var produkInstance = Produk();
-    var result = await produkInstance.fetchProduk(
-        null,
-        'TAGIHANBPJS',
-        null
-    );
-    return result;
-  }
 }
-

@@ -10,6 +10,7 @@ class NativeChannel {
   static const PULSA_PAKET_PLATFORM = MethodChannel('com.example.whitelabel/pulsa_paket_produk_channel');
   static const UTILS_CHANNEL = MethodChannel('com.example.whitelabel/utils');
   static const PRODUK_PLATFORM = MethodChannel('com.example.whitelabel/produk');
+  static const TAGIHAN_PLATFORM = MethodChannel('com.example.whitelabel/tagihan');
 
   // Initialize NativeChannel and set up method call handler
   void initialize() {
@@ -66,6 +67,31 @@ class NativeChannel {
               .map((item) => Map<String, dynamic>.from(item as Map))
               .toList(),
         );
+      });
+
+      return mappedResult;
+    } on PlatformException catch (e) {
+      print('Failed to get data: ${e.message}');
+      throw 'Failed to get data: ${e.message}';
+    }
+  }
+
+  Future<Map<String, dynamic>> getTagihan(
+      String kodeProduk, String data
+      ) async {
+    try {
+      // Call the native method and get the result
+      final Map<dynamic, dynamic> result = await TAGIHAN_PLATFORM.invokeMethod(
+        'fetchTagihan',
+        {
+          'kodeProduk': kodeProduk,
+          'data': data,
+        },
+      );
+
+      // Map the dynamic result to a Map<String, dynamic> in Dart
+      final Map<String, dynamic> mappedResult = result.map((key, value) {
+        return MapEntry(key as String, value); // Cast key and value appropriately
       });
 
       return mappedResult;

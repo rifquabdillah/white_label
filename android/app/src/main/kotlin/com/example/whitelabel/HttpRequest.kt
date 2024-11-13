@@ -2,8 +2,6 @@ package com.example.whitelabel
 
 import android.content.Context
 import android.util.Log
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -35,6 +33,10 @@ class HttpRequest(private val context: Context) {
     // Update the response model to match the new structure
     data class ProductsResponse(
         val data: Map<String, List<Product>> // Map category names to a list of products
+    )
+
+    data class TagihanResponse(
+        val data: Map<String, Any>
     )
 
     data class Banners(
@@ -97,6 +99,35 @@ class HttpRequest(private val context: Context) {
             override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
                 Log.e("HttpRequest", "Network error: ${t.message}")
                 callback(emptyMap()) // Return empty map on failure
+            }
+        })
+    }
+
+    fun getTagihan(
+        kodeProduk: String,
+        data: String,
+        callback: (Map<String, Any>) -> Unit
+    ) {
+        val call = apiRoutes.getTagihan(kodeProduk, data)
+        call.enqueue(object : retrofit2.Callback<TagihanResponse> {
+            override fun onResponse(
+                call: Call<TagihanResponse>,
+                response: Response<TagihanResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { tagihanResponse ->
+                        // Pass the dynamic map to the callback
+                        callback(tagihanResponse.data)
+                    }
+                } else {
+                    // Handle unsuccessful response (error case)
+                    callback(emptyMap())
+                }
+            }
+
+            override fun onFailure(call: Call<TagihanResponse>, t: Throwable) {
+                // Handle failure (e.g., network issue)
+                callback(emptyMap())
             }
         })
     }

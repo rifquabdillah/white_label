@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/menuSaldo/mSaldo.dart';
 
 
 class MutasiMenu extends StatefulWidget {
@@ -67,7 +68,25 @@ class _MutasiMenuState extends State<MutasiMenu> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Icon(Icons.add, color:Color(0xff909EAE)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF909EAE), // Warna latar belakang abu-abu
+                            borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: Color(0xffFAF9F6),
+                            size: 18,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],

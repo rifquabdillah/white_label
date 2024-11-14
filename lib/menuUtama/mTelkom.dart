@@ -1,23 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/backend/produk.dart';
+import 'package:white_label/transaksipay.dart';
+import 'package:quickalert/quickalert.dart';
 import '../menuSaldo/mSaldo.dart';
 
-// Model for BPJS item
-class TelkomItem {
-  final String produk;
-  final String description;
-  final String originalPrice;
-  final String info;
-
-  TelkomItem({
-    required this.produk,
-    required this.description,
-    required this.originalPrice,
-    required this.info,
-  });
-}
-
-// Main BPJS screen
 class mTelkomScreen extends StatefulWidget {
   const mTelkomScreen({super.key});
 
@@ -26,9 +13,9 @@ class mTelkomScreen extends StatefulWidget {
 }
 
 class mTelkomScreenState extends State<mTelkomScreen> {
-  int _selectedTelkomIndex = 0; // Track selected tab index
-  final TextEditingController _phoneController = TextEditingController();
-  bool _isSaldoVisible = true; // Controller for balance visibility
+  int _selectedPdamIndex = 0;
+  final TextEditingController _customerNumberController = TextEditingController();
+  bool _isSaldoVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +52,7 @@ class mTelkomScreenState extends State<mTelkomScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isSaldoVisible = !_isSaldoVisible; // Toggle visibility
+                        _isSaldoVisible = !_isSaldoVisible;
                       });
                     },
                     child: Icon(
@@ -83,8 +70,8 @@ class mTelkomScreenState extends State<mTelkomScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF909EAE), // Warna latar belakang abu-abu
-                        borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                        color: Color(0xFF909EAE),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Icon(
                         Icons.add,
@@ -104,7 +91,7 @@ class mTelkomScreenState extends State<mTelkomScreen> {
             },
           ),
           toolbarHeight: 60,
-          elevation: 0, // Remove shadow
+          elevation: 0,
         ),
       ),
       body: Padding(
@@ -112,15 +99,17 @@ class mTelkomScreenState extends State<mTelkomScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhoneNumberField(screenSize), // Phone number input field
+            _buildCustomerNumberField(screenSize),
             const SizedBox(height: 0),
-            TelkomTabBarWidget(
-              selectedTelkomIndex: _selectedTelkomIndex,
-              onTelkomSelected: (index) {
-                setState(() {
-                  _selectedTelkomIndex = index; // Update selected index
-                });
-              },
+            PDAMTabBarWidget(
+                selectedPdamIndex: _selectedPdamIndex,
+                onPdamSelected: (index) {
+                  setState(() {
+                    _selectedPdamIndex = index;
+                  });
+                },
+                customerNumberController: _customerNumberController,
+                customerNumber: _customerNumberController.text
             ),
           ],
         ),
@@ -128,72 +117,100 @@ class mTelkomScreenState extends State<mTelkomScreen> {
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0),
-          child: TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0XFFfaf9f6),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+  Widget _buildCustomerNumberField(Size screenSize) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 26.0, right: 16.0),
+      child: TextField(
+        controller: _customerNumberController,
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0XFFfaf9f6),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          hintText: 'Nomor TELKOM',
+          hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.mic, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.startSpeechRecognition();
+                },
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+              IconButton(
+                icon: const Icon(Icons.contacts_sharp, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.getContact();
+                },
               ),
-              hintText: 'Nomor Telkom',
-              hintStyle: const TextStyle(
-                color: Colors.grey,
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to handle voice input
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to open contacts
-                    },
-                  ),
-                ],
-              ),
-            ),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
-            ),
-            onChanged: (value) {
-              setState(() {});
-            },
+            ],
           ),
         ),
-      ],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: _customerNumberController.text.isEmpty
+              ? FontWeight.normal
+              : FontWeight.w600,
+          color: _customerNumberController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+        ),
+      ),
     );
   }
 }
 
-// Tab bar widget for BPJS items
-class TelkomTabBarWidget extends StatelessWidget {
-  final int selectedTelkomIndex;
-  final ValueChanged<int> onTelkomSelected;
+class PDAMTabBarWidget extends StatefulWidget {
+  final int selectedPdamIndex;
+  final ValueChanged<int> onPdamSelected;
+  final TextEditingController customerNumberController;
+  final String customerNumber;
 
-  const TelkomTabBarWidget({
+  const PDAMTabBarWidget({
     super.key,
-    required this.selectedTelkomIndex,
-    required this.onTelkomSelected,
+    required this.selectedPdamIndex,
+    required this.onPdamSelected,
+    required this.customerNumberController,
+    required this.customerNumber
   });
+
+  @override
+  _PDAMTabBarWidgetState createState() => _PDAMTabBarWidgetState();
+}
+
+class _PDAMTabBarWidgetState extends State<PDAMTabBarWidget> {
+  late Future<Map<String, List<Map<String, dynamic>>>> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _fetchData();
+  }
+
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+      null,
+      'TAGIHANTELKOM',
+      null,
+    );
+    return result;
+  }
+
+  Future<Map<String, dynamic>> _fetchTagihan(
+      String kodeProduk
+      ) async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchTagihan(
+        kodeProduk,
+        'kodeproduk:SPEEDY/tanggal:20241108101346/idpel1:152321214394/idpel2:/idpel3:/nominal:421800/admin:2500/id_outlet:SP390394/pin:------/ref1:CEK90412148/ref2:462652301/ref3:/status:00/keterangan:APPROVE/fee:-1500/saldo_terpotong:422800/sisa_saldo:5417997/total_bayar:424300/ref:411A/jumlahbill:1/nama_pelanggan:BRYAN ZIDANE FARRELTINO/periode:202411'
+    );
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,11 +241,20 @@ class TelkomTabBarWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                color: const Color(0xfffdf7e6),
-                child: _buildTelkomTab(selectedTelkomIndex, onTelkomSelected, context),
-              ),
+            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+              future: _dataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error fetching data'));
+                } else if (snapshot.hasData) {
+                  final data = snapshot.data!['Pembayaran Tagihan Telkom'] ?? [];
+                  return _buildDataCard(context, data);
+                } else {
+                  return Center(child: Text('No data available'));
+                }
+              },
             ),
           ),
         ],
@@ -236,107 +262,108 @@ class TelkomTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTelkomTab(int selectedTelkomIndex, ValueChanged<int> onTelkomSelected, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          if (selectedTelkomIndex == 0)
-            _buildTelkomCards(context)
-          // Add more conditions for additional tabs if needed
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTelkomCards(BuildContext context) {
-    List<TelkomItem> bpjsItems = _fetchTelkomItems();
-    return Column(
-      children: [
-        for (var item in bpjsItems)
-          _buildTelkomCard(context, item),
-      ],
-    );
-  }
-
-  Widget _buildTelkomCard(BuildContext context, TelkomItem item) {
-    return GestureDetector(
-      onTap: () {
-        // Add navigation or action for BPJS card tap
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+  Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: item.produk,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff353E43),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(item.description),
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    item.originalPrice,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                      color: Color(0xffECB709),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey), // Add arrow icon if needed
-                ],
-              ),
-              const SizedBox(height: 4.0),
-            ],
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
           ),
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        final item = data[index];
+        return GestureDetector(
+          onTap: () async {
+            if (widget.customerNumberController.text.isEmpty) {
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.error,
+                title: 'Oopss..',
+                text: 'Silakan isi nomor pelanggan TELKOM terlebih dahulu.',
+              );
+            } else {
+              // Melanjutkan ke TransaksiPay jika nomor pelanggan sudah diisi
+              final data = await _fetchTagihan(item['kodeProduk']);
+              // Kirim data ke halaman TransaksiPay
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tagihan': widget.customerNumberController.text,
+                      'Nama Pelanggan': data['namaPelanggan'],
+                      'Tipe Meteran': data['tipeMeteran'],
+                      'Jumlah Bulan': data['bulan'],
+                      'Periode': data['periode'],
+                      'Daya': data['daya'],
+                      'Tagihan': (data['tagihan'] is num ? (data['tagihan'] as num).toInt() : 0).toString(),
+                      'Admin': (data['admin'] is num ? (data['admin'] as num).toInt() : 0).toString(),
+                      'Total Tagihan': (data['jumlahTagihan'] is num ? (data['jumlahTagihan'] as num).toInt() : 0).toString(),
+                      'description': item['detailProduk'] ?? 'No description available',
+                    },
+                  ),
+                ),
+              );
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  offset: Offset(0, 4),
+                  blurRadius: 8.0,
+                  spreadRadius: 2.0,
+                ),
+              ],
+            ),
+            child: Card(
+              elevation: 2,
+              color: const Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item['kodeProduk'] ?? 'No description available',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
-  }
 
-  List<TelkomItem> _fetchTelkomItems() {
-    return [
-      TelkomItem(produk: 'Telkom 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
-      TelkomItem(produk: 'Telkom 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),
-      TelkomItem(produk: 'Telkom 3', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      TelkomItem(produk: 'Telkom 4', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      TelkomItem(produk: 'Telkom 5', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      TelkomItem(produk: 'Telkom 6', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      TelkomItem(produk: 'Telkom 7', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      TelkomItem(produk: 'Telkom 8', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-
-
-    ];
   }
 }

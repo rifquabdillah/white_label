@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:white_label/backend/nativeChannel.dart';
 import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../menuSaldo/mSaldo.dart';
 
@@ -105,14 +106,14 @@ class _BpjsScreenState extends State<BpjsScreen> {
             _buildPhoneNumberField(screenSize),
             const SizedBox(height: 0),
             BpjsTabBarWidget(
-              selectedBpjsIndex: _selectedBpjsIndex,
-              onBpjsSelected: (index) {
-                setState(() {
-                  _selectedBpjsIndex = index;
-                });
-              },
-              phoneController: _phoneController,
-              phoneNumber: _phoneController.text// Diteruskan ke widget tab bar
+                selectedBpjsIndex: _selectedBpjsIndex,
+                onBpjsSelected: (index) {
+                  setState(() {
+                    _selectedBpjsIndex = index;
+                  });
+                },
+                phoneController: _phoneController,
+                phoneNumber: _phoneController.text// Diteruskan ke widget tab bar
             ),
           ],
         ),
@@ -213,7 +214,7 @@ class _BpjsTabBarWidgetState extends State<BpjsTabBarWidget> {
     var produkInstance = Produk();
     var result = await produkInstance.fetchTagihan(
         'BYRBPJS',
-        'kodeproduk:ASRBPJSKSH/tanggal:20241107154828/idpel1:002084934205/idpel2:/idpel3:/nominal:105000/admin:2500/id_outlet:SP390394/pin:------/ref1:CEK90335191/ref2:462139944/ref3:/status:00/keterangan:Success/fee:-1550/saldo_terpotong:105950/sisa_saldo:8063531/total_bayar:107500/no_va_keluarga:8888802084934205/jml_keluarga:3/no_hp:/no_ref:/nama_pelanggan:AL%20KANZAKI%20ROKHMANI/periode:1'
+        'kodeproduk:ASRBPJSKSH/tanggal:20241107154828/idpel1:002084934205/idpel2:/idpel3:/nominal:105000/admin:2500/id_outlet:SP390394/pin:------/ref1:CEK90335191/ref2:462139944/ref3:/status:00/keterangan:Success/fee:-1550/saldo_terpotong:105950/sisa_saldo:8063531/total_bayar:107500/no_va_keluarga:8888802084934205/jml_keluarga:3/no_hp:/no_ref:/nama_pelanggan:ALI KANZAKI ROKHMANI/periode:1'
     );
     return result; // Return the fetched result
   }
@@ -290,46 +291,42 @@ class _BpjsTabBarWidgetState extends State<BpjsTabBarWidget> {
         return GestureDetector(
           onTap: () async {
             if (widget.phoneController.text.isEmpty) {
-              showDialog(
+              QuickAlert.show(
                 context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Peringatan'),
-                    content: const Text('Silakan isi nomor BPJS terlebih dahulu.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  );
-                },
+                type: QuickAlertType.error,
+                title: 'Oops...',
+                text: 'Silakan isi nomor BPJS terlebih dahulu.',
               );
             } else {
-              // Fetch the tagihan details when "OK" button is pressed
-              final tagihanData = await _fetchTagihan();
-
-              // Pass the retrieved data to the TransaksiPay screen
+              // Ambil data tagihan ketika tombol OK ditekan
+              final data = await _fetchTagihan();
+              // Pass data ke layar TransaksiPay
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TransaksiPay(
-                    params: {
-                      'Nama': item['namaProduk'] ?? 'Unknown',
-                      'Kode Produk': item['kodeProduk'] ?? 'Unknown',
-                      'Nomor Tagihan': widget.phoneNumber, // Correct variable
-                      'periodeBayar': item['periodeBayar'].toString(),
-                      'Nama Pelanggan': 'Wisnu Akhiri Ramadhan',
-                      'Jumlah Keluarga': '1 Orang',
-                      'Tagihan': '35.000',
-                      'Admin': '1.100',
-                      'Total Tagihan': '36.100',
-                      'description': item['detailProduk'] ?? 'No description available',
-                      'selectedData': tagihanData, // Pass the fetched tagihan data
-                    },
-                  ),
+                  builder: (context) =>
+                      TransaksiPay(
+                        params: {
+                          'Nama': item['namaProduk'] ?? 'Unknown',
+                          'Kode Produk': 'BYRBPJS',
+                          'Nomor Tagihan': widget.phoneNumber,
+                          'Periode Bayar': data['periode']?.toString() ??
+                              'Unknown',
+                          'Nama Pelanggan': data['namaPelanggan'] ?? 'Unknown',
+                          'Jumlah Keluarga': data['jumlahKeluarga'],
+                          'Tagihan': (data['tagihan'] is num
+                              ? (data['tagihan'] as num).toInt()
+                              : 0).toString(),
+                          'Admin': (data['admin'] is num
+                              ? (data['admin'] as num).toInt()
+                              : 0).toString(),
+                          'Total Tagihan': (data['jumlahTagihan'] is num
+                              ? (data['jumlahTagihan'] as num).toInt()
+                              : 0).toString(),
+                          'description': item['detailProduk'] ??
+                              'No description available',
+                        },
+                      ),
                 ),
               );
             }
@@ -361,7 +358,9 @@ class _BpjsTabBarWidgetState extends State<BpjsTabBarWidget> {
                         Expanded(
                           child: Text(
                             item['namaProduk'] ?? 'Unknown',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                            style: const TextStyle(fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins'),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -370,7 +369,9 @@ class _BpjsTabBarWidgetState extends State<BpjsTabBarWidget> {
                     const SizedBox(height: 8),
                     Text(
                       item['kodeProduk'] ?? 'No description available',
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontFamily: 'Poppins'),
+                      style: const TextStyle(fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                          fontFamily: 'Poppins'),
                     ),
                     const SizedBox(height: 8),
                   ],

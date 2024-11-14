@@ -117,16 +117,19 @@ class HttpRequest(private val context: Context) {
                 if (response.isSuccessful) {
                     response.body()?.let { tagihanResponse ->
                         // Pass the dynamic map to the callback
+                        Log.e("TAGIHAN", "Received Tagihan: ${tagihanResponse.data}")
                         callback(tagihanResponse.data)
                     }
                 } else {
                     // Handle unsuccessful response (error case)
+                    Log.e("TAGIHAN", "Fucked Up")
                     callback(emptyMap())
                 }
             }
 
             override fun onFailure(call: Call<TagihanResponse>, t: Throwable) {
                 // Handle failure (e.g., network issue)
+                Log.e("TAGIHAN", "Fucked Up")
                 callback(emptyMap())
             }
         })

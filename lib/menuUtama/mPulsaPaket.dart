@@ -398,7 +398,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildPulsaTabContent", isPulsa: true), // Set isPulsa to true
+          _buildFilterButtons("_buildPulsaTabContent", true, false), // Set isPulsa to true
         ],
       ),
     );
@@ -409,7 +409,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildSmsTelponTabContent"),
+          _buildFilterButtons("_buildSmsTelponTabContent", false, true),
         ],
       ),
     );
@@ -420,7 +420,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildInternetTabContent"),
+          _buildFilterButtons("_buildInternetTabContent", false, false),
         ],
       ),
     );
@@ -458,7 +458,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     return result; // Return the fetched result
   }
 
-  Widget _buildFilterButtons(String methodName, {bool isPulsa = false}) {
+  Widget _buildFilterButtons(String methodName, bool? isPulsa, bool? isNelpon) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
       future: _fetchData(methodName, null),
       builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
@@ -477,23 +477,33 @@ class _TabBarWidgetState extends State<TabBarWidget> {
           });
         }
 
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _scrollController,
-                child: Row(
-                  children: data.keys.map((key) {
-                    return _buildFilterButtonCard(key);
-                  }).toList(),
-                ),
+        List<Widget> filterWidgets = [
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              child: Row(
+                children: data.keys.map((key) {
+                  return _buildFilterButtonCard(key);
+                }).toList(),
               ),
             ),
-            if (selectedFilter != null && data.containsKey(selectedFilter))
-              isPulsa ? _buildDataPulsaCard(selectedFilter, data[selectedFilter]!) : _buildDataCard(selectedFilter, data[selectedFilter]!),
-          ],
+          ),
+        ];
+
+        if (selectedFilter != null && data.containsKey(selectedFilter)) {
+          if (isPulsa == true) {
+            filterWidgets.add(_buildDataPulsaCard(selectedFilter, data[selectedFilter]!));
+          } else if (isNelpon == true) {
+            filterWidgets.add(_buildNelponCarf(selectedFilter, data[selectedFilter]!));
+          } else {
+            filterWidgets.add(_buildDataCard(selectedFilter, data[selectedFilter]!));
+          }
+        }
+
+        return Column(
+          children: filterWidgets,
         );
       },
     );
@@ -682,6 +692,111 @@ class _TabBarWidgetState extends State<TabBarWidget> {
   }
 
   Widget _buildDataPulsaCard(String? key, List<Map<String, dynamic>> data) {
+    print('data: $data');
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Jumlah kolom (2 kolom)
+          crossAxisSpacing: 8.0, // Jarak horizontal antar item
+          mainAxisSpacing: 8.0, // Jarak vertikal antar item
+          childAspectRatio: 3 / 2, // Rasio aspek untuk setiap item
+        ),
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          final item = data[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'Key': key,
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tujuan': widget.phoneNumber,
+                      'Harga Produk': item['hargaJual'].toString() // Map kosong, sesuaikan sesuai kebutuhan
+                    },
+                  ),
+                ),
+              );
+
+            },
+            child: Card(
+              margin: const EdgeInsets.all(4.0),
+              elevation: 2,
+              color: Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          ' ${item['hargaCoret']?.toString() ?? '0'}',
+                          style: const TextStyle(fontSize: 12, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          ' ${item['kodeProduk'] ?? 'Unknown'}',
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          '-',
+                          style: TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          ' ${item['hargaJual'].toString()}',
+                          style: const TextStyle(fontSize: 12, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      ' ${item['detail'] ?? 'No active period available'}',
+                      style: const TextStyle(fontSize: 10, color: Color(0xff909EAE)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildNelponCarf(String? key, List<Map<String, dynamic>> data) {
     print('data: $data');
     if (data.isEmpty) {
       return Card(

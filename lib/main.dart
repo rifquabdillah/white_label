@@ -987,11 +987,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         break;
       case 'PLN':
       // Add the corresponding screen for PLN
-        page = const mPLNScreen(); // Replace with the correct screen
+        page = const PlnScreen(); // Replace with the correct screen
         break;
       case 'PDAM':
       // Add the corresponding screen for PDAM
-        page = const mPDAMScreen(); // Replace with the correct screen
+        page = const PDAMScreen(); // Replace with the correct screen
         break;
       case 'Telkom':
       // Add the corresponding screen for Telkom

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/menuSaldo/mSaldo.dart';
 
 import 'menuTransaksi/konfirmasiTransaksi.dart';
 
@@ -65,9 +66,22 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       const SizedBox(width: 8.0),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to saldo page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                          );
                         },
-                        child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF909EAE), // Warna latar belakang abu-abu
+                            borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: Color(0xffFAF9F6),
+                            size: 18,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -185,7 +199,12 @@ class _TransaksiPayState extends State<TransaksiPay> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Perform action on button press
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => KonfirmasiTransaksi(params: widget.params),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -198,31 +217,10 @@ class _TransaksiPayState extends State<TransaksiPay> {
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                          child: SizedBox(
-                            width: 350,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: const Color(0xffecb709),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              child: const Text('KIRIM TRANSAKSI'),
-                            ),
-                          )
-
+                        child: const Text('KIRIM TRANSAKSI'),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -234,10 +232,10 @@ class _TransaksiPayState extends State<TransaksiPay> {
   }
 
   String _bodoh() {
-    if (widget.params['Kode Produk']?.contains('BYRBPJS') ?? false) {
-      return '';
-    } else {
+    if (widget.params.containsKey('Masa Aktif')) {
       return '|';
+    } else {
+      return '';
     }
   }
 

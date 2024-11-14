@@ -1,34 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/backend/produk.dart';
+import 'package:white_label/transaksipay.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../menuSaldo/mSaldo.dart';
 
-// Model for BPJS item
-class PlnItem {
-  final String produk;
-  final String description;
-  final String originalPrice;
-  final String info;
-
-  PlnItem({
-    required this.produk,
-    required this.description,
-    required this.originalPrice,
-    required this.info,
-  });
-}
-
-// Main BPJS screen
-class mPLNScreen extends StatefulWidget {
-  const mPLNScreen({super.key});
+class PlnScreen extends StatefulWidget {
+  const PlnScreen({super.key});
 
   @override
-  _mPLNScreenState createState() => _mPLNScreenState();
+  _PlnScreenState createState() => _PlnScreenState();
 }
 
-class _mPLNScreenState extends State<mPLNScreen> {
-  int _selectedPLNIndex = 0; // Track selected tab index
-  final TextEditingController _phoneController = TextEditingController();
-  bool _isSaldoVisible = true; // Controller for balance visibility
+class _PlnScreenState extends State<PlnScreen> {
+  int _selectedPlnIndex = 0;
+  final TextEditingController _customerNumberController = TextEditingController();
+  bool _isSaldoVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +53,7 @@ class _mPLNScreenState extends State<mPLNScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isSaldoVisible = !_isSaldoVisible; // Toggle visibility
+                        _isSaldoVisible = !_isSaldoVisible;
                       });
                     },
                     child: Icon(
@@ -83,8 +71,8 @@ class _mPLNScreenState extends State<mPLNScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF909EAE), // Warna latar belakang abu-abu
-                        borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                        color: Color(0xFF909EAE),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Icon(
                         Icons.add,
@@ -104,7 +92,7 @@ class _mPLNScreenState extends State<mPLNScreen> {
             },
           ),
           toolbarHeight: 60,
-          elevation: 0, // Remove shadow
+          elevation: 0,
         ),
       ),
       body: Padding(
@@ -112,15 +100,17 @@ class _mPLNScreenState extends State<mPLNScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhoneNumberField(screenSize), // Phone number input field
+            _buildCustomerNumberField(screenSize),
             const SizedBox(height: 0),
-            PLNTabBarWidget(
-              selectedPLNIndex: _selectedPLNIndex,
-              onPLNSelected: (index) {
-                setState(() {
-                  _selectedPLNIndex = index; // Update selected index
-                });
-              },
+            PlnTabBarWidget(
+                selectedPlnIndex: _selectedPlnIndex,
+                onPlnSelected: (index) {
+                  setState(() {
+                    _selectedPlnIndex = index;
+                  });
+                },
+                customerNumberController: _customerNumberController,
+                customerNumber: _customerNumberController.text
             ),
           ],
         ),
@@ -128,72 +118,98 @@ class _mPLNScreenState extends State<mPLNScreen> {
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0),
-          child: TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0XFFfaf9f6),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+  Widget _buildCustomerNumberField(Size screenSize) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 26.0, right: 16.0),
+      child: TextField(
+        controller: _customerNumberController,
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0XFFfaf9f6),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          hintText: 'Masukkan nomor pelanggan PLN',
+          hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.mic, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.startSpeechRecognition();
+                },
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+              IconButton(
+                icon: const Icon(Icons.contacts_sharp, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.getContact();
+                },
               ),
-              hintText: 'Nomor PLN',
-              hintStyle: const TextStyle(
-                color: Colors.grey,
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to handle voice input
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
-                    onPressed: () {
-                      // Logic to open contacts
-                    },
-                  ),
-                ],
-              ),
-            ),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
-            ),
-            onChanged: (value) {
-              setState(() {});
-            },
+            ],
           ),
         ),
-      ],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: _customerNumberController.text.isEmpty
+              ? FontWeight.normal
+              : FontWeight.w600,
+          color: _customerNumberController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+        ),
+      ),
     );
   }
 }
 
-// Tab bar widget for BPJS items
-class PLNTabBarWidget extends StatelessWidget {
-  final int selectedPLNIndex;
-  final ValueChanged<int> onPLNSelected;
+class PlnTabBarWidget extends StatefulWidget {
+  final int selectedPlnIndex;
+  final ValueChanged<int> onPlnSelected;
+  final TextEditingController customerNumberController;
+  final String customerNumber;
 
-  const PLNTabBarWidget({
+  const PlnTabBarWidget({
     super.key,
-    required this.selectedPLNIndex,
-    required this.onPLNSelected,
+    required this.selectedPlnIndex,
+    required this.onPlnSelected,
+    required this.customerNumberController,
+    required this.customerNumber
   });
+
+  @override
+  _PlnTabBarWidgetState createState() => _PlnTabBarWidgetState();
+}
+
+class _PlnTabBarWidgetState extends State<PlnTabBarWidget> {
+  late Future<Map<String, List<Map<String, dynamic>>>> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _fetchData();
+  }
+
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+      null,
+      'TAGIHANPLN',
+      null,
+    );
+    return result;
+  }
+
+  Future<Map<String, dynamic>> _fetchTagihan() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchTagihan(
+        'BYRPLN',
+        'kodeproduk:PLNPASCH/tanggal:20241108093429/idpel1:538740190050/idpel2:/idpel3:/nominal:342570/admin:3000/id_outlet:SP390394/pin:------/ref1:CEK90408159/ref2:462614781/ref3:/status:00/keterangan:TRANSAKSI SUKSES/fee:-2689/saldo_terpotong:342881/sisa_saldo:6766087/total_bayar:345570/jml_bulan:1/tarif:R1M/daya:900/ref:/stanawal:83540/stanakhir:38/infoteks:/nama_pelanggan:NURDIN/periode:202411'
+    );
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,11 +240,20 @@ class PLNTabBarWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                color: const Color(0xfffdf7e6),
-                child: _buildPLNTab(selectedPLNIndex, onPLNSelected, context),
-              ),
+            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+              future: _dataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error fetching data'));
+                } else if (snapshot.hasData) {
+                  final data = snapshot.data!['Pembayaran Tagihan PLN'] ?? [];
+                  return _buildDataCard(context, data);
+                } else {
+                  return Center(child: Text('No data available'));
+                }
+              },
             ),
           ),
         ],
@@ -236,107 +261,119 @@ class PLNTabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPLNTab(int selectedPLNIndex, ValueChanged<int> onPLNSelected, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          if (selectedPLNIndex == 0)
-            _buildPLNCards(context)
-          // Add more conditions for additional tabs if needed
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPLNCards(BuildContext context) {
-    List<PlnItem> PLNItems = _fetchPLNItems();
-    return Column(
-      children: [
-        for (var item in PLNItems)
-          _buildPLNCard(context, item),
-      ],
-    );
-  }
-
-  Widget _buildPLNCard(BuildContext context, PlnItem item) {
-    return GestureDetector(
-      onTap: () {
-        // Add navigation or action for BPJS card tap
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+  Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: item.produk,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff353E43),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(item.description),
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    item.originalPrice,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                      color: Color(0xffECB709),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey), // Add arrow icon if needed
-                ],
-              ),
-              const SizedBox(height: 4.0),
-            ],
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
           ),
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        final item = data[index];
+        return GestureDetector(
+          onTap: () async {
+            if (widget.customerNumberController.text.isEmpty) {
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.error,
+                title: 'Oops...',
+                text: 'Silakan isi nomor pelanggan PLN terlebih dahulu.',
+              );
+            } else {
+              // Melanjutkan ke TransaksiPay jika nomor pelanggan sudah diisi
+              final data = await _fetchTagihan();
+              // Kirim data ke halaman TransaksiPay
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      TransaksiPay(
+                        params: {
+                          'Nama': item['namaProduk'] ?? 'Unknown',
+                          'Kode Produk': item['kodeProduk'],
+                          'Nomor Tagihan': widget.customerNumberController.text,
+                          'Nama Pelanggan': data['namaPelanggan'],
+                          'Tipe Meteran': data['tipeMeteran'],
+                          'Jumlah Bulan': data['bulan'],
+                          'Periode': data['periode'],
+                          'Daya': data['daya'],
+                          'Tagihan': (data['tagihan'] is num
+                              ? (data['tagihan'] as num).toInt()
+                              : 0).toString(),
+                          'Admin': (data['admin'] is num
+                              ? (data['admin'] as num).toInt()
+                              : 0).toString(),
+                          'Total Tagihan': (data['jumlahTagihan'] is num
+                              ? (data['jumlahTagihan'] as num).toInt()
+                              : 0).toString(),
+                          'description': item['detailProduk'] ??
+                              'No description available',
+                        },
+                      ),
+                ),
+              );
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  offset: Offset(0, 4),
+                  blurRadius: 8.0,
+                  spreadRadius: 2.0,
+                ),
+              ],
+            ),
+            child: Card(
+              elevation: 2,
+              color: const Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item['kodeProduk'] ?? 'No description available',
+                      style: const TextStyle(fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                          fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
-  }
-
-  List<PlnItem> _fetchPLNItems() {
-    return [
-      PlnItem(produk: 'PLN 1', description: 'Deskripsi 1', originalPrice: '100.000', info: 'Info 1'),
-      PlnItem(produk: 'PLN 2', description: 'Deskripsi 2', originalPrice: '200.000', info: 'Info 2'),
-      PlnItem(produk: 'PLN 3', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      PlnItem(produk: 'PLN 4', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      PlnItem(produk: 'PLN 5', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      PlnItem(produk: 'PLN 6', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      PlnItem(produk: 'PLN 7', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-      PlnItem(produk: 'PLN 8', description: 'Deskripsi 3', originalPrice: '300.000', info: 'Info 3'),
-
-
-    ];
   }
 }

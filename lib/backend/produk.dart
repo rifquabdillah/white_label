@@ -24,7 +24,7 @@ class Produk {
     var result = await NativeChannel.instance.getTagihan(
       kodeProduk,
       data,
-    );aa
+    );
 
     return result;
   }

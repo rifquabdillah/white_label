@@ -19,7 +19,6 @@ class KonfirmasiTransaksi extends StatefulWidget {
 
 class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
   String _hargaJual = '7.000';
-  bool isTokenListrik = true;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +105,9 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
   }
 
   Widget _buildTransactionDetails(BuildContext context) {
+    // Get data from widget.params and safely provide fallback values
+    final namaPengguna = 'Ferry Febrian Nagara' ?? 'Nama tidak tersedia';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -115,19 +117,58 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Ferry Febrian Negara',
-            style: TextStyle(
+          Text(
+            namaPengguna,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
             ),
           ),
-
-          _buildTransactionDetailRowWithEdit(context, 'Harga Jual', _hargaJual, isBold: true, color: Colors.orange),
+          const SizedBox(height: 8),
+          _buildDynamicDataRows()
         ],
       ),
     );
+  }
+
+  Widget _buildDynamicDataRows() {
+    Set<String> validKeys = {'Kuota', 'Masa', 'Deskripsi'};
+    List<Widget> rows = [];
+
+    // First handle 'Kode Produk' explicitly to ensure it comes first
+    if (widget.params.containsKey('Kode Produk') && widget.params['Kode Produk'] != null && widget.params['Kode Produk'].isNotEmpty) {
+      rows.add(_buildTransactionDetailRow('Kode Produk', widget.params['Kode Produk']));
+    }
+
+    // Now process the other keys as usual
+    widget.params.forEach((key, value) {
+      if (value.runtimeType != int && value != null && value.isNotEmpty) {
+        if (!key.contains('Kuota') &&
+            !key.contains('Masa') &&
+            !key.contains('Detail') &&
+            !key.contains('Deskripsi') &&
+            !key.contains('Key')) {
+
+          if (key == 'Kode Produk') {
+            return;
+          }
+          if (key == 'Harga Produk') {
+            rows.add(_buildTransactionDetailRowWithEdit(context, 'Harga Jual', value));
+            return;
+          }
+
+          if (key == 'Nama') {
+            rows.add(_buildTransactionDetailRow(key, '${widget.params['Key']} ${widget.params['Nama']}'));
+            return;
+          } else {
+            rows.add(_buildTransactionDetailRow(key, value));
+          }
+        }
+      }
+    });
+
+    return Column(children: rows);
   }
 
   Widget _buildTransactionDetailRow(String title, String value) {
@@ -241,11 +282,7 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
               ),
             ),
             onPressed: () {
-              if (isTokenListrik) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFaktur()));
-              } else {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CetakFaktur()));
-              }
+              // You can add functionality here for creating the invoice.
             },
             child: const Text(
               'Buat Faktur',

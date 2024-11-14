@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
 
 import '../menuSaldo/mSaldo.dart';
@@ -7,110 +9,107 @@ class mPertagasScreen extends StatefulWidget {
   const mPertagasScreen({super.key});
 
   @override
-  _mPertagasScreenState createState() => _mPertagasScreenState();
+  mPertagasScreenState createState() => mPertagasScreenState();
 }
 
-class _mPertagasScreenState extends State<mPertagasScreen> {
-  int _selectedPromoIndex = 0;
-  bool _isSaldoVisible = true; // Controller for phone input
-  final TextEditingController _phoneController = TextEditingController();
+class mPertagasScreenState extends State<mPertagasScreen> {
+  int _selectedPdamIndex = 0;
+  final TextEditingController _customerNumberController = TextEditingController();
+  bool _isSaldoVisible = true;
 
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    const String saldo = '2.862.590'; // Menyimpan saldo
+    const String saldo = '2.862.590';
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
-        child: Stack(
-          children: [
-            AppBar(
-              backgroundColor: const Color(0XFFfaf9f6),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: AppBar(
+          backgroundColor: const Color(0XFFfaf9f6),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      const Text(
-                        'Saldo ',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF4e5558),
-                        ),
+                  const Text(
+                    'Saldo ',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF4e5558),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    _isSaldoVisible ? saldo : '********',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 25.0),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isSaldoVisible = !_isSaldoVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF909EAE),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      const SizedBox(width: 10.0),
-                      Text(
-                        _isSaldoVisible ? saldo : '********',
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Icon(
+                        Icons.add,
+                        color: Color(0xffFAF9F6),
+                        size: 18,
                       ),
-                      const SizedBox(width: 25.0),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSaldoVisible =
-                            !_isSaldoVisible; // Toggle visibility
-                          });
-                        },
-                        child: Icon(
-                          _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SaldoPageScreen()),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFF909EAE), // Warna latar belakang abu-abu
-                            borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Color(0xffFAF9F6),
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              // Menambahkan toolbarHeight untuk menyesuaikan tinggi AppBar
-              toolbarHeight: 60,
-              elevation: 0, // Menghilangkan bayangan
-            ),
-          ],
+            ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          toolbarHeight: 60,
+          elevation: 0,
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0), // Menghilangkan padding
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhoneNumberField(screenSize), // Kolom input nomor telepon
-            const SizedBox(height: 0), // Spacing
-            TabBarWidget(
-              selectedPromoIndex: _selectedPromoIndex,
-              onPromoSelected: (index) {
-                setState(() {
-                  _selectedPromoIndex = index; // Update indeks yang dipilih
-                });
-              },
+            _buildCustomerNumberField(screenSize),
+            const SizedBox(height: 0),
+            PertagasTabBarWidget(
+                selectedPdamIndex: _selectedPdamIndex,
+                onPdamSelected: (index) {
+                  setState(() {
+                    _selectedPdamIndex = index;
+                  });
+                },
+                customerNumberController: _customerNumberController,
+                customerNumber: _customerNumberController.text
             ),
           ],
         ),
@@ -118,74 +117,100 @@ class _mPertagasScreenState extends State<mPertagasScreen> {
     );
   }
 
-  Widget _buildPhoneNumberField(Size screenSize) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 26.0, bottom: 16.0), // Menghilangkan padding kanan
-          child: TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0XFFfaf9f6),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
+  Widget _buildCustomerNumberField(Size screenSize) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 26.0, right: 16.0),
+      child: TextField(
+        controller: _customerNumberController,
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: const Color(0XFFfaf9f6),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          hintText: 'Nomor Pertagas',
+          hintStyle: const TextStyle(color: Colors.grey),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.mic, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.startSpeechRecognition();
+                },
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
+              IconButton(
+                icon: const Icon(Icons.contacts_sharp, color: Color(0xffECB709)),
+                onPressed: () async {
+                  await NativeChannel.instance.getContact();
+                },
               ),
-              hintText: 'Nomor Pertagas',
-              hintStyle: const TextStyle(
-                color: Color(0xff909EAE),
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.mic, color: Color(0xffECB709)),
-                    onPressed: () {
-                      // Tambahkan logika untuk menangani input suara di sini
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.contacts, color: Color(0xffECB709)),
-                    onPressed: () {
-                      // Tambahkan logika untuk membuka kontak di sini
-                    },
-                  ),
-                ],
-              ),
-            ),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: _phoneController.text.isEmpty
-                  ? FontWeight.normal
-                  : FontWeight.w600,
-              color: _phoneController.text.isEmpty ? Color(0xff909EAE) : const Color(0xFF363636),
-            ),
-            onChanged: (value) {
-              setState(() {
-              });
-            },
+            ],
           ),
         ),
-      ],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: _customerNumberController.text.isEmpty
+              ? FontWeight.normal
+              : FontWeight.w600,
+          color: _customerNumberController.text.isEmpty ? Colors.grey : const Color(0xFF363636),
+        ),
+      ),
     );
   }
 }
 
-class TabBarWidget extends StatelessWidget {
-  final int selectedPromoIndex;
-  final ValueChanged<int> onPromoSelected;
+class PertagasTabBarWidget extends StatefulWidget {
+  final int selectedPdamIndex;
+  final ValueChanged<int> onPdamSelected;
+  final TextEditingController customerNumberController;
+  final String customerNumber;
 
-  const TabBarWidget({
+  const PertagasTabBarWidget({
     super.key,
-    required this.selectedPromoIndex,
-    required this.onPromoSelected,
+    required this.selectedPdamIndex,
+    required this.onPdamSelected,
+    required this.customerNumberController,
+    required this.customerNumber
   });
+
+  @override
+  _PertagasTabBarWidgetState createState() => _PertagasTabBarWidgetState();
+}
+
+class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
+  late Future<Map<String, List<Map<String, dynamic>>>> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _fetchData();
+  }
+
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+      null,
+      'TAGIHANPERTAGAS',
+      null,
+    );
+    return result;
+  }
+
+  Future<Map<String, dynamic>> _fetchTagihan(
+      String kodeProduk
+      ) async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchTagihan(
+        kodeProduk,
+        'kodeproduk:WADEPOK/tanggal:20241108093617/idpel1:03019156/idpel2:03019156/idpel3:03019156/nominal:50000/admin:2500/id_outlet:SP390394/pin:------/ref1:CEK90408342/ref2:462616454/ref3:/status:00/keterangan:EXT:%20APPROVE/fee:-1100/saldo_terpotong:51400/sisa_saldo:6317806/total_bayar:52500/jml_bln:01/stan_awal:00000012/stan_akhir:00000012/nama_pelanggan:NURDIN/periode:202410'
+    );
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,28 +224,37 @@ class TabBarWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    'Pertagas',
+                    'PERTAGAS',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Color(0xff353E43),
+                      color: Colors.black,
                     ),
                   ),
                 ),
                 Container(
                   height: 3,
                   width: double.infinity,
-                  color: Color(0xffECB709),
+                  color: Colors.orange,
                 ),
               ],
             ),
           ),
           Expanded(
-            child: SingleChildScrollView( // Wrap the Container in SingleChildScrollView
-              child: Container(
-                color: const Color(0xfffdf7e6),
-                child: _buildPertagasTab(selectedPromoIndex, onPromoSelected, context),
-              ),
+            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+              future: _dataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error fetching data'));
+                } else if (snapshot.hasData) {
+                  final data = snapshot.data!['Pembayaran Tagihan Pertagas'] ?? [];
+                  return _buildDataCard(context, data);
+                } else {
+                  return Center(child: Text('No data available'));
+                }
+              },
             ),
           ),
         ],
@@ -228,254 +262,125 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPertagasTab(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 6.0, left: 16.0, right: 16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0), // Menambahkan padding horizontal
-            child: Row(
-              children: [
-                _buildPromoButton('PERTAGAS', 0),
-                const SizedBox(width: 5),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Show content based on the selected promo index
-          if (selectedPromoIndex == 0)
-            _buildPertagasCards(context) // Pass context to _buildTokenPromoCards
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPertagasCards(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildPertagasOptionCard(context, '20.000', 'PR20 - ', '21.760', '', 'Token Pertagas', isClosed: true),
-              const SizedBox(height: 10),
-              _buildPertagasOptionCard(context, '100.000', 'PR100 - ', '101.765', '', 'Token Pertagas'),
-              const SizedBox(height: 10),
-            ],
+  Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
+    if (data.isEmpty) {
+      return Card(
+        margin: const EdgeInsets.all(0.0),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'No data available',
+            style: TextStyle(fontSize: 14.0),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
-              const SizedBox(height: 10),
-              _buildPertagasOptionCard(context, '20.000', 'PP20 - ', '19.975', '20.035', 'Proses mungkin agak lambat'),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+      );
+    }
 
-  Widget _buildPertagasOptionCard(BuildContext context, String nominal, String kodeProduk, String hargaJual, String originalPrice, String info, {bool isNew = false, bool isClosed = false}) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to the TransaksiPay page jika tidak ditutup
-        if (!isClosed) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TransaksiPay(
-                params: {
-                  'nominal': nominal,
-                  'kodeProduk': kodeProduk,
-                  'hargaJual': hargaJual,
-                  'description': 'Deskripsi produk di sini', // Change this as necessary
-                  'originalPrice': originalPrice,
-                  'info': info,
-                  'transactionType': 'Pertagas',
-                  'namaPemilik': 'Chandra Yadi', // New field
-                  'tipeMeteran': 'RT1', // New field
-                  'selectedData': {}, // New field
-                },
-              ),
-            ),
-          );
-        }
-      },
-      child: SizedBox(
-        width: 190,
-        height: 100,
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xffECB709).withOpacity(0.2), // Warna bayangan
-                    spreadRadius: 0, // Mengatur radius penyebaran
-                    blurRadius: 2, // Mengatur blur
-                    offset: const Offset(0, 0), // Posisi bayangan
-                  ),
-                ],
-              ),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            nominal,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: isClosed ? Color(0xff353E43)  : Color(0xff353E43) , // Warna teks berubah jadi hitam jika closed
-                            ),
-                          ),
-                          Text(
-                            originalPrice,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: isClosed ? Color(0xff353E43) : Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
-                              fontWeight: FontWeight.normal,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: kodeProduk,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: isClosed ? Color(0xff353E43) :  Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
-                              ),
-                            ),
-                            TextSpan(
-                              text: hargaJual,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isClosed ?Color(0xff353E43) : Color(0xffECB709), // Warna teks berubah jadi hitam jika closed
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        info,
-                        style: TextStyle(
-                          fontSize: 8,
-                          color: isClosed ? Color(0xff353E43) : Color(0xff909EAE), // Warna teks berubah jadi hitam jika closed
-                        ),
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        final item = data[index];
+        return GestureDetector(
+          onTap: () async {
+            if (widget.customerNumberController.text.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Peringatan'),
+                    content: const Text(
+                        'Silakan isi nomor pelanggan PERTAGAS terlebih dahulu.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () async {
+                        },
+                        child: const Text('OK'),
                       ),
                     ],
-                  ),
+                  );
+                },
+              );
+            } else {
+              // Directly proceed to TransaksiPay if customer number is already filled
+              // Fetch the tagihan details when "OK" button is pressed
+              final data = await _fetchTagihan(item['kodeProduk']);
+              // Pass the retrieved data to the TransaksiPay screen
+              print('data: $data');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      TransaksiPay(
+                        params: {
+                          'Nama': item['namaProduk'] ?? 'Unknown',
+                          'Kode Produk': item['kodeProduk'],
+                          'Nomor Tagihan': widget.customerNumberController.text,
+                          'Nama Pelanggan': data['namaPelanggan'] ,
+                          'Tipe Meteran': data['tipeMeteran'],
+                          'Jumlah Bulan': data['bulan'],
+                          'Periode': data['periode'],
+                          'Daya': data['daya'],
+                          'Tagihan': (data['tagihan'] is num ? (data['tagihan'] as num).toInt() : 0).toString(),
+                          'Admin': (data['admin'] is num ? (data['admin'] as num).toInt() : 0).toString(),
+                          'Total Tagihan': (data['jumlahTagihan'] is num ? (data['jumlahTagihan'] as num).toInt() : 0).toString(),
+                          'description': item['detailProduk'] ?? 'No description available',
+                        },
+                      ),
+                ),
+              );
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  offset: Offset(0, 4),
+                  blurRadius: 8.0,
+                  spreadRadius: 2.0,
+                ),
+              ],
+            ),
+            child: Card(
+              elevation: 2,
+              color: const Color(0xffFAF9F6),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['namaProduk'] ?? 'Unknown',
+                            style: const TextStyle(fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item['kodeProduk'] ?? 'No description available',
+                      style: const TextStyle(fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                          fontFamily: 'Poppins'),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
             ),
-            if (isNew)
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Color(0xffC70000),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'NEW',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            if (isClosed)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF909EAE).withOpacity(0.7), // Overlay warna
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            if (isClosed)
-              Positioned(
-                bottom: 1,
-                right: 2,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff353e43),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPromoButton(String text, int index) {
-    return ElevatedButton(
-      onPressed: () {
-        onPromoSelected(index);
+          ),
+        );
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: selectedPromoIndex == index ? Color(0xffC70000) : Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: 6, // Menambahkan elevasi untuk bayangan
-        shadowColor: Colors.black.withOpacity(0.6), // Warna bayangan
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-            color: selectedPromoIndex == index ? Colors.white : Color(0xff353E43),
-            fontFamily: 'Poppins',
-            fontSize: 12,
-            fontWeight: FontWeight.w600  // Ubah warna teks jika aktif
-        ),
-      ),
     );
   }
-
-
 }

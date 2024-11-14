@@ -15,7 +15,7 @@ import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import jdk.jpackage.internal.Log
+
 
 class MainActivity : FlutterActivity() {
     private val PULSA_PAKET_PRODUK_CHANNEL = "com.example.whitelabel/pulsa_paket_produk_channel"

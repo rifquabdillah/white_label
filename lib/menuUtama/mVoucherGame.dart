@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../menuSaldo/mSaldo.dart';
+import 'mDetailVoucherGame.dart';
+import 'package:white_label/backend/produk.dart';
 
 class VoucherGameScreen extends StatefulWidget {
   @override
@@ -27,7 +29,6 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     const String saldo = '2.862.590'; // Consider using localization
-
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
@@ -77,8 +78,8 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF909EAE), // Warna latar belakang abu-abu
-                        borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
+                        color: Color(0xFF909EAE),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Icon(
                         Icons.add,
@@ -101,18 +102,18 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
       ),
       body: Column(
         children: [
-          _buildSearchGameField(screenSize), // Fixed search field at the top
+          _buildSearchGameField(screenSize),
           Expanded(
-            child: SingleChildScrollView( // Wrap the scrollable content in a SingleChildScrollView
+            child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 0.0),
-                    _buildBannerGameCarousel(), // Banner Game Carousel
-                    const SizedBox(height: 0.0), // Add some spacing
-                    _buildGridOptions(), // Grid options
+                    _buildBannerGameCarousel(),
+                    const SizedBox(height: 0.0),
+                    _buildGridOptions(),
                   ],
                 ),
               ),
@@ -123,12 +124,10 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
-
   Widget _buildSearchGameField(Size screenSize) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xffFAF9F6),
-        borderRadius: BorderRadius.circular(0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -145,6 +144,7 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
             children: [
               Expanded(
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0XFFfaf9f6),
@@ -159,16 +159,13 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 0.0),
               IconButton(
                 onPressed: () {
-                  // Action when icon pressed
+                  // Implement search action
                 },
                 icon: const Icon(Icons.search_rounded),
                 color: const Color(0xff353E43),
                 iconSize: 28.0,
-                padding: const EdgeInsets.all(0.0),
-                constraints: const BoxConstraints(),
                 splashRadius: 20.0,
               ),
             ],
@@ -246,43 +243,67 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
-  Widget _buildGridOptions() {
-    const List<Map<String, dynamic>> options = [
-      {'title': 'PUBG Mobile', 'image': 'assets/pubg.jpg'},
-      {'title': 'Mobile Legends', 'image': 'assets/mlbb.png'},
-      {'title': 'Free Fire', 'image': 'assets/ff.jpg'},
-      {'title': 'Point Blank', 'image': 'assets/pb.png'},
-      {'title': 'Call of Duty M', 'image': 'assets/codm.png'},
-      {'title': 'Honor of Kings', 'image': 'assets/hok.png'},
-      {'title': 'Genshin Impact', 'image': 'assets/genshin.jpeg'},
-      {'title': 'Honkai Star Rail', 'image': 'assets/honkai.jpeg'},
-      {'title': 'LoL: Wild Rift', 'image': 'assets/lol.png'},
-    ];
 
-    return Container(
-      color: const Color(0xFFfdf7e6),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
-      child: GridView.builder(
-        itemCount: options.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 0.75,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 5,
-        ),
-        itemBuilder: (context, index) {
-          return _buildGridItem(options[index]['title'], options[index]['image']);
-        },
-        shrinkWrap: true, // Allow GridView to be sized to its children
-        physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
-      ),
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+        '',
+        'GAME',
+        ''
+    );
+
+    return result;
+  }
+
+  Widget _buildGridOptions() {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _fetchData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error loading data"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text("No data available"));
+        }
+
+        // Access the map directly (no need to access 'data' key)
+        final data = snapshot.data!;  // Directly access the map
+
+        // Extract the keys (which are the names of the products)
+        final keys = data.keys.toList();
+        print('keys: $keys');  // Log the keys to verify they are correct
+
+        return Container(
+          color: const Color(0xFFfdf7e6),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
+          child: GridView.builder(
+            itemCount: keys.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 5,
+            ),
+            itemBuilder: (context, index) {
+              final key = keys[index];
+              return _buildGridItem(key, 'assets/ff.jpg');
+            },
+            shrinkWrap: true, // Allow GridView to be sized to its children
+            physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+          ),
+        );
+      },
     );
   }
 
   Widget _buildGridItem(String title, String imagePath) {
     return GestureDetector(
       onTap: () {
-        // Handle the tap event
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => mDetaiVoucherGame()), // Ensure proper navigation
+        );
       },
       child: Stack(
         alignment: Alignment.center,

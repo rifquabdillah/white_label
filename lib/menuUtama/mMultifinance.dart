@@ -5,15 +5,15 @@ import 'package:white_label/transaksipay.dart';
 import 'package:quickalert/quickalert.dart';
 import '../menuSaldo/mSaldo.dart';
 
-class mPertagasScreen extends StatefulWidget {
-  const mPertagasScreen({super.key});
+class mMultifinance extends StatefulWidget {
+  const mMultifinance({super.key});
 
   @override
-  mPertagasScreenState createState() => mPertagasScreenState();
+  mMultifinanceState createState() => mMultifinanceState();
 }
 
-class mPertagasScreenState extends State<mPertagasScreen> {
-  int _selectedPdamIndex = 0;
+class mMultifinanceState extends State<mMultifinance> {
+  int _selectedPascaBayarIndex = 0;
   final TextEditingController _customerNumberController = TextEditingController();
   bool _isSaldoVisible = true;
 
@@ -101,11 +101,11 @@ class mPertagasScreenState extends State<mPertagasScreen> {
           children: [
             _buildCustomerNumberField(screenSize),
             const SizedBox(height: 0),
-            PertagasTabBarWidget(
-                selectedPdamIndex: _selectedPdamIndex,
-                onPdamSelected: (index) {
+            PascaBayarTabBarWidget(
+                selectedPascaBayarIndex: _selectedPascaBayarIndex,
+                onPascaBayarSelected: (index) {
                   setState(() {
-                    _selectedPdamIndex = index;
+                    _selectedPascaBayarIndex = index;
                   });
                 },
                 customerNumberController: _customerNumberController,
@@ -132,7 +132,7 @@ class mPertagasScreenState extends State<mPertagasScreen> {
           focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.grey, width: 2.0),
           ),
-          hintText: 'Nomor Pertagas',
+          hintText: 'Nomor Multifinance',
           hintStyle: const TextStyle(color: Colors.grey),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
@@ -164,16 +164,16 @@ class mPertagasScreenState extends State<mPertagasScreen> {
   }
 }
 
-class PertagasTabBarWidget extends StatefulWidget {
-  final int selectedPdamIndex;
-  final ValueChanged<int> onPdamSelected;
+class PascaBayarTabBarWidget extends StatefulWidget {
+  final int selectedPascaBayarIndex;
+  final ValueChanged<int> onPascaBayarSelected;
   final TextEditingController customerNumberController;
   final String customerNumber;
 
-  const PertagasTabBarWidget({
+  const PascaBayarTabBarWidget({
     super.key,
-    required this.selectedPdamIndex,
-    required this.onPdamSelected,
+    required this.selectedPascaBayarIndex,
+    required this.onPascaBayarSelected,
     required this.customerNumberController,
     required this.customerNumber
   });
@@ -182,7 +182,7 @@ class PertagasTabBarWidget extends StatefulWidget {
   _PertagasTabBarWidgetState createState() => _PertagasTabBarWidgetState();
 }
 
-class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
+class _PertagasTabBarWidgetState extends State<PascaBayarTabBarWidget> {
   late Future<Map<String, List<Map<String, dynamic>>>> _dataFuture;
 
   @override
@@ -224,7 +224,7 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    'PERTAGAS',
+                    'MULTIFINANCE',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -288,7 +288,7 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
                 context: context,
                 type: QuickAlertType.error,
                 title: 'Oops...',
-                text: 'Silakan isi nomor Pertagas terlebih dahulu.',
+                text: 'Silakan isi nomor Multifinance terlebih dahulu.',
               );
             } else {
               // Directly proceed to TransaksiPay if customer number is already filled

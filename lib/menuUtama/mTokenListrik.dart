@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
 
 import '../menuSaldo/mSaldo.dart';
@@ -139,6 +140,7 @@ class _TokenListrikScreenState extends State<TokenListrikScreen> {
                 isPhoneNumberEmpty: _phoneController.text.isEmpty,
                 selectedProvider: selectedProvider,
                 activeFilters: _activeFilters,
+                  phoneNumber: _phoneController.text
               ),
             ),
           ],
@@ -193,6 +195,7 @@ class TokenTabBarWidget extends StatefulWidget {
   final List<String> tabTitles;
   final bool isPhoneNumberEmpty;
   final Map<String, String>? selectedProvider;
+  final String phoneNumber;
 
   const TokenTabBarWidget({
     super.key,
@@ -201,6 +204,7 @@ class TokenTabBarWidget extends StatefulWidget {
     required this.tabTitles,
     required this.isPhoneNumberEmpty,
     required this.selectedProvider, required Set<String> activeFilters,
+    required this.phoneNumber,
   });
 
   @override
@@ -276,17 +280,20 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
     );
   }
 
-  Future<Map<String, List<Map<String, dynamic>>>> _fetchData(String methodName) async {
-    var result = await NativeChannel.instance.getPulsaPaketProduk(
-      '${widget.selectedProvider?.keys.first}',
-      methodName,
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+        '${widget.selectedProvider?.keys.first}',
+        'TOKENPLN',
+        ''
     );
     return result; // Return the fetched result
   }
 
-  Widget _buildFilterButtons(String methodName) {
+
+    Widget _buildFilterButtons(String methodName) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-      future: _fetchData(methodName),
+      future: _fetchData(),
       builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -309,7 +316,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
               ),
             ),
             if (selectedFilter != null && data.containsKey(selectedFilter))
-              _buildDataCard(data[selectedFilter]!),
+              _buildDataCard(selectedFilter, data[selectedFilter]!),
           ],
         );
       },
@@ -358,7 +365,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
     );
   }
 
-  Widget _buildDataCard(List<Map<String, dynamic>> data) {
+  Widget _buildDataCard(String? key, List<Map<String, dynamic>> data) {
     // Print to debug the incoming data
     print('data: $data');
 
@@ -389,14 +396,13 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                 MaterialPageRoute(
                   builder: (context) => TransaksiPay(
                     params: {
-                      'nominal': item['namaProduk'] ?? 'Unknown',
-                      'kodeProduk': item['kodeProduk'] ?? 'Unknown',
-                      'hargaJual': item['hargaJual'].toString(), // Convert to String
-                      'description': item['detailProduk'] ?? 'No description available',
-                      'originalPrice': item['hargaCoret']?.toString() ?? '0', // Convert to String
-                      'info': item['masaAktif'] ?? 'No active period available',
-                      'transactionType': 'TokenLisrik',
-                      'selectedData': {}, // Map kosong, sesuaikan sesuai kebutuhan
+                      'Key': key,
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Masa Aktif': item['masaAktif'] ?? 'Unknown',
+                      'Detail': item['detail'] ?? 'Gada Detail',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tujuan': widget.phoneNumber,
+                      'Harga Produk': item['hargaJual'].toString()
                     },
                   ),
                 ),

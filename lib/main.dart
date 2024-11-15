@@ -8,10 +8,12 @@ import 'package:white_label/menuUtama/mBpjs.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'backend/nativeChannel.dart';
+import 'bantuan.dart';
 import 'historyTransaction.dart';
 import 'menuAkun/infoAkun.dart';
 import 'menuSaldo/kirimSaldo.dart';
 import 'menuSaldo/mSaldo.dart';
+import 'menuUtama/mMultifinance.dart';
 import 'menuUtama/mPDAM.dart';
 import 'menuUtama/mPLN.dart';
 import 'menuUtama/mPascabayar.dart';
@@ -190,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: ''), // Replace with your actual SupportPage
+              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0); // Start from right
                 const end = Offset.zero; // End at normal position
@@ -1000,6 +1002,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       case 'Pascabayar':
       // Add the corresponding screen for Telkom
         page = const mPascabayarScreen(); // Replace with the correct screen
+        break;
+      case 'Multifinance':
+      // Add the corresponding screen for Telkom
+        page = const mMultifinance(); // Replace with the correct screen
         break;
       default:
         return; // If the title does not match, do nothing

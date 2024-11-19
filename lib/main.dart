@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:white_label/login/login.dart';
 import 'package:white_label/menuUtama/mBpjs.dart';
+import 'package:white_label/menuUtama/mTvKabel.dart';
 import 'package:white_label/splashScreen.dart';
 import 'account.dart';
 import 'backend/nativeChannel.dart';
@@ -13,6 +14,7 @@ import 'historyTransaction.dart';
 import 'menuAkun/infoAkun.dart';
 import 'menuSaldo/kirimSaldo.dart';
 import 'menuSaldo/mSaldo.dart';
+import 'menuUtama/mDompetDigital.dart';
 import 'menuUtama/mMultifinance.dart';
 import 'menuUtama/mPDAM.dart';
 import 'menuUtama/mPLN.dart';
@@ -900,6 +902,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       case 'Voucher Game':
         page = VoucherGameScreen(); // Replace with the correct screen
         break;
+      case 'Dompet Digital':
+        page = mDompetDigital(); // Replace with the correct screen
+        break;
       default:
         return; // If the title does not match, do nothing
     }
@@ -1006,6 +1011,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       case 'Multifinance':
       // Add the corresponding screen for Telkom
         page = const mMultifinance(); // Replace with the correct screen
+        break;
+      case 'Tv Kabel':
+      // Add the corresponding screen for Telkom
+        page = const mTvKabelScreen(); // Replace with the correct screen
         break;
       default:
         return; // If the title does not match, do nothing

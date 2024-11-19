@@ -22,6 +22,7 @@ class MainActivity : FlutterActivity() {
     private val UTILS_CHANNEL = "com.example.whitelabel/utils"
     private val PRODUK_CHANNEL = "com.example.whitelabel/produk"
     private val TAGIHAN_CHANNEL = "com.example.whitelabel/tagihan"
+    private val IMAGES_CHANNEL = "com.example.whitelabel/images"
 
     private val PICK_CONTACT_REQUEST_CODE = 1
     private val SPEECH_REQUEST_CODE = 2
@@ -101,6 +102,20 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "fetchTagihan" -> {
                         httpRequest.getTagihan(kodeProduk!!, data!!) { response ->
+                            result.success(response)
+                        }
+                    } else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, IMAGES_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                val key = call.argument<String>("key")
+                Log.e("IMAGES_CHANNEL", "Received key: $key")
+
+                when (call.method) {
+                    "fetchIcon" -> {
+                        httpRequest.fetchAndSaveImage(key!!) { response ->
                             result.success(response)
                         }
                     } else -> result.notImplemented()

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:white_label/bantuan.dart';
 
 import 'account.dart';
 import 'main.dart';
@@ -171,7 +172,7 @@ class _HistoryPageState extends State<HistoryPage> {
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: ''), // Replace with your actual SupportPage
+              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0); // Start from right
                 const end = Offset.zero; // End at normal position

@@ -282,17 +282,29 @@ class _KonfirmasiTransaksiState extends State<KonfirmasiTransaksi> {
               ),
             ),
             onPressed: () {
-              // You can add functionality here for creating the invoice.
+              // Panggil fungsi cetakFaktur atau buka halaman CetakFaktur
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CetakFaktur(), // Kirim parameter jika diperlukan
+                ),
+              );
             },
             child: const Text(
               'Buat Faktur',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Colors.white),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Poppins',
+                color: Colors.white,
+              ),
             ),
           ),
         ),
       ],
     );
   }
+
 
   Widget _buildBackButton(BuildContext context) {
     return TextButton(

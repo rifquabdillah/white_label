@@ -6,6 +6,10 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.ResponseBody
+import retrofit2.Callback
+import java.io.File
+import java.io.FileOutputStream
 
 class HttpRequest(private val context: Context) {
 
@@ -99,6 +103,68 @@ class HttpRequest(private val context: Context) {
             override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
                 Log.e("HttpRequest", "Network error: ${t.message}")
                 callback(emptyMap()) // Return empty map on failure
+            }
+        })
+    }
+
+    fun fetchAndSaveImage(
+        key: String,
+        callback: (String?) -> Unit
+    ) {
+        // Make the request to get the product icon image
+        val call = apiRoutes.getProductIcon(key)
+
+        // Asynchronous network request to fetch the image
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        try {
+                            // Define the assets directory inside the app's private storage
+                            val assetsDir = File(context.filesDir, "assets")
+                            if (!assetsDir.exists()) assetsDir.mkdirs()  // Create the directory if it doesn't exist
+
+                            // Define the file path and name
+                            val fileName = "$key.jpg"  // Customize the file extension or name if needed
+                            val file = File(assetsDir, fileName)
+
+                            // Save the image to the file
+                            val outputStream = FileOutputStream(file)
+                            responseBody.byteStream().use { inputStream ->
+                                inputStream.copyTo(outputStream)  // Save the image data
+                            }
+                            outputStream.close()
+
+                            Log.d("FETCH_IMAGE", "Image saved to: ${file.absolutePath}")
+
+                            // Return the file path to Flutter (callback with file path)
+                            callback(file.absolutePath)
+                        } catch (e: Exception) {
+                            // Handle any exceptions during the save process
+                            Log.e("FETCH_IMAGE", "Failed to save image", e)
+                            callback(null)  // Return null if there is an error
+                        }
+                    } ?: run {
+                        Log.e("FETCH_IMAGE", "Response body is null")
+                        callback(null)  // Return null if the response body is null
+                    }
+                } else {
+                    // Log the error code and response body for debugging
+                    Log.e("FETCH_IMAGE", "Failed to download image: ${response.code()}")
+                    try {
+                        val errorBody = response.errorBody()?.string() // Log the error body content
+                        Log.e("FETCH_IMAGE", "Error Body: $errorBody")
+                    } catch (e: Exception) {
+                        Log.e("FETCH_IMAGE", "Failed to read error body", e)
+                    }
+                    callback(null)  // Return null if the download failed
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                // Handle network failures or other exceptions
+                Log.e("FETCH_IMAGE", "Failed to fetch image", t)
+                callback(null)  // Return null if the request failed
             }
         })
     }

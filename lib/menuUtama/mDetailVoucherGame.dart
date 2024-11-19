@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../menuSaldo/mSaldo.dart';
 
 class mDetaiVoucherGame extends StatefulWidget {
-  const mDetaiVoucherGame({super.key});
+  const mDetaiVoucherGame({super.key, required String gameTitle});
 
   @override
   mDetaiVoucherGameState createState() => mDetaiVoucherGameState();
@@ -61,13 +61,22 @@ class mDetaiVoucherGameState extends State<mDetaiVoucherGame> {
                   const SizedBox(width: 8.0),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to SaldoPage when the add icon is tapped
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SaldoPageScreen()), // Replace with your SaldoPage
+                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
                       );
                     },
-                    child: const Icon(Icons.add, color: Color(0xFFFAF9F6)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF909EAE),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color: Color(0xffFAF9F6),
+                        size: 18,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -123,19 +132,19 @@ class mDetaiVoucherGameState extends State<mDetaiVoucherGame> {
               ),
               hintText: 'ID GAME',
               hintStyle: const TextStyle(
-                color: Colors.grey,
+                color: Color(0xff909EAE),
               ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.orange),
+                    icon: const Icon(Icons.mic, color: Color(0xffECB709)),
                     onPressed: () {
                       // Logic to handle voice input
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.contacts, color: Colors.orange),
+                    icon: const Icon(Icons.contacts, color: Color(0xffECB709)),
                     onPressed: () {
                       // Logic to open contacts
                     },
@@ -182,7 +191,7 @@ class TabBarWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    'Promo',
+                    'Voucher Games',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -223,7 +232,7 @@ class TabBarWidget extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           if (selectedPromoIndex == 0)
-            _buildPromoGrid(context, 'Promo!')
+            _buildPromoGrid(context, 'Voucher Games!')
           else if (selectedPromoIndex == 1)
             _buildPromoGrid(context, 'Voucher Games'),
         ],
@@ -233,8 +242,30 @@ class TabBarWidget extends StatelessWidget {
 
   Widget _buildPromoGrid(BuildContext context, String promoType) {
     final promoItems = [
-      {'title': 'Promo Card 1', 'priceCoret': 'Rp 150.000', 'price': 'Rp 100.000', 'detail': 'Masa aktif 30 hari'},
-      {'title': 'Promo Card 2', 'priceCoret': 'Rp 200.000', 'price': 'Rp 150.000', 'detail': 'Masa aktif 60 hari'},
+      {
+        'title': 'Promo Card 1',
+        'priceCoret': 'Rp 150.000',
+        'price': 'Rp 100.000',
+        'detail': 'Masa aktif 30 hari'
+      },
+      {
+        'title': 'Promo Card 2',
+        'priceCoret': 'Rp 200.000',
+        'price': 'Rp 150.000',
+        'detail': 'Masa aktif 60 hari'
+      },
+      {
+        'title': 'Promo Card 2',
+        'priceCoret': 'Rp 200.000',
+        'price': 'Rp 150.000',
+        'detail': 'Masa aktif 60 hari'
+      },
+      {
+        'title': 'Promo Card 2',
+        'priceCoret': 'Rp 200.000',
+        'price': 'Rp 150.000',
+        'detail': 'Masa aktif 60 hari'
+      },
       // Add more items as needed
     ];
 
@@ -245,7 +276,7 @@ class TabBarWidget extends StatelessWidget {
         crossAxisCount: 2, // Dua card dalam satu baris
         crossAxisSpacing: 8.0, // Jarak horizontal antar card
         mainAxisSpacing: 8.0, // Jarak vertikal antar card
-        childAspectRatio: 3 / 4, // Rasio aspek card
+        childAspectRatio: 3 / 2, // Rasio lebar dan tinggi (contoh lebih pendek)
       ),
       itemCount: promoItems.length,
       itemBuilder: (context, index) {
@@ -253,7 +284,6 @@ class TabBarWidget extends StatelessWidget {
         return _buildPromoCard(
           context,
           item['title'] ?? '',
-          item['priceCoret'] ?? '',
           item['price'] ?? '',
           item['detail'] ?? '',
         );
@@ -261,7 +291,7 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPromoCard(BuildContext context, String title, String priceCoret, String price, String detail) {
+    Widget _buildPromoCard(BuildContext context, String title, String price, String detail) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent, // Warna transparan untuk container
@@ -292,38 +322,31 @@ class TabBarWidget extends StatelessWidget {
                     child: Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        fontFamily: 'Poppins',
+                        color: Color(0xff353E43),
                       ),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.all(4.0),
-                    color: Colors.orange,
+                    color: Color(0xffECB709),
 
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Text(
-                priceCoret,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey,
-                  decoration: TextDecoration.lineThrough,
-                ),
-              ),
+              const SizedBox(height: 5),
               Text(
                 price,
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                  color: Color(0xff353E43),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -331,11 +354,12 @@ class TabBarWidget extends StatelessWidget {
                     detail,
                     style: const TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff909EAE),
                     ),
                   ),
-                  const Icon(Icons.info, color: Colors.orange, size: 15),
+                  const Icon(Icons.info, color: Color(0xffECB709), size: 15),
                 ],
               ),
             ],

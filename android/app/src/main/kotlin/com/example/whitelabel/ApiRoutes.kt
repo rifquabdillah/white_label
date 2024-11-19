@@ -3,6 +3,7 @@ package com.example.whitelabel
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
+import okhttp3.ResponseBody
 
 interface ApiRoutes {
     @GET("products")
@@ -20,4 +21,9 @@ interface ApiRoutes {
         @Query("kodeProduk") kodeProduk: String,
         @Query("data") data: String
     ): Call<HttpRequest.TagihanResponse>
+
+    @GET("image")
+    fun getProductIcon(
+        @Query("key") key: String
+    ): Call<ResponseBody>
 }

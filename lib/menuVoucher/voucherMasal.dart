@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import 'injectSatuan.dart';
 
@@ -13,7 +15,12 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
   bool _isSaldoVisible = true;
   String? selectedProvider;
   String? selectedFilter;
-  TextEditingController _phoneController = TextEditingController(); // Controller for TextField
+  String _buttonText = "Input Nomor Voucher Masal"; // Default teks tombol
+  bool _isInjecting = false; // Status untuk proses injeksi voucher
+  final TextEditingController _voucherStartController = TextEditingController();
+  final TextEditingController _voucherEndController = TextEditingController();
+  final TextEditingController _voucherAmountController = TextEditingController();
+
   List<Map<String, dynamic>> data = [
     {
       'namaProduk': 'Voucher Pulsa',
@@ -31,8 +38,21 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
       'detailProduk': 'Voucher Data 5GB',
       'masaAktif': '15 Hari',
     },
-    // Add more sample data if needed
   ];
+
+  void _updateVoucherAmount() {
+    final start = int.tryParse(_voucherStartController.text) ?? 0;
+    final end = int.tryParse(_voucherEndController.text) ?? 0;
+
+    if (end >= start) {
+      final amount = end - start + 1; // Menghitung jumlah voucher
+      _voucherAmountController.text = amount.toString();
+    } else {
+      _voucherAmountController.text = '0'; // Reset jika input tidak valid
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +60,7 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: AppBar(
-        backgroundColor: const Color(0XFFfaf9f6),
+        backgroundColor: const Color(0xfffaf9f6),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -87,9 +107,7 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         toolbarHeight: 60,
         elevation: 0,
@@ -99,251 +117,166 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Replaced TextField with ElevatedButton
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Show Modal Bottom Sheet instead of AlertDialog
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: const Color(0xfffaf9f6), // Match the app's background color
-                    builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Input Nomor Voucher Masal",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff353E43),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Divider(
-                              color: Color(0xff909EAE), // Set color for the underline
-                              thickness: 1.5, // Set thickness of the divider
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Label and TextField for Nomor Seri Voucher
-                            const Text(
-                              'Nomor Seri Voucher Awal',  // Add label here
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w300,
-                                color: Color(0xff353E43),
-                                fontStyle: FontStyle.italic,  // Making the text italic
-                              ),
-                            ),
-
-                            TextField(
-                              controller: _phoneController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: const Color(0XFFFAF9F6),
-                                border: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xffFAF9F6), width: 2.0),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xffFAF9F6), width: 2.0),
-                                ),
-                                hintText: 'Nomor Seri Voucher',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xff909EAE),
+                  if (_buttonText == "Input Nomor Voucher Masal") {
+                    // Menampilkan modal input
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: const Color(0xfffaf9f6),
+                      builder: (context) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Input Nomor Voucher Masal",
+                                style: TextStyle(
+                                  fontSize: 18,
                                   fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                suffixIcon: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.mic, color: Color(0xffECB709)),
-                                      onPressed: () {
-                                        // Logic for voice input
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.qr_code_scanner_outlined, color: Color(0xffECB709)),
-                                      onPressed: () {
-                                        // Logic for QR scanner
-                                      },
-                                    ),
-                                  ],
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff353E43),
                                 ),
                               ),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF363636),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Label and TextField for Nomor Seri Voucher (Second one)
-                            const Text(
-                              'Nomor Seri Voucher',  // Add label here
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff353E43),
-                              ),
-                            ),
-                            TextField(
-                              controller: _phoneController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: const Color(0XFFFAF9F6),
-                                border: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xffFAF9F6), width: 2.0),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xffFAF9F6), width: 2.0),
-                                ),
-                                hintText: 'Nomor Seri Voucher',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xff909EAE),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Nomor Seri Voucher Awal',
+                                style: TextStyle(
+                                  fontSize: 12,
                                   fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                suffixIcon: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.mic, color: Color(0xffECB709)),
-                                      onPressed: () {
-                                        // Logic for voice input
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.qr_code_scanner_outlined, color: Color(0xffECB709)),
-                                      onPressed: () {
-                                        // Logic for QR scanner
-                                      },
-                                    ),
-                                  ],
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w100,
+                                  color: Color(0xff353E43),
                                 ),
                               ),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF363636),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Label and TextField for Jumlah Voucher
-                            const Text(
-                              'Jumlah Voucher',  // Add label here
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff353E43),
-                              ),
-                            ),
-                            TextField(
-                              controller: _phoneController, // Add your controller here
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: const Color(0XFFfaf9f6),
-                                border: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xff909EAE), width: 2.0),
-                                ),
-                                hintText: 'Jumlah Voucher',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xff909EAE),
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                              TextField(
+                                controller: _voucherStartController,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) => _updateVoucherAmount(),
+                                decoration: const InputDecoration(
+                                  hintText: 'Masukkan Nomor Seri Awal',
+                                  hintStyle: TextStyle(
                                     color: Color(0xff909EAE),
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.zero,
-                                    bottomRight: Radius.zero,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF363636),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Nomor Seri Voucher Akhir',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Poppins',
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w100,
+                                  color: Color(0xff353E43),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            // "Batalkan" Text with Underline and Yellow Color
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center, // Center the button
-                              children: [
-                                // "Batalkan" Text with Underline and Yellow Color
-                                TextButton(
-                                  onPressed: () {
-                                    // Add your cancel logic here
-                                  },
-                                  child: const Text(
-                                    'Batalkan',
-                                    style: TextStyle(
-                                      color: Color(0xffECB709), // Yellow color
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w600,
-                                      decoration: TextDecoration.underline, // Underline text
-                                    ),
+                              TextField(
+                                controller: _voucherEndController,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) => _updateVoucherAmount(),
+                                decoration: const InputDecoration(
+                                  hintText: 'Masukkan Nomor Seri Akhir',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xff909EAE),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                const SizedBox(width: 20), // Add spacing between Batalkan and Input button
-                                // "Input" Button with increased size
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Add your input logic here
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xffECB709), // Yellow color for the button
-                                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 50.0), // Increase size
-                                    textStyle: const TextStyle(
-                                      fontSize: 14, // Change the font size here
-                                      fontWeight: FontWeight.w600,
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Jumlah Voucher',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Poppins',
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w100,
+                                  color: Color(0xff353E43),
+                                ),
+                              ),
+                              TextField(
+                                controller: _voucherAmountController,
+                                readOnly: true,
+                                decoration: const InputDecoration(
+                                  hintText: 'Jumlah Voucher',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xff909EAE),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (_voucherAmountController.text != '0' &&
+                                          _voucherAmountController.text.isNotEmpty) {
+                                        setState(() {
+                                          _buttonText =
+                                          'Inject ${_voucherAmountController.text} Voucher';
+                                        });
+                                      }
+                                      Navigator.pop(context); // Tutup modal
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xffECB709),
+                                    ),
+                                    child: const Text(
+                                      'Simpan',
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Input',
-                                    style: TextStyle(
-                                      color: Colors.white, // Change the text color here
-                                    ),
-                                  ),
-                                )
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    // Proses injeksi voucher
+                    setState(() {
+                      _isInjecting = true;
+                    });
+                    Future.delayed(const Duration(seconds: 2), () {
+                      setState(() {
+                        _isInjecting = false;
+                        _buttonText = "Input Nomor Voucher Masal"; // Reset tombol
+                      });
 
-                              ],
-                            )
-
-                          ],
-                        ),
+                      // Menampilkan QuickAlert
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.success,
+                        title: 'Berhasil!',
+                        text: 'Voucher berhasil di-inject!',
+                        confirmBtnText: 'OK',
+                        confirmBtnColor: const Color(0xffECB709),
                       );
-                    },
-                  );
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0XFFfaf9f6), // Button background color
+                  backgroundColor: const Color(0XFFfaf9f6),
                   padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0),
-                  side: BorderSide(color: Color(0xffECB709), width: 2.0),
+                  side: const BorderSide(color: Color(0xffECB709), width: 2.0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0), // Adjust the radius value here
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                child: const Text(
-                  'Nomor Seri Voucher',
-                  style: TextStyle(
+                child: Text(
+                  _isInjecting ? "Injecting..." : _buttonText,
+                  style: const TextStyle(
                     color: Color(0xffECB709),
                     fontSize: 18,
                     fontFamily: 'Poppins',
@@ -352,7 +285,7 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+  const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: Row(
@@ -461,7 +394,6 @@ class _VoucherMasalScreenState extends State<VoucherMasalScreen> {
     );
   }
 
-  // Function to build the data card
   Widget _buildDataCard(List<Map<String, dynamic>> data) {
     if (data.isEmpty) {
       return Card(

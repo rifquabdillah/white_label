@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/nativeChannel.dart';
 import '../menuSaldo/mSaldo.dart';
 import 'mDetailVoucherGame.dart';
 import 'package:white_label/backend/produk.dart';
@@ -243,6 +244,11 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
+  Future<String> _getImage(String key) async {
+      var result = await NativeChannel.instance.fetchAndSaveImage(key);
+      return result;
+  }
+
 
   Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
     var produkInstance = Produk();
@@ -267,12 +273,13 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
           return Center(child: Text("No data available"));
         }
 
-        // Access the map directly (no need to access 'data' key)
-        final data = snapshot.data!;  // Directly access the map
-
-        // Extract the keys (which are the names of the products)
+        final data = snapshot.data!;
         final keys = data.keys.toList();
-        print('keys: $keys');  // Log the keys to verify they are correct
+
+        // Fetch image for each key if not already fetched
+        for (var key in keys) {
+          _getImage(key);
+        }
 
         return Container(
           color: const Color(0xFFfdf7e6),
@@ -287,10 +294,12 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              return _buildGridItem(key, 'assets/ff.jpg');
+              // Get the image path or use a default image if not fetched yet
+              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$key.jpg';
+              return _buildGridItem(key, imagePath);  // Pass the image path to the item builder
             },
-            shrinkWrap: true, // Allow GridView to be sized to its children
-            physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
           ),
         );
       },
@@ -302,7 +311,7 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => mDetaiVoucherGame()), // Ensure proper navigation
+          MaterialPageRoute(builder: (context) => mDetaiVoucherGame(gameTitle: title)), // Pass dynamic data
         );
       },
       child: Stack(
@@ -327,12 +336,9 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
               borderRadius: BorderRadius.circular(10),
               child: Stack(
                 children: [
-                  Opacity(
-                    opacity: 0.8,
-                    child: Image.asset(
-                      imagePath,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
                   ),
                   Positioned(
                     bottom: 0,
@@ -358,26 +364,15 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
           ),
           Positioned(
             bottom: 37,
-            left: 16,
-            right: 16,
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 70),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(1),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontFamily: 'Poppins',
+                fontSize: 10.0,
+                fontWeight: FontWeight.w600,
               ),
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],

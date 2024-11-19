@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:white_label/bantuan.dart';
 import 'package:white_label/login/login.dart';
 import 'package:white_label/main.dart'; // Adjust according to your file structure
 import 'package:white_label/menuSaldo/downlinePage.dart';
@@ -22,109 +23,81 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   int _selectedIndex = 2; // Set default index to 2 for Profile
-
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
       setState(() {
-        // Check if we are currently on the Profile page
-        if (_selectedIndex == 2) { // Profile page index
-          if (index == 1) { // Navigate to History
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation,
-                    secondaryAnimation) => const HistoryPage(transactions: []),
-                transitionsBuilder: (context, animation, secondaryAnimation,
-                    child) {
-                  const begin = Offset(
-                      -1.0, 0.0); // Start from left for History
-                  const end = Offset.zero; // End at normal position
-                  const curve = Curves.easeIn;
+        // Determine the direction of the slide transition based on the selected index
+        if (index == 0) { // Home
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(-1.0, 0.0); // Start from left
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 1) { // History
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 2) { // Profile (Account)
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero;
+                const curve = Curves.ease;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-                  var tween = Tween(begin: begin, end: end).chain(
-                      CurveTween(curve: curve));
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 3) { // Support
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
 
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          } else if (index == 0) { // Navigate to Home
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation,
-                    secondaryAnimation) => const MyHomePage(title: 'Home'),
-                // Replace with your actual HomePage
-                transitionsBuilder: (context, animation, secondaryAnimation,
-                    child) {
-                  const begin = Offset(-1.0, 0.0); // Start from left for Home
-                  const end = Offset.zero; // End at normal position
-                  const curve = Curves.easeIn;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-                  var tween = Tween(begin: begin, end: end).chain(
-                      CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          }
-        } else {
-          // For other navigation (History to Profile and Home to Profile)
-          if (index == 2) { // Navigate to Profile
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation,
-                    secondaryAnimation) => const AccountPage(),
-                transitionsBuilder: (context, animation, secondaryAnimation,
-                    child) {
-                  const begin = Offset(
-                      1.0, 0.0); // Start from right for Profile
-                  const end = Offset.zero; // End at normal position
-                  const curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end).chain(
-                      CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          } else if (index == 3) { // Navigate to Support
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation,
-                    secondaryAnimation) => const MyHomePage(title: ''),
-                // Replace with your actual SupportPage
-                transitionsBuilder: (context, animation, secondaryAnimation,
-                    child) {
-                  const begin = Offset(
-                      1.0, 0.0); // Start from right for Support
-                  const end = Offset.zero; // End at normal position
-                  const curve = Curves.easeIn;
-
-                  var tween = Tween(begin: begin, end: end).chain(
-                      CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          }
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
         }
         _selectedIndex = index; // Update selected index after navigating
       });
@@ -786,7 +759,7 @@ class _AccountPageState extends State<AccountPage> {
                 MaterialPageRoute(builder: (context) => ReferallMarkupScreen()),
               );
             },
-            child: _buildAccountOption('Kode Referral dan Mark Up'),
+            child: _buildAccountOption('Pricelist & Kode Referral'),
           ),
           GestureDetector(
             onTap: () {

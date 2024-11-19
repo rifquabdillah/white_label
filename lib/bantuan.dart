@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'account.dart';
+import 'historyTransaction.dart';
+import 'main.dart';
+
 class mBantuan extends StatefulWidget {
   const mBantuan({super.key});
 
@@ -8,6 +12,94 @@ class mBantuan extends StatefulWidget {
 }
 
 class mBantuanState extends State<mBantuan> {
+  int _selectedIndex = 3 ;
+
+
+  void _onItemTapped(int index) {
+    if (_selectedIndex != index) {
+      setState(() {
+        // Determine the direction of the slide transition based on the selected index
+        if (index == 0) { // Home
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(-1.0, 0.0); // Start from left
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 1) { // History
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 2) { // Profile (Account)
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero;
+                const curve = Curves.ease;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        } else if (index == 3) { // Support
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Start from right
+                const end = Offset.zero; // End at normal position
+                const curve = Curves.easeIn;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+        _selectedIndex = index; // Update selected index after navigating
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,12 +126,12 @@ class mBantuanState extends State<mBantuan> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildNewContent(context),
-            const SizedBox(height: 30),
+            const SizedBox(height: 100),
             _buildHeaderText(),
 
             const SizedBox(height: 20),
             _buildInfoCard(
-              icon: Icons.chat,
+              icon: Icons.chat_outlined,
               color: Colors.green,
               title: 'Hubungi Customer Officer',
               subtitle: 'Mulai percakapan dengan petugas Customer Service 24 jam kami',
@@ -59,27 +151,100 @@ class mBantuanState extends State<mBantuan> {
           ],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xffecb709),
+        tooltip: 'Shopping Cart',
+        shape: const CircleBorder(),
+        onPressed: () {},
+        child: const Icon(Icons.shopping_cart, color: Colors.white, size: 35.0),
+      ),
+      bottomNavigationBar: SizedBox(
+        height: 88.9,
+        child: BottomAppBar(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            // Align icons to the left
+            children: [
+              _buildIconWithText(Icons.home_filled, "Beranda ", 0),
+              // Pass index 0
+              _buildIconWithText(
+                  Icons.access_time_filled_rounded, "History", 1),
+              // Pass index 1
+              _buildIconWithText(Icons.person_rounded, "Akun", 2),
+              // Pass index 2
+              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3),
+              // Pass index 3
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconWithText(IconData icon, String text, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5.0, bottom: 1.0),
+      // Adjust horizontal padding as needed
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start, // Align items to the top
+        children: [
+          // Add the orange indicator line at the top
+          if (_selectedIndex == index) // Use if for cleaner syntax
+            Container(
+              width: 30.0, // Adjust width as needed
+              height: 1.5, // Thin line
+              color: Colors.orange, // Orange color for the indicator
+            ),
+          IconButton(
+            onPressed: () => _onItemTapped(index),
+            // Call _onItemTapped with the index
+            icon: Icon(
+              icon,
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors
+                  .grey, // Change color based on selection
+              size: 30.0,
+            ),
+          ),
+
+          Text(
+            text,
+            style: TextStyle(
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors
+                  .grey, // Change color based on selection
+              fontSize: 10.0,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildHeaderText() {
     return Center(
-      child: Text(
-        'Bagaimana kami bisa membantu kamu hari ini?',
-        style: const TextStyle(
-          fontSize: 16.0,
-          fontFamily: 'Poppins',
-          color: Color(0xff353E43),
-          fontWeight: FontWeight.w700,
+      child: SizedBox(
+        width: double.infinity, // Pastikan teks memiliki batas untuk melipat
+        child: Text(
+          'Bagaimana kami bisa membantu kamu hari ini?',
+          style: const TextStyle(
+            fontSize: 18.0,
+            fontFamily: 'Poppins',
+            color: Color(0xff353E43),
+            fontWeight: FontWeight.w700,
+          ),
+          textAlign: TextAlign.center,
+          softWrap: true, // Mengizinkan teks terpotong menjadi beberapa baris
         ),
-        textAlign: TextAlign.center,
       ),
     );
   }
 
+
   Widget _buildNewContent(BuildContext context) {
     return Container(
-      height: 115,
+      height: 130,
       decoration: BoxDecoration(
         color: const Color(0xff34C759),
         boxShadow: [
@@ -112,7 +277,12 @@ class mBantuanState extends State<mBantuan> {
     );
   }
 
-  Widget _buildInfoCard({required IconData icon, required Color color, required String title, required String subtitle}) {
+  Widget _buildInfoCard({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
@@ -132,16 +302,18 @@ class mBantuanState extends State<mBantuan> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Ikon dalam kotak persegi beradius
             Container(
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(24),
+                color: color, // Latar belakang solid dengan warna sesuai parameter
+                borderRadius: BorderRadius.circular(10), // Radius untuk kotak persegi
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: Colors.white, size: 24), // Ikon berwarna putih di tengah
             ),
             const SizedBox(width: 16),
+            // Teks detail
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,8 +331,8 @@ class mBantuanState extends State<mBantuan> {
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w300,
                       fontFamily: 'Poppins',
                       color: Color(0xFF909EAE),
                     ),
@@ -173,4 +345,5 @@ class mBantuanState extends State<mBantuan> {
       ),
     );
   }
+
 }

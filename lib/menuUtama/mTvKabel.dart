@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:white_label/backend/nativeChannel.dart';
 import 'package:white_label/backend/produk.dart';
 import 'package:white_label/transaksipay.dart';
 
 import '../menuSaldo/mSaldo.dart';
 
-class mMultifinance extends StatefulWidget {
-  const mMultifinance({super.key,});
+class mTvKabelScreen extends StatefulWidget {
+  const mTvKabelScreen({super.key,});
 
   @override
-  _mMultifinanceScreenState createState() => _mMultifinanceScreenState();
+  mTvKabelScreenState createState() => mTvKabelScreenState();
 }
 
 class Product {
@@ -21,7 +23,7 @@ class Product {
   Product({required this.kodeProduk, required this.namaProduk, required this.hargaJual});
 }
 
-class _mMultifinanceScreenState extends State<mMultifinance> {
+class mTvKabelScreenState extends State<mTvKabelScreen> {
   int _selectedPromoIndex = 0;
   final TextEditingController _phoneController = TextEditingController();
   bool _isSaldoVisible = true;
@@ -71,7 +73,7 @@ class _mMultifinanceScreenState extends State<mMultifinance> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye : Icons.visibility_off,
                       color: Color(0xff909EAE),
                     ),
                   ),
@@ -136,7 +138,7 @@ class _mMultifinanceScreenState extends State<mMultifinance> {
                       _selectedPromoIndex = index;
                     });
                   },
-                  tabTitles: ['Multifinance'],
+                  tabTitles: ['Tv Kabel'],
                   isPhoneNumberEmpty: _phoneController.text.isEmpty,
                   selectedProvider: selectedProvider,
                   activeFilters: _activeFilters,
@@ -166,7 +168,7 @@ class _mMultifinanceScreenState extends State<mMultifinance> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Color(0xff353E43), width: 3.0),
               ),
-              hintText: 'Masukkan Nomor Multifinance',
+              hintText: 'Masukkan Nomor Tv Kabel',
               hintStyle: const TextStyle(color: Colors.grey),
             ),
             onChanged: (value) {
@@ -240,7 +242,8 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Poppins',
                 ),
-                tabs: widget.tabTitles.map((title) => Tab(text: title)).toList(),
+                tabs: widget.tabTitles.map((title) => Tab(text: title))
+                    .toList(),
               ),
             ),
             Expanded(
@@ -249,7 +252,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                 child: TabBarView(
                   children: widget.isPhoneNumberEmpty
                       ? [_buildEmptyContent()]
-                      : [_buildMultifinanceTabContent()],
+                      : [_buildTvKabelTabContent()],
                 ),
               ),
             ),
@@ -262,19 +265,28 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
   Widget _buildEmptyContent() {
     return Center(
       child: Text(
-        'MULTIFINANCE',
+        'TV KABEL',
         style: TextStyle(color: Color(0xff909EAE)),
         textAlign: TextAlign.center,
       ),
     );
   }
 
-  Widget _buildMultifinanceTabContent() {
+  Future<Map<String, dynamic>> _fetchTagihan(String kodeProduk) async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchTagihan(
+        kodeProduk,
+        'group_produk:TV BERLANGGANAN/produk:CBN/tipe_trx:BAYAR/id_produk:TVCBN/idpel1:30124154/idpel2:/response_code:00/keterangan:Success/timeout:0/nominal:254190/nominal_admin:0/jml_bln:-'
+    );
+    return result;
+  }
+
+  Widget _buildTvKabelTabContent() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          _buildFilterButtons("_buildMultifinanceTabContent"),
+          _buildFilterButtons("_buildTvKabelTabContent"),
         ],
       ),
     );
@@ -284,7 +296,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
     var produkInstance = Produk();
     var result = await produkInstance.fetchProduk(
         '${widget.selectedProvider?.keys.first}',
-        'TAGIHANMULTIFINANCE',
+        'TAGIHANTVKABEL',
         ''
     );
     return result; // Return the fetched result
@@ -294,7 +306,8 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
   Widget _buildFilterButtons(String methodName) {
     return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
       future: _fetchData(),
-      builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -316,7 +329,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
               ),
             ),
             if (selectedFilter != null && data.containsKey(selectedFilter))
-              _buildDataCard(selectedFilter, data[selectedFilter]!),
+              _buildDataCard(context, data[selectedFilter]!),
           ],
         );
       },
@@ -365,11 +378,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
     );
   }
 
-  Widget _buildDataCard(String? key, List<Map<String, dynamic>> data) {
-    // Print to debug the incoming data
-    print('data: $data');
-
-    // Check if the data list is empty
+  Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
     if (data.isEmpty) {
       return Card(
         margin: const EdgeInsets.all(0.0),
@@ -377,109 +386,121 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            'No data available',  // Display message when there's no data
+            'No data available',
             style: TextStyle(fontSize: 14.0),
           ),
         ),
       );
     }
-    return Container( // Use a container to control the height
-      height: MediaQuery.of(context).size.height * 0.6, // Set a height to allow scrolling
-      child: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          final item = data[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TransaksiPay(
-                    params: {
-                      'Key': key,
-                      'Nama': item['namaProduk'] ?? 'Unknown',
-                      'Masa Aktif': item['masaAktif'] ?? 'Unknown',
-                      'Detail': item['detail'] ?? 'Gada Detail',
-                      'Kode Produk': item['kodeProduk'],
-                      'Nomor Tujuan': widget.phoneNumber,
-                      'Harga Produk': item['hargaJual'].toString()
-                    },
-                  ),
-                ),
-              );
 
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card
-              decoration: BoxDecoration(
-                color: Colors.transparent, // Pastikan warna transparan untuk container
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Warna bayangan
-                    offset: Offset(0, 4), // Posisi bayangan
-                    blurRadius: 8.0, // Mengaburkan bayangan
-                    spreadRadius: 2.0, // Menyebarkan bayangan
-                  ),
-                ],
-              ),
-              child: Card(
-                elevation: 2,
-                color: const Color(0xffFAF9F6), // Warna latar belakang card
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between items
-                        children: [
-                          Expanded( // Allow the product name to take available space
-                            child: Text(
-                              item['namaProduk'] ?? 'Unknown', // Display product name
-                              style: const TextStyle(color: Color(0xff353E43), fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            // Membuat ListView menyusut agar tidak mengambil ruang yang tidak perlu
+            physics: NeverScrollableScrollPhysics(),
+            // Menonaktifkan scroll ListView jika sudah di dalam SingleChildScrollView
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final item = data[index];
+              return GestureDetector(
+                onTap: () async {
+                  if (widget.phoneNumber.isEmpty) {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      title: 'Oopss...',
+                      text: 'Silakan isi nomor pelanggan PDAM terlebih dahulu.',
+                    );
+                  } else {
+                    final data = await _fetchTagihan(item['kodeProduk']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            TransaksiPay(
+                              params: {
+                                'Nama': item['namaProduk'] ?? 'Unknown',
+                                'Kode Produk': item['kodeProduk'],
+                                'Nomor Tagihan': widget.phoneNumber,
+                                'Nama Pelanggan': data['namaPelanggan'],
+                                'Tipe Meteran': data['tipeMeteran'],
+                                'Jumlah Bulan': data['bulan'],
+                                'Periode': data['periode'],
+                                'Daya': data['daya'],
+                                'Tagihan': (data['tagihan'] is num
+                                    ? (data['tagihan'] as num).toInt()
+                                    : 0).toString(),
+                                'Admin': (data['admin'] is num
+                                    ? (data['admin'] as num).toInt()
+                                    : 0).toString(),
+                                'Total Tagihan': (data['jumlahTagihan'] is num
+                                    ? (data['jumlahTagihan'] as num).toInt()
+                                    : 0).toString(),
+                                'description': item['detailProduk'] ??
+                                    'No description available',
+                              },
                             ),
-                          ),
-                          const SizedBox(width: 8), // Space between product name and original price
-                          Text(
-                            ' ${item['hargaCoret']?.toString() ?? '0'}', // Display original price
-                            style: const TextStyle(fontSize: 14, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
-                          ),
-                        ],
                       ),
-
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
-                        children: [
-                          Text(
-                            ' ${item['kodeProduk'] ?? 'Unknown'}', // Display product code
-                            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300, color: Color(0xff353E43)),
-                          ),
-                          const SizedBox(width: 8), // Space between kodeProduk and the dash
-                          const Text(
-                            '-', // Dash as a separator
-                            style: TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
-                          ),
-                          const SizedBox(width: 8), // Space between the dash and hargaJual
-                          Text(
-                            ' ${item['hargaJual'].toString()}', // Display selling price
-                            style: const TextStyle(fontSize: 14, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        ' ${item['detail'] ?? 'No active period available'}', // Display active period
-                        style: const TextStyle(fontSize: 12, color: Color(0xff909EAE)),
+                    );
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        offset: Offset(0, 4),
+                        blurRadius: 8.0,
+                        spreadRadius: 2.0,
                       ),
                     ],
                   ),
+                  child: Card(
+                    elevation: 2,
+                    color: const Color(0xffFAF9F6),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item['namaProduk'] ?? 'Unknown',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item['kodeProduk'] ?? 'No description available',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

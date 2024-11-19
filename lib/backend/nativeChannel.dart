@@ -11,6 +11,7 @@ class NativeChannel {
   static const UTILS_CHANNEL = MethodChannel('com.example.whitelabel/utils');
   static const PRODUK_PLATFORM = MethodChannel('com.example.whitelabel/produk');
   static const TAGIHAN_PLATFORM = MethodChannel('com.example.whitelabel/tagihan');
+  static const IMAGES_PLATFORM = MethodChannel('com.example.whitelabel/images');
 
   // Initialize NativeChannel and set up method call handler
   void initialize() {
@@ -98,6 +99,23 @@ class NativeChannel {
     } on PlatformException catch (e) {
       print('Failed to get data: ${e.message}');
       throw 'Failed to get data: ${e.message}';
+    }
+  }
+
+  Future<String> fetchAndSaveImage(String key) async {
+    try {
+      // Call the native method (Kotlin) and get the result
+      final String result = await IMAGES_PLATFORM.invokeMethod(
+        'fetchIcon',
+        {'key': key},
+      );
+
+      // Map the dynamic result to Map<String, dynamic>
+
+      return result;
+    } on PlatformException catch (e) {
+      print('Failed to fetch and save image: ${e.message}');
+      throw 'Failed to fetch and save image: ${e.message}';
     }
   }
 

@@ -118,7 +118,7 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
       resizeToAvoidBottomInset: false, // Prevent overflow when keyboard appears
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           backgroundColor: const Color(0XFFfaf9f6),
           title: Row(
@@ -496,7 +496,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
           if (isPulsa == true) {
             filterWidgets.add(_buildDataPulsaCard(selectedFilter, data[selectedFilter]!));
           } else if (isNelpon == true) {
-            filterWidgets.add(_buildNelponCarf(selectedFilter, data[selectedFilter]!));
+            filterWidgets.add(_buildNelponCard(selectedFilter, data[selectedFilter]!));
           } else {
             filterWidgets.add(_buildDataCard(selectedFilter, data[selectedFilter]!));
           }
@@ -581,7 +581,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       );
     }
     return Container( // Use a container to control the height
-      height: MediaQuery.of(context).size.height * 0.6, // Set a height to allow scrolling
+      height: MediaQuery.of(context).size.height * 0.63, // Set a height to allow scrolling
       child: ListView.builder(
         itemCount: data.length,
         itemBuilder: (context, index) {
@@ -618,17 +618,6 @@ class _TabBarWidgetState extends State<TabBarWidget> {
             },
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card
-              decoration: BoxDecoration(
-                color: Colors.transparent, // Pastikan warna transparan untuk container
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Warna bayangan
-                    offset: Offset(0, 4), // Posisi bayangan
-                    blurRadius: 8.0, // Mengaburkan bayangan
-                    spreadRadius: 2.0, // Menyebarkan bayangan
-                  ),
-                ],
-              ),
               child: Card(
                 elevation: 2,
                 color: const Color(0xffFAF9F6), // Warna latar belakang card
@@ -708,7 +697,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     }
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.of(context).size.height * 0.63,
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, // Jumlah kolom (2 kolom)
@@ -796,31 +785,26 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     );
   }
 
-  Widget _buildNelponCarf(String? key, List<Map<String, dynamic>> data) {
+  Widget _buildNelponCard(String? key, List<Map<String, dynamic>> data) {
     print('data: $data');
+
     if (data.isEmpty) {
       return Card(
         margin: const EdgeInsets.all(0.0),
         elevation: 4,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(18.0),
           child: Text(
             'No data available',
-            style: TextStyle(fontSize: 14.0),
+            style: const TextStyle(fontSize: 14.0),
           ),
         ),
       );
     }
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Jumlah kolom (2 kolom)
-          crossAxisSpacing: 8.0, // Jarak horizontal antar item
-          mainAxisSpacing: 8.0, // Jarak vertikal antar item
-          childAspectRatio: 3 / 2, // Rasio aspek untuk setiap item
-        ),
+      height: MediaQuery.of(context).size.height * 0.63, // Tinggi container agar bisa scroll
+      child: ListView.builder(
         itemCount: data.length,
         itemBuilder: (context, index) {
           final item = data[index];
@@ -833,65 +817,95 @@ class _TabBarWidgetState extends State<TabBarWidget> {
                     params: {
                       'Key': key,
                       'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Masa Aktif': item['masaAktif'] ?? 'Unknown',
+                      'Detail': item['detail'] ?? 'No Detail',
                       'Kode Produk': item['kodeProduk'],
                       'Nomor Tujuan': widget.phoneNumber,
-                      'Harga Produk': item['hargaJual'].toString() // Map kosong, sesuaikan sesuai kebutuhan
+                      'Harga Produk': item['hargaJual'].toString()
                     },
                   ),
                 ),
               );
-
             },
-            child: Card(
-              margin: const EdgeInsets.all(4.0),
-              elevation: 2,
-              color: Color(0xffFAF9F6),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            item['namaProduk'] ?? 'Unknown',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin antar card
+              child: Card(
+                elevation: 2,
+                color: const Color(0xffFAF9F6),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item['namaProduk'] ?? 'Unknown',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ),
+                          const SizedBox(width: 8),
+                          Text(
+                            ' ${item['hargaCoret']?.toString() ?? '0'}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xff909EAE),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Color(0xff909EAE),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            ' ${item['kodeProduk'] ?? 'Unknown'}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            '-',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            ' ${item['hargaJual'].toString()}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xffECB709),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        ' ${item['detail'] ?? 'No active period available'}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xff909EAE),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          ' ${item['hargaCoret']?.toString() ?? '0'}',
-                          style: const TextStyle(fontSize: 12, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          ' ${item['kodeProduk'] ?? 'Unknown'}',
-                          style: const TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          '-',
-                          style: TextStyle(fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          ' ${item['hargaJual'].toString()}',
-                          style: const TextStyle(fontSize: 12, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      ' ${item['detail'] ?? 'No active period available'}',
-                      style: const TextStyle(fontSize: 10, color: Color(0xff909EAE)),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

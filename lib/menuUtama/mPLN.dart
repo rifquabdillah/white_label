@@ -240,22 +240,26 @@ class _PlnTabBarWidgetState extends State<PlnTabBarWidget> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-              future: _dataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error fetching data'));
-                } else if (snapshot.hasData) {
-                  final data = snapshot.data!['Pembayaran Tagihan PLN'] ?? [];
-                  return _buildDataCard(context, data);
-                } else {
-                  return Center(child: Text('No data available'));
-                }
-              },
+            child: Container(
+              color: const Color(0xffFDF7E6), // Menambahkan warna latar belakang pada konten
+              child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+                future: _dataFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error fetching data'));
+                  } else if (snapshot.hasData) {
+                    final data = snapshot.data!['Pembayaran Tagihan PLN'] ?? [];
+                    return _buildDataCard(context, data);
+                  } else {
+                    return Center(child: Text('No data available'));
+                  }
+                },
+              ),
             ),
-          ),
+          )
+
         ],
       ),
     );
@@ -263,14 +267,25 @@ class _PlnTabBarWidgetState extends State<PlnTabBarWidget> {
 
   Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
     if (data.isEmpty) {
-      return Card(
-        margin: const EdgeInsets.all(0.0),
-        elevation: 4,
+      return Container(
+        margin: const EdgeInsets.all(16.0), // Jarak pada semua sisi
+        decoration: BoxDecoration(
+          color: const Color(0xffFAF9F6),
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1), // Warna bayangan
+              blurRadius: 5, // Radius blur
+              spreadRadius: 2, // Radius penyebaran
+              offset: const Offset(0, 2), // Posisi bayangan (x, y)
+            ),
+          ],
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             'No data available',
-            style: TextStyle(fontSize: 14.0),
+            style: const TextStyle(fontSize: 14.0),
           ),
         ),
       );
@@ -290,85 +305,76 @@ class _PlnTabBarWidgetState extends State<PlnTabBarWidget> {
                 text: 'Silakan isi nomor pelanggan PLN terlebih dahulu.',
               );
             } else {
-              // Melanjutkan ke TransaksiPay jika nomor pelanggan sudah diisi
-              final data = await _fetchTagihan();
-              // Kirim data ke halaman TransaksiPay
+              final fetchedData = await _fetchTagihan();
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      TransaksiPay(
-                        params: {
-                          'Nama': item['namaProduk'] ?? 'Unknown',
-                          'Kode Produk': item['kodeProduk'],
-                          'Nomor Tagihan': widget.customerNumberController.text,
-                          'Nama Pelanggan': data['namaPelanggan'],
-                          'Tipe Meteran': data['tipeMeteran'],
-                          'Jumlah Bulan': data['bulan'],
-                          'Periode': data['periode'],
-                          'Daya': data['daya'],
-                          'Tagihan': (data['tagihan'] is num
-                              ? (data['tagihan'] as num).toInt()
-                              : 0).toString(),
-                          'Admin': (data['admin'] is num
-                              ? (data['admin'] as num).toInt()
-                              : 0).toString(),
-                          'Total Tagihan': (data['jumlahTagihan'] is num
-                              ? (data['jumlahTagihan'] as num).toInt()
-                              : 0).toString(),
-                          'description': item['detailProduk'] ??
-                              'No description available',
-                        },
-                      ),
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tagihan': widget.customerNumberController.text,
+                      'Nama Pelanggan': fetchedData['namaPelanggan'],
+                      'Tipe Meteran': fetchedData['tipeMeteran'],
+                      'Jumlah Bulan': fetchedData['bulan'],
+                      'Periode': fetchedData['periode'],
+                      'Daya': fetchedData['daya'],
+                      'Tagihan': (fetchedData['tagihan'] as num?)?.toInt().toString() ?? '0',
+                      'Admin': (fetchedData['admin'] as num?)?.toInt().toString() ?? '0',
+                      'Total Tagihan': (fetchedData['jumlahTagihan'] as num?)?.toInt().toString() ?? '0',
+                      'description': item['detailProduk'] ?? 'No description available',
+                    },
+                  ),
                 ),
               );
             }
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Jarak pada sisi atas, bawah, kanan, dan kiri
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: const Color(0xffFAF9F6),
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  offset: Offset(0, 4),
-                  blurRadius: 8.0,
-                  spreadRadius: 2.0,
+                  color: Colors.black.withOpacity(0.10), // Warna bayangan
+                  blurRadius: 2, // Radius blur
+                  spreadRadius: 3, // Radius penyebaran
+                  offset: const Offset(0, 0), // Posisi bayangan (x, y)
                 ),
               ],
             ),
-            child: Card(
-              elevation: 2,
-              color: const Color(0xffFAF9F6),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            item['namaProduk'] ?? 'Unknown',
-                            style: const TextStyle(fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins'),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item['namaProduk'] ?? 'Unknown',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
                           ),
                         ),
-                        const SizedBox(width: 8),
-                      ],
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    item['kodeProduk'] ?? 'No description available',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Poppins',
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item['kodeProduk'] ?? 'No description available',
-                      style: const TextStyle(fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          fontFamily: 'Poppins'),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
           ),
@@ -376,4 +382,5 @@ class _PlnTabBarWidgetState extends State<PlnTabBarWidget> {
       },
     );
   }
+
 }

@@ -245,7 +245,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
             ),
             Expanded(
               child: Container(
-                color: const Color(0xfffdf7e6),
+                color: const Color(0xffFDF7E6),
                 child: TabBarView(
                   children: widget.isPhoneNumberEmpty
                       ? [_buildEmptyContent()]
@@ -371,9 +371,20 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
 
     // Check if the data list is empty
     if (data.isEmpty) {
-      return Card(
-        margin: const EdgeInsets.all(0.0),
-        elevation: 4,
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: const Color(0xffFAF9F6),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 0), // Bayangan merata di setiap sisi
+            ),
+          ],
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
@@ -383,6 +394,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
         ),
       );
     }
+
     return Container( // Use a container to control the height
       height: MediaQuery.of(context).size.height * 0.6, // Set a height to allow scrolling
       child: ListView.builder(
@@ -399,7 +411,7 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                       'Key': key,
                       'Nama': item['namaProduk'] ?? 'Unknown',
                       'Masa Aktif': item['masaAktif'] ?? 'Unknown',
-                      'Detail': item['detail'] ?? 'Gada Detail',
+                      'Detail': item['detail'] ?? 'No Detail Available',
                       'Kode Produk': item['kodeProduk'],
                       'Nomor Tujuan': widget.phoneNumber,
                       'Harga Produk': item['hargaJual'].toString()
@@ -407,24 +419,25 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                   ),
                 ),
               );
-
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card
+              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin for spacing between cards
               decoration: BoxDecoration(
-                color: Colors.transparent, // Pastikan warna transparan untuk container
+                color: Colors.transparent, // Transparent color for container
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Warna bayangan
-                    offset: Offset(0, 4), // Posisi bayangan
-                    blurRadius: 8.0, // Mengaburkan bayangan
-                    spreadRadius: 2.0, // Menyebarkan bayangan
+                    color: Colors.black.withOpacity(0.1), // Shadow color
+                    offset: Offset(0, 4), // Shadow position
+                    blurRadius: 8.0, // Blur the shadow
+                    spreadRadius: 2.0, // Spread the shadow
                   ),
                 ],
               ),
               child: Card(
-                elevation: 2,
-                color: const Color(0xffFAF9F6), // Warna latar belakang card
+                color: const Color(0xffFAF9F6), // Card background color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -433,43 +446,68 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between items
                         children: [
-                          Expanded( // Allow the product name to take available space
+                          Expanded(
                             child: Text(
                               item['namaProduk'] ?? 'Unknown', // Display product name
-                              style: const TextStyle(color: Color(0xff353E43), fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                              style: const TextStyle(
+                                color: Color(0xff353E43),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8), // Space between product name and original price
                           Text(
                             ' ${item['hargaCoret']?.toString() ?? '0'}', // Display original price
-                            style: const TextStyle(fontSize: 14, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xff909EAE),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Color(0xff909EAE),
+                            ),
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 4),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             ' ${item['kodeProduk'] ?? 'Unknown'}', // Display product code
-                            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300, color: Color(0xff353E43)),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w300,
+                              color: Color(0xff353E43),
+                            ),
                           ),
                           const SizedBox(width: 8), // Space between kodeProduk and the dash
                           const Text(
-                            '-', // Dash as a separator
-                            style: TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                            '-', // Dash separator
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
                           const SizedBox(width: 8), // Space between the dash and hargaJual
                           Text(
                             ' ${item['hargaJual'].toString()}', // Display selling price
-                            style: const TextStyle(fontSize: 14, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xffECB709),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        ' ${item['detail'] ?? 'No active period available'}', // Display active period
+                        ' ${item['detail'] ?? 'No active period available'}', // Display active period or description
                         style: const TextStyle(fontSize: 12, color: Color(0xff909EAE)),
                       ),
                     ],
@@ -477,10 +515,10 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                 ),
               ),
             ),
-
           );
         },
       ),
     );
   }
+
 }

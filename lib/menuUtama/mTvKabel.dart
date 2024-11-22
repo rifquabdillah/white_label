@@ -338,40 +338,37 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
 
   Widget _buildFilterButtonCard(String key) {
     final isActive = _activeFilters.contains(key);
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isActive) {
-            _activeFilters.remove(key);
-            selectedFilter = null;
-          } else {
-            _activeFilters.clear();
-            _activeFilters.add(key);
-            selectedFilter = key;
-          }
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.all(8.0),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: isActive ? Color(0xffC70000) : Color(0xffFAF9F6),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2), // Color of the shadow
-              spreadRadius: 1, // Spread of the shadow
-              blurRadius: 5, // Blur radius of the shadow
-              offset: Offset(0, 3), // Offset of the shadow (x, y)
-            ),
-          ],
+
+    return Container(
+      margin: const EdgeInsets.all(8.0), // Margin untuk spasi antar tombol
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 2, // Tinggi elevasi tombol
+          backgroundColor: isActive ? const Color(0xffC70000) : const Color(0xffFAF9F6),
+          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0), // Padding di dalam tombol
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Radius sudut tombol
+          ),
         ),
+        onPressed: () {
+          setState(() {
+            if (isActive) {
+              _activeFilters.remove(key);
+              selectedFilter = null;
+            } else {
+              _activeFilters.clear();
+              _activeFilters.add(key);
+              selectedFilter = key;
+            }
+          });
+        },
         child: Text(
           key,
           style: TextStyle(
-            color: isActive ? Colors.white : Color(0xff353E43),
-            fontFamily: 'Poppins',
+            fontSize: 13, // Ukuran font
+            color: isActive ? Colors.white : const Color(0xff353E43), // Warna teks
             fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
           ),
         ),
       ),
@@ -453,14 +450,13 @@ class _TokenTabBarWidgetState extends State<TokenTabBarWidget> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        offset: Offset(0, 4),
-                        blurRadius: 8.0,
+                        offset: Offset(0, 0), // Bayangan merata di semua sisi
+                        blurRadius: 5.0,
                         spreadRadius: 2.0,
                       ),
                     ],
                   ),
                   child: Card(
-                    elevation: 2,
                     color: const Color(0xffFAF9F6),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),

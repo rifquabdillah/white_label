@@ -241,30 +241,34 @@ class _PertagasTabBarWidgetState extends State<PascaBayarTabBarWidget> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-              future: _dataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error fetching data'));
-                } else if (snapshot.hasData) {
-                  // Combine data from all keys, skipping keys that contain "Cek"
-                  final List<Map<String, dynamic>> allData = [];
-                  snapshot.data!.forEach((key, dataList) {
-                    if (!key.contains("Cek")) {
-                      allData.addAll(dataList);
-                    }
-                  });
+            child: Container(
+              color: const Color(0xffFDF7E6), // Menambahkan warna latar belakang pada konten
+              child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+                future: _dataFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error fetching data'));
+                  } else if (snapshot.hasData) {
+                    // Gabungkan data dari semua kunci, kecuali yang mengandung "Cek"
+                    final List<Map<String, dynamic>> allData = [];
+                    snapshot.data!.forEach((key, dataList) {
+                      if (!key.contains("Cek")) {
+                        allData.addAll(dataList);
+                      }
+                    });
 
-                  // Display combined data
-                  return _buildDataCard(context, allData);
-                } else {
-                  return Center(child: Text('No data available'));
-                }
-              },
+                    // Tampilkan data yang digabungkan
+                    return _buildDataCard(context, allData);
+                  } else {
+                    return Center(child: Text('No data available'));
+                  }
+                },
+              ),
             ),
-          ),
+          )
+
         ],
       ),
     );
@@ -279,9 +283,20 @@ class _PertagasTabBarWidgetState extends State<PascaBayarTabBarWidget> {
     }).toList();
 
     if (filteredData.isEmpty) {
-      return Card(
-        margin: const EdgeInsets.all(0.0),
-        elevation: 4,
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: const Color(0xffFAF9F6),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 0), // Bayangan merata di setiap sisi
+            ),
+          ],
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
@@ -331,21 +346,25 @@ class _PertagasTabBarWidgetState extends State<PascaBayarTabBarWidget> {
             }
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: const Color(0xffFAF9F6),
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
-                  offset: Offset(0, 4),
-                  blurRadius: 8.0,
+                  offset: Offset(0, 0), // Bayangan merata di semua sisi
+                  blurRadius: 5.0,
                   spreadRadius: 2.0,
                 ),
               ],
             ),
             child: Card(
-              elevation: 2,
+              elevation: 0, // Menghapus elevation agar bayangan dari Container yang tampil
               color: const Color(0xffFAF9F6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -386,4 +405,5 @@ class _PertagasTabBarWidgetState extends State<PascaBayarTabBarWidget> {
       },
     );
   }
+
 }

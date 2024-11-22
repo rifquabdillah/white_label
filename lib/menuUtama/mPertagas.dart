@@ -241,22 +241,26 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-              future: _dataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error fetching data'));
-                } else if (snapshot.hasData) {
-                  final data = snapshot.data!['Bayar Tagihan Pertamina GAS'] ?? [];
-                  return _buildDataCard(context, data);
-                } else {
-                  return Center(child: Text('No data available'));
-                }
-              },
+            child: Container(
+              color: const Color(0xffFDF7E6), // Menambahkan warna latar belakang pada konten
+              child: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+                future: _dataFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error fetching data'));
+                  } else if (snapshot.hasData) {
+                    final data = snapshot.data!['Bayar Tagihan Pertamina GAS'] ?? [];
+                    return _buildDataCard(context, data);
+                  } else {
+                    return Center(child: Text('No data available'));
+                  }
+                },
+              ),
             ),
-          ),
+          )
+
         ],
       ),
     );
@@ -265,7 +269,7 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
   Widget _buildDataCard(BuildContext context, List<Map<String, dynamic>> data) {
     if (data.isEmpty) {
       return Card(
-        margin: const EdgeInsets.all(0.0),
+        margin: const EdgeInsets.all(16.0), // Adding margin around the card when there's no data
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -292,52 +296,40 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
               );
             } else {
               // Directly proceed to TransaksiPay if customer number is already filled
-              // Fetch the tagihan details when "OK" button is pressed
               final data = await _fetchTagihan(item['kodeProduk']);
-              // Pass the retrieved data to the TransaksiPay screen
-              print('data: $data');
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      TransaksiPay(
-                        params: {
-                          'Nama': item['namaProduk'] ?? 'Unknown',
-                          'Kode Produk': item['kodeProduk'],
-                          'Nomor Tagihan': widget.customerNumberController.text,
-                          'Nama Pelanggan': data['namaPelanggan'] ,
-                          'Tipe Meteran': data['tipeMeteran'],
-                          'Jumlah Bulan': data['bulan'],
-                          'Periode': data['periode'],
-                          'Daya': data['daya'],
-                          'Tagihan': (data['tagihan'] is num ? (data['tagihan'] as num).toInt() : 0).toString(),
-                          'Admin': (data['admin'] is num ? (data['admin'] as num).toInt() : 0).toString(),
-                          'Total Tagihan': (data['jumlahTagihan'] is num ? (data['jumlahTagihan'] as num).toInt() : 0).toString(),
-                          'description': item['detailProduk'] ?? 'No description available',
-                        },
-                      ),
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Kode Produk': item['kodeProduk'],
+                      'Nomor Tagihan': widget.customerNumberController.text,
+                      'Nama Pelanggan': data['namaPelanggan'],
+                      'Tipe Meteran': data['tipeMeteran'],
+                      'Jumlah Bulan': data['bulan'],
+                      'Periode': data['periode'],
+                      'Daya': data['daya'],
+                      'Tagihan': (data['tagihan'] is num ? (data['tagihan'] as num).toInt() : 0).toString(),
+                      'Admin': (data['admin'] is num ? (data['admin'] as num).toInt() : 0).toString(),
+                      'Total Tagihan': (data['jumlahTagihan'] is num ? (data['jumlahTagihan'] as num).toInt() : 0).toString(),
+                      'description': item['detailProduk'] ?? 'No description available',
+                    },
+                  ),
                 ),
               );
             }
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  offset: Offset(0, 4),
-                  blurRadius: 8.0,
-                  spreadRadius: 2.0,
-                ),
-              ],
-            ),
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Adding horizontal margin
             child: Card(
               elevation: 2,
               color: const Color(0xffFAF9F6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Optional: Round the corners of the card
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0), // Padding inside the card
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -347,9 +339,11 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
                         Expanded(
                           child: Text(
                             item['namaProduk'] ?? 'Unknown',
-                            style: const TextStyle(fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins'),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -358,9 +352,11 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
                     const SizedBox(height: 8),
                     Text(
                       item['kodeProduk'] ?? 'No description available',
-                      style: const TextStyle(fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          fontFamily: 'Poppins'),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -372,4 +368,5 @@ class _PertagasTabBarWidgetState extends State<PertagasTabBarWidget> {
       },
     );
   }
+
 }

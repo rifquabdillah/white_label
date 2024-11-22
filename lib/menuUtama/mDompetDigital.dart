@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../menuSaldo/mSaldo.dart';
-import 'mDetailVoucherGame.dart';
+import 'mDetailDompetDigital.dart';
 import 'package:white_label/backend/produk.dart';
 
 class mDompetDigital extends StatefulWidget {
@@ -53,7 +53,8 @@ class _mDompetDigitalState extends State<mDompetDigital> {
                     _isSaldoVisible ? saldo : '********',
                     style: const TextStyle(
                       fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(width: 25.0),
@@ -232,7 +233,7 @@ class _mDompetDigitalState extends State<mDompetDigital> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              final imagePath = gameImages[key] ?? 'assets/ff.jpg';
+              final imagePath = gameImages[key] ?? 'assets/ewalet.jpg';
               return _buildGridItem(key, imagePath);
             },
             shrinkWrap: true,
@@ -248,7 +249,7 @@ class _mDompetDigitalState extends State<mDompetDigital> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => mDetaiVoucherGame(gameTitle: title)), // Pass dynamic data
+          MaterialPageRoute(builder: (context) => mDetaiDompetDigital(gameTitle: title)), // Pass dynamic data
         );
       },
       child: Stack(

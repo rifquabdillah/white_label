@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: ''), // Set SplashScreen sebagai halaman awal
+      home: const MyHomePage(title: ''), // Ganti dengan widget SplashScreen
     );
   }
 }

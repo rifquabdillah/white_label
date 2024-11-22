@@ -136,20 +136,24 @@ class _PulsaPaketScreenState extends State<PulsaPaketScreen> {
                   ),
                   const SizedBox(width: 10.0),
                   Text(
-                    saldo,
+                    _isSaldoVisible ? saldo : '********',
                     style: const TextStyle(
                       fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(width: 25.0),
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        // Toggle visibility of saldo
+                        _isSaldoVisible = !_isSaldoVisible;
                       });
                     },
-                    child: const Icon(Icons.remove_red_eye, color: Color(0xff909EAE)),
+                    child: Icon(
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      color: const Color(0xff909EAE),
+                    ),
                   ),
                   const SizedBox(width: 8.0),
                   GestureDetector(

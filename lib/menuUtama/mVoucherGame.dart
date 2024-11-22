@@ -275,7 +275,6 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
 
         final data = snapshot.data!;
         final keys = data.keys.toList();
-
         // Fetch image for each key if not already fetched
         for (var key in keys) {
           _getImage(key);
@@ -294,7 +293,6 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              // Get the image path or use a default image if not fetched yet
               final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$key.jpg';
               return _buildGridItem(key, imagePath);  // Pass the image path to the item builder
             },

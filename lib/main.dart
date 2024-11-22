@@ -132,88 +132,54 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
       setState(() {
-        // Determine the direction of the slide transition based on the selected index
-        if (index == 0) { // Home
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(-1.0, 0.0); // Start from left
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 1) { // History
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 2) { // Profile (Account)
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero;
-                const curve = Curves.ease;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 3) { // Support
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
+        // Tentukan arah transisi berdasarkan indeks yang dipilih
+        Offset beginOffset;
+        if (index < _selectedIndex) {
+          // Transisi ke kiri jika menuju indeks yang lebih kecil
+          beginOffset = const Offset(-1.0, 0.0);
+        } else {
+          // Transisi ke kanan jika menuju indeks yang lebih besar
+          beginOffset = const Offset(1.0, 0.0);
         }
-        _selectedIndex = index; // Update selected index after navigating
+
+        Widget targetPage;
+        if (index == 0) {
+          targetPage = const MyHomePage(title: 'Home');
+        } else if (index == 1) {
+          targetPage = const HistoryPage(transactions: []);
+        } else if (index == 2) {
+          targetPage = const AccountPage();
+        } else if (index == 3) {
+          targetPage = const mBantuan();
+        } else {
+          return; // Jika halaman tidak ditemukan
+        }
+
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 500), // Atur durasi transisi
+            pageBuilder: (context, animation, secondaryAnimation) => targetPage,
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              const endOffset = Offset.zero;
+              const curve = Curves.easeInOut; // Lebih smooth
+
+              var tween = Tween(begin: beginOffset, end: endOffset)
+                  .chain(CurveTween(curve: curve));
+
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
+
+        _selectedIndex = index; // Perbarui indeks yang dipilih
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

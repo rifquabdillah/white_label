@@ -18,87 +18,50 @@ class mBantuanState extends State<mBantuan> {
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
       setState(() {
-        // Determine the direction of the slide transition based on the selected index
-        if (index == 0) { // Home
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(title: 'Home'), // Replace with your actual HomePage
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(-1.0, 0.0); // Start from left
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 1) { // History
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const HistoryPage(transactions: []),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 2) { // Profile (Account)
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const AccountPage(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero;
-                const curve = Curves.ease;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else if (index == 3) { // Support
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const mBantuan(), // Replace with your actual SupportPage
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0); // Start from right
-                const end = Offset.zero; // End at normal position
-                const curve = Curves.easeIn;
-
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ),
-          );
+        // Tentukan halaman tujuan berdasarkan indeks
+        Widget targetPage;
+        switch (index) {
+          case 0:
+            targetPage = const MyHomePage(title: 'Home');
+            break;
+          case 1:
+            targetPage = const HistoryPage(transactions: []);
+            break;
+          case 2:
+            targetPage = const AccountPage();
+            break;
+          case 3:
+            targetPage = const mBantuan();
+            break;
+          default:
+            return;
         }
-        _selectedIndex = index; // Update selected index after navigating
+
+        // Animasi selalu masuk dari kiri ke kanan
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => targetPage,
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              const begin = Offset(-1.0, 0.0); // Animasi selalu dari kiri
+              const end = Offset.zero; // Selesai di posisi normal
+              const curve = Curves.easeInOut; // Transisi smooth
+
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: child,
+              );
+            },
+          ),
+        );
+
+        // Perbarui indeks yang dipilih
+        _selectedIndex = index;
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

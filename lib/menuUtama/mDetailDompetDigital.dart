@@ -2,14 +2,27 @@ import 'package:flutter/material.dart';
 
 import '../menuSaldo/mSaldo.dart';
 
-class mDetaiDompetDigital extends StatefulWidget {
-  const mDetaiDompetDigital({super.key, required String gameTitle});
+class mDetailDompetDigital extends StatefulWidget {
+  final String gameTitle;
+  final List<Map<String, dynamic>> voucherData;
+
+  const mDetailDompetDigital({
+    super.key,
+    required this.gameTitle,
+    required this.voucherData,
+  });
 
   @override
-  mDetaiDompetDigitalState createState() => mDetaiDompetDigitalState();
+  mDetailDompetDigitalState createState() => mDetailDompetDigitalState();
 }
 
-class mDetaiDompetDigitalState extends State<mDetaiDompetDigital> {
+class mDetailDompetDigitalState extends State<mDetailDompetDigital> {
+  @override
+  void initState() {
+    super.initState();
+    // Print voucherData to the console
+    print('Dompet: ${widget.voucherData}');
+  }
   int _selectedPromoIndex = 0;
   bool _isSaldoVisible = true; // Controller for phone input
   final TextEditingController _phoneController = TextEditingController();
@@ -100,12 +113,12 @@ class mDetaiDompetDigitalState extends State<mDetaiDompetDigital> {
             _buildPhoneNumberField(screenSize), // Phone number input field
             const SizedBox(height: 0),
             TabBarWidget(
-              selectedPromoIndex: _selectedPromoIndex,
-              onPromoSelected: (index) {
-                setState(() {
-                  _selectedPromoIndex = index; // Update selected index
-                });
-              },
+                selectedPromoIndex: _selectedPromoIndex,
+                onPromoSelected: (index) {
+                  setState(() {
+                    _selectedPromoIndex = index; // Update selected index
+                  });
+                }, voucherData: widget.voucherData
             ),
           ],
         ),
@@ -130,7 +143,7 @@ class mDetaiDompetDigitalState extends State<mDetaiDompetDigital> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              hintText: 'Masukan Nomor',
+              hintText: 'Nomor',
               hintStyle: const TextStyle(
                 color: Color(0xff909EAE),
               ),
@@ -169,16 +182,23 @@ class mDetaiDompetDigitalState extends State<mDetaiDompetDigital> {
   }
 }
 
-class TabBarWidget extends StatelessWidget {
+class TabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
+  final List<Map<String, dynamic>> voucherData;
 
   const TabBarWidget({
     super.key,
     required this.selectedPromoIndex,
     required this.onPromoSelected,
+    required this.voucherData,
   });
 
+  @override
+  State<TabBarWidget> createState() => _TabBarWidgetState();
+}
+
+class _TabBarWidgetState extends State<TabBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -190,9 +210,9 @@ class TabBarWidget extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
+                  child: const Text(
                     'Dompet Digital',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                       color: Colors.black,
@@ -211,7 +231,7 @@ class TabBarWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 color: const Color(0xfffdf7e6),
-                child: _buildPromoTab(selectedPromoIndex, onPromoSelected, context),
+                child: _buildVoucherCards(context),
               ),
             ),
           ),
@@ -220,152 +240,106 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPromoTab(int selectedPromoIndex, ValueChanged<int> onPromoSelected, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          if (selectedPromoIndex == 0)
-            _buildPromoGrid(context, 'Voucher Games!')
-          else if (selectedPromoIndex == 1)
-            _buildPromoGrid(context, 'Voucher Games'),
-        ],
-      ),
-    );
-  }
+  Widget _buildVoucherCards(BuildContext context) {
+    final voucherData = widget.voucherData;
 
-  Widget _buildPromoGrid(BuildContext context, String promoType) {
-    final promoItems = [
-      {
-        'title': 'Promo Card 1',
-        'priceCoret': 'Rp 150.000',
-        'price': 'Rp 100.000',
-        'detail': 'Masa aktif 30 hari'
-      },
-      {
-        'title': 'Promo Card 2',
-        'priceCoret': 'Rp 200.000',
-        'price': 'Rp 150.000',
-        'detail': 'Masa aktif 60 hari'
-      },
-      {
-        'title': 'Promo Card 2',
-        'priceCoret': 'Rp 200.000',
-        'price': 'Rp 150.000',
-        'detail': 'Masa aktif 60 hari'
-      },
-      {
-        'title': 'Promo Card 2',
-        'priceCoret': 'Rp 200.000',
-        'price': 'Rp 150.000',
-        'detail': 'Masa aktif 60 hari'
-      },
-      // Add more items as needed
-    ];
-
-    return GridView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Dua card dalam satu baris
-        crossAxisSpacing: 8.0, // Jarak horizontal antar card
-        mainAxisSpacing: 8.0, // Jarak vertikal antar card
-        childAspectRatio: 3 / 2, // Rasio lebar dan tinggi (contoh lebih pendek)
-      ),
-      itemCount: promoItems.length,
+      itemCount: voucherData.length,
       itemBuilder: (context, index) {
-        final item = promoItems[index];
-        return _buildPromoCard(
+        final voucher = voucherData[index];
+        return _buildVoucherCard(
           context,
-          item['title'] ?? '',
-          item['price'] ?? '',
-          item['detail'] ?? '',
+          voucher['namaProduk'] ?? 'Unknown',
+          voucher['kodeProduk'] ?? 'Unknown',
+          voucher['hargaJual']?.toString() ?? '0',
+          voucher['hargaCoret']?.toString() ?? '0',
         );
       },
     );
   }
 
-  Widget _buildPromoCard(BuildContext context, String title, String price, String detail) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.transparent, // Warna transparan untuk container
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Warna bayangan
-            offset: const Offset(0, 4), // Posisi bayangan
-            blurRadius: 8.0, // Mengaburkan bayangan
-            spreadRadius: 2.0, // Menyebarkan bayangan
-          ),
-        ],
+  Widget _buildVoucherCard(
+      BuildContext context,
+      String productName,
+      String kodeProduk,
+      String price,
+      String priceCoret,
+      ) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Card(
-        elevation: 2,
-        color: const Color(0xffFAF9F6), // Warna latar belakang card
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between items
-                children: [
-                  Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Nama produk dan harga coret
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    productName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff353E43),
+                    ),
+                  ),
+                ),
+                  Align(
+                    alignment: Alignment.centerRight,
                     child: Text(
-                      title,
+                      '$priceCoret',
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        fontFamily: 'Poppins',
-                        color: Color(0xff353E43),
+                        decoration: TextDecoration.lineThrough,
+                        color: Color(0xff909EAE),
                       ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(4.0),
-                    color: Color(0xffECB709),
-
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Kode Produk - Harga
+            Row(
+              children: [
+                Text(
+                  kodeProduk,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff909EAE),
                   ),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Text(
-                price,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: Color(0xff353E43),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    detail,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff909EAE),
-                    ),
+                const SizedBox(width: 8), // Jarak antara kode produk dan tanda -
+                const Text(
+                  '-',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff909EAE),
                   ),
-                  const Icon(Icons.info, color: Color(0xffECB709), size: 15),
-                ],
-              ),
-            ],
-          ),
+                ),
+                const SizedBox(width: 8), // Jarak antara tanda - dan harga
+                Text(
+                  '$price',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xffECB709),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
+
   }
 }

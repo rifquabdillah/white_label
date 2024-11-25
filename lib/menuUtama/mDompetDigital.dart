@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/nativeChannel.dart';
+import 'package:white_label/menuUtama/mDetailDompetDigital.dart';
 import '../menuSaldo/mSaldo.dart';
-import 'mDetailDompetDigital.dart';
+import 'mDetailVoucherGame.dart';
 import 'package:white_label/backend/produk.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class mDompetDigital extends StatefulWidget {
   @override
-  _mDompetDigitalState createState() => _mDompetDigitalState();
+  mDompetDigitalScreenState createState() => mDompetDigitalScreenState();
 }
 
-class _mDompetDigitalState extends State<mDompetDigital> {
+class mDompetDigitalScreenState extends State<mDompetDigital> {
   bool _isSaldoVisible = true;
   late PageController _pageController;
   final TextEditingController _searchController = TextEditingController();
@@ -27,7 +31,9 @@ class _mDompetDigitalState extends State<mDompetDigital> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
     const String saldo = '2.862.590'; // Consider using localization
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
@@ -53,8 +59,7 @@ class _mDompetDigitalState extends State<mDompetDigital> {
                     _isSaldoVisible ? saldo : '********',
                     style: const TextStyle(
                       fontSize: 18.0,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 25.0),
@@ -65,7 +70,8 @@ class _mDompetDigitalState extends State<mDompetDigital> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons
+                          .visibility_off,
                       color: const Color(0xff909EAE),
                     ),
                   ),
@@ -74,7 +80,8 @@ class _mDompetDigitalState extends State<mDompetDigital> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => SaldoPageScreen()),
                       );
                     },
                     child: Container(
@@ -107,10 +114,12 @@ class _mDompetDigitalState extends State<mDompetDigital> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenSize.width * 0.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 0.0),
                     const SizedBox(height: 0.0),
                     _buildGridOptions(),
                   ],
@@ -180,6 +189,12 @@ class _mDompetDigitalState extends State<mDompetDigital> {
     );
   }
 
+  Future<String> _getImage(String key, String index) async {
+    var result = await NativeChannel.instance.fetchAndSaveImage(key, index);
+    return result;
+  }
+
+
   Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
     var produkInstance = Produk();
     var result = await produkInstance.fetchProduk(
@@ -206,19 +221,11 @@ class _mDompetDigitalState extends State<mDompetDigital> {
         final data = snapshot.data!;
         final keys = data.keys.toList();
 
-        print('keys: $keys');
-
-        final Map<String, String> gameImages = {
-          "Free Fire": "assets/ff.jpg",
-          "Mobile Legends: Bang Bang": "assets/mlbb.png",
-          "PUBG Mobile": "assets/pubg.jpg",
-          "PUBG PC": "assets/pubg.jpg",
-          "AU2 Mobile": "assets/au2.png",
-          "Apex Legend Mobile Syndicate": "assets/apex.png",
-          "Battle NET": "assets/battle-net.png",
-
-          // Add more games as needed
-        };
+        // Fetch images for each key and index
+        for (var i = 0; i < keys.length; i++) {
+          print('Index: $i, Key: ${keys[i]}');
+          _getImage(keys[i], i.toString());
+        }
 
         return Container(
           color: const Color(0xFFfdf7e6),
@@ -233,8 +240,9 @@ class _mDompetDigitalState extends State<mDompetDigital> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              final imagePath = gameImages[key] ?? 'assets/ewalet.jpg';
-              return _buildGridItem(key, imagePath);
+              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$index-emoney.jpg';
+              final voucherData = data[key]; // Extract relevant voucher data
+              return _buildGridItem(key, imagePath, voucherData);
             },
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -244,12 +252,18 @@ class _mDompetDigitalState extends State<mDompetDigital> {
     );
   }
 
-  Widget _buildGridItem(String title, String imagePath) {
+
+  Widget _buildGridItem(String title, String imagePath, List<Map<String, dynamic>> voucherData) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => mDetaiDompetDigital(gameTitle: title)), // Pass dynamic data
+          MaterialPageRoute(
+            builder: (context) => mDetailDompetDigital(
+              gameTitle: title,
+              voucherData: voucherData,
+            ),
+          ),
         );
       },
       child: Stack(
@@ -274,9 +288,16 @@ class _mDompetDigitalState extends State<mDompetDigital> {
               borderRadius: BorderRadius.circular(10),
               child: Stack(
                 children: [
-                  Image.asset(
-                    imagePath,
+                  Image.file(
+                    File(imagePath),
+                    // Use Image.file to load from internal storage
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                            Icons.broken_image, size: 40, color: Colors.grey),
+                      );
+                    },
                   ),
                   Positioned(
                     bottom: 0,

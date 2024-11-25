@@ -212,7 +212,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           child: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 45.0), // Keep the icon size as needed
         ),
       ),
-
       bottomNavigationBar: Container(
         height: 88.9,
         decoration: const BoxDecoration(

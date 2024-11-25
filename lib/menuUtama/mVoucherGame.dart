@@ -3,6 +3,8 @@ import 'package:white_label/backend/nativeChannel.dart';
 import '../menuSaldo/mSaldo.dart';
 import 'mDetailVoucherGame.dart';
 import 'package:white_label/backend/produk.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class VoucherGameScreen extends StatefulWidget {
   @override
@@ -28,7 +30,9 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
     const String saldo = '2.862.590'; // Consider using localization
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
@@ -65,7 +69,8 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                       });
                     },
                     child: Icon(
-                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                      _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons
+                          .visibility_off,
                       color: const Color(0xff909EAE),
                     ),
                   ),
@@ -74,7 +79,8 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SaldoPageScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => SaldoPageScreen()),
                       );
                     },
                     child: Container(
@@ -107,7 +113,8 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenSize.width * 0.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -244,9 +251,9 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
-  Future<String> _getImage(String key) async {
-      var result = await NativeChannel.instance.fetchAndSaveImage(key);
-      return result;
+  Future<String> _getImage(String key, String index) async {
+    var result = await NativeChannel.instance.fetchAndSaveImage(key, index);
+    return result;
   }
 
 
@@ -275,9 +282,11 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
 
         final data = snapshot.data!;
         final keys = data.keys.toList();
-        // Fetch image for each key if not already fetched
-        for (var key in keys) {
-          _getImage(key);
+
+        // Fetch images for each key and index
+        for (var i = 0; i < keys.length; i++) {
+          print('Index: $i, Key: ${keys[i]}');
+          _getImage(keys[i], i.toString());
         }
 
         return Container(
@@ -293,8 +302,9 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$key.jpg';
-              return _buildGridItem(key, imagePath);  // Pass the image path to the item builder
+              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$index.jpg';
+              final voucherData = data[key]; // Extract relevant voucher data
+              return _buildGridItem(key, imagePath, voucherData);
             },
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -304,12 +314,18 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
-  Widget _buildGridItem(String title, String imagePath) {
+
+  Widget _buildGridItem(String title, String imagePath, List<Map<String, dynamic>> voucherData) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => mDetaiVoucherGame(gameTitle: title)), // Pass dynamic data
+          MaterialPageRoute(
+            builder: (context) => mDetaiVoucherGame(
+              gameTitle: title,
+              voucherData: voucherData,
+            ),
+          ),
         );
       },
       child: Stack(
@@ -334,9 +350,16 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
               borderRadius: BorderRadius.circular(10),
               child: Stack(
                 children: [
-                  Image.asset(
-                    imagePath,
+                  Image.file(
+                    File(imagePath),
+                    // Use Image.file to load from internal storage
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                            Icons.broken_image, size: 40, color: Colors.grey),
+                      );
+                    },
                   ),
                   Positioned(
                     bottom: 0,

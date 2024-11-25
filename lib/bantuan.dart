@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'account.dart';
 import 'historyTransaction.dart';
 import 'main.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class mBantuan extends StatefulWidget {
   const mBantuan({super.key});
@@ -98,6 +99,7 @@ class mBantuanState extends State<mBantuan> {
               color: Colors.green,
               title: 'Hubungi Customer Officer',
               subtitle: 'Mulai percakapan dengan petugas Customer Service 24 jam kami',
+              onTap: _launchWhatsApp, // Hubungkan ke fungsi peluncur WhatsApp
             ),
             _buildInfoCard(
               icon: Icons.help_outline,
@@ -245,68 +247,82 @@ class mBantuanState extends State<mBantuan> {
     required Color color,
     required String title,
     required String subtitle,
+    VoidCallback? onTap, // Tambahkan callback opsional untuk menangani aksi tap
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Ikon dalam kotak persegi beradius
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color, // Latar belakang solid dengan warna sesuai parameter
-                borderRadius: BorderRadius.circular(10), // Radius untuk kotak persegi
+    return GestureDetector(
+      onTap: onTap, // Gunakan callback jika disediakan
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 2),
               ),
-              child: Icon(icon, color: Colors.white, size: 24), // Ikon berwarna putih di tengah
-            ),
-            const SizedBox(width: 16),
-            // Teks detail
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
-                      color: Color(0xFF353E43),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w300,
-                      fontFamily: 'Poppins',
-                      color: Color(0xFF909EAE),
-                    ),
-                  ),
-                ],
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
-            ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Color(0xFF353E43),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w300,
+                        fontFamily: 'Poppins',
+                        color: Color(0xFF909EAE),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _launchWhatsApp() async {
+    const phoneNumber = '6281312287575'; // Ganti dengan nomor WhatsApp Anda
+    const message = 'Halo, saya butuh bantuan.'; // Pesan default
+    final url = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Tidak dapat membuka WhatsApp.';
+    }
   }
 
 }

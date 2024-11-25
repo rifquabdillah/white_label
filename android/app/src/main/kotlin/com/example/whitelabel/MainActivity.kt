@@ -111,11 +111,11 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, IMAGES_CHANNEL)
             .setMethodCallHandler { call, result ->
                 val key = call.argument<String>("key")
-                Log.e("IMAGES_CHANNEL", "Received key: $key")
+                val index = call.argument<String>("index")
 
                 when (call.method) {
                     "fetchIcon" -> {
-                        httpRequest.fetchAndSaveImage(key!!) { response ->
+                        httpRequest.fetchAndSaveImage(key!!, index!!) { response ->
                             result.success(response)
                         }
                     } else -> result.notImplemented()

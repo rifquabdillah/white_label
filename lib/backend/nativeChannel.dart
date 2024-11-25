@@ -102,14 +102,15 @@ class NativeChannel {
     }
   }
 
-  Future<String> fetchAndSaveImage(String key, String index) async {
+  Future<String> fetchAndSaveImage(String key, String index, String tipe) async {
     try {
       // Call the native method (Kotlin) and get the result
       final String result = await IMAGES_PLATFORM.invokeMethod(
         'fetchIcon',
         {
           'key': key,
-          'index': index
+          'index': index,
+          'tipe': tipe
         },
       );
 

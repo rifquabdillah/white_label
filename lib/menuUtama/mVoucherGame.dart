@@ -251,8 +251,8 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
     );
   }
 
-  Future<String> _getImage(String key, String index) async {
-    var result = await NativeChannel.instance.fetchAndSaveImage(key, index);
+  Future<String> _getImage(String key, String index, String tipe) async {
+    var result = await NativeChannel.instance.fetchAndSaveImage(key, index, tipe);
     return result;
   }
 
@@ -286,7 +286,7 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
         // Fetch images for each key and index
         for (var i = 0; i < keys.length; i++) {
           print('Index: $i, Key: ${keys[i]}');
-          _getImage(keys[i], i.toString());
+          _getImage(keys[i], i.toString(), 'game');
         }
 
         return Container(
@@ -302,7 +302,7 @@ class _VoucherGameScreenState extends State<VoucherGameScreen> {
             ),
             itemBuilder: (context, index) {
               final key = keys[index];
-              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$index.jpg';
+              final imagePath = '/data/user/0/com.example.whitelabel/files/assets/$index-game.jpg';
               final voucherData = data[key]; // Extract relevant voucher data
               return _buildGridItem(key, imagePath, voucherData);
             },

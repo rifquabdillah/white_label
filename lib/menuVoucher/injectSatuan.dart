@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:white_label/backend/produk.dart';
+
+import '../transaksipay.dart';
 
 class InjectVoucherSatuanScreen extends StatefulWidget {
   const InjectVoucherSatuanScreen({super.key});
@@ -12,25 +15,17 @@ class _InjectVoucherSatuanScreenState extends State<InjectVoucherSatuanScreen> {
   final TextEditingController _phoneController = TextEditingController();
   String? selectedProvider;
   String? selectedFilter;
-  List<Map<String, dynamic>> data = [
-    {
-      'namaProduk': 'Voucher Pulsa',
-      'kodeProduk': 'VP123',
-      'hargaJual': 100000,
-      'hargaCoret': 150000,
-      'detailProduk': 'Voucher Pulsa 100K',
-      'masaAktif': '30 Hari',
-    },
-    {
-      'namaProduk': 'Voucher Data',
-      'kodeProduk': 'VD456',
-      'hargaJual': 50000,
-      'hargaCoret': 70000,
-      'detailProduk': 'Voucher Data 5GB',
-      'masaAktif': '15 Hari',
-    },
-    // Add more sample data if needed
-  ];
+
+  Future<Map<String, List<Map<String, dynamic>>>> _fetchData() async {
+    var produkInstance = Produk();
+    var result = await produkInstance.fetchProduk(
+        '',
+        'INJECTVOUCHERSATUAN',
+        ''
+    );
+
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,8 +218,8 @@ class _InjectVoucherSatuanScreenState extends State<InjectVoucherSatuanScreen> {
               color: Color(0xffECB709),
               thickness: 2,
             ),
-            FilterWidget(), // Insert the filter widget
-            _buildDataCard(data), // Add the data display function here
+            // Insert the filter widget
+            _buildFilterButtons(), // Add the data display function here
             Expanded(
               child: Center(
                 child: TextButton(
@@ -251,68 +246,198 @@ class _InjectVoucherSatuanScreenState extends State<InjectVoucherSatuanScreen> {
     );
   }
 
-  // Function to build the data card
-  Widget _buildDataCard(List<Map<String, dynamic>> data) {
+  Widget _buildFilterButtons() {
+    return FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
+      future: _fetchData(),
+      builder: (BuildContext context, AsyncSnapshot<Map<String, List<Map<String, dynamic>>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        final data = snapshot.data ?? {};
+
+        List<Widget> filterWidgets = [
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: data.keys.map((key) {
+                  return _buildFilterButtonCard(key);
+                }).toList(),
+              ),
+            ),
+          ),
+        ];
+
+        if (selectedFilter != null && data.containsKey(selectedFilter)) {
+          filterWidgets.add(_buildDataCard(selectedFilter, data[selectedFilter]!));
+        }
+
+        return Column(
+          children: filterWidgets,
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterButtonCard(String label) {
+    bool isActive = selectedFilter == label;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 2,
+          backgroundColor: isActive ? Color(0xffC70000) : Color(0xffFAF9F6),
+        ),
+        onPressed: () {
+          setState(() {
+            selectedFilter = isActive ? null : label;
+          });
+
+        },
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: isActive ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? extractPembagian(String inputString, String key) {
+    // Step 1: Remove the trailing '|'
+    if (inputString.endsWith('|')) {
+      inputString = inputString.substring(0, inputString.length - 1);
+    }
+
+    // Step 2: Split the string by '|'
+    List<String> pairs = inputString.split('|');
+
+    // Step 3: Iterate through each pair to find the key and return its value
+    for (String pair in pairs) {
+      List<String> keyValue = pair.split('=');
+      if (keyValue.length == 2 && keyValue[0] == key) {
+        return keyValue[1];  // Return the value of the specific key
+      }
+    }
+
+    // Return null or empty string if the key is not found
+    return null;
+  }
+
+
+  Widget _buildDataCard(String? key, List<Map<String, dynamic>> data) {
+    // Print to debug the incoming data
+    print('data: $data');
+
+    // Check if the data flist is empty
     if (data.isEmpty) {
       return Card(
         margin: const EdgeInsets.all(0.0),
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Text(
-              'No data available',
-              style: TextStyle(fontSize: 14.0),
-            ),
+          child: Text(
+            'No data available',  // Display message when there's no data
+            style: TextStyle(fontSize: 14.0),
           ),
         ),
       );
     }
-
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
+    return Container( // Use a container to control the height
+      height: MediaQuery.of(context).size.height * 0.63, // Set a height to allow scrolling
       child: ListView.builder(
         itemCount: data.length,
         itemBuilder: (context, index) {
           final item = data[index];
           return GestureDetector(
             onTap: () {
-              // Your navigation logic
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransaksiPay(
+                    params: {
+                      'Key': key,
+                      'Nama': item['namaProduk'] ?? 'Unknown',
+                      'Masa Aktif': item['masaAktif'] ?? 'Unknown',
+                      'Detail': item['detail'] ?? 'Gada Detail',
+                      'Kode Produk': item['kodeProduk'],
+                      'Kuota Utama': extractPembagian(item['pembagian'], 'utama') ?? '',
+                      'Kuota Khusus 4G': extractPembagian(item['pembagian'], '4g') ?? '',
+                      'Kuota Malam': extractPembagian(item['pembagian'], 'malam') ?? '',
+                      'Kuota App': extractPembagian(item['pembagian'], 'apps') ?? '',
+                      'Deskripsi': 'Ganteng' ?? 'blabla',
+                      'Kuota Lokal': extractPembagian(item['pembagian'], 'lokal') ?? '',
+                      'Kuota OMG': extractPembagian(item['pembagian'], 'omg') ?? '',
+                      'Kuota Nelpon Sesama': extractPembagian(item['pembagian'], 'nelpsama') ?? '',
+                      'Kuota Nelpon Semua': extractPembagian(item['pembagian'], 'nelpsemua') ?? '',
+                      'Kuota SMS Sesama': extractPembagian(item['pembagian'], 'smssama') ?? '',
+                      'Kuota SMS Semua': extractPembagian(item['pembagian'], 'smssemua') ?? '',
+                      'Harga Produk': item['hargaJual'].toString()
+                    },
+                  ),
+                ),
+              );
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    offset: Offset(0, 4),
-                    blurRadius: 8.0,
-                    spreadRadius: 2.0,
-                  ),
-                ],
-              ),
+              margin: const EdgeInsets.symmetric(vertical: 8.0), // Margin untuk jarak antar card
               child: Card(
                 elevation: 2,
-                color: const Color(0xffFAF9F6),
+                color: const Color(0xffFAF9F6), // Warna latar belakang card
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item['namaProduk'],
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      const SizedBox(height: 5),
-                      Text(item['kodeProduk']),
-                      const SizedBox(height: 5),
-                      Text('Harga Jual: ${item['hargaJual']}'),
-                      Text('Harga Coret: ${item['hargaCoret']}'),
-                      const SizedBox(height: 5),
-                      Text('Detail Produk: ${item['detailProduk']}'),
-                      Text('Masa Aktif: ${item['masaAktif']}'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between items
+                        children: [
+                          Expanded( // Allow the product name to take available space
+                            child: Text(
+                              item['namaProduk'] ?? 'Unknown', // Display product name
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                            ),
+                          ),
+                          const SizedBox(width: 8), // Space between product name and original price
+                          Text(
+                            ' ${item['hargaCoret']?.toString() ?? '0'}', // Display original price
+                            style: const TextStyle(fontSize: 14, color: Color(0xff909EAE), fontWeight: FontWeight.w400, fontFamily: 'Poppins', decoration: TextDecoration.lineThrough, decorationColor: Color(0xff909EAE)),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+                        children: [
+                          Text(
+                            ' ${item['kodeProduk'] ?? 'Unknown'}', // Display product code
+                            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                          ),
+                          const SizedBox(width: 8), // Space between kodeProduk and the dash
+                          const Text(
+                            '-', // Dash as a separator
+                            style: TextStyle(fontSize: 14, fontFamily: 'Poppins', fontWeight: FontWeight.w300),
+                          ),
+                          const SizedBox(width: 8), // Space between the dash and hargaJual
+                          Text(
+                            ' ${item['hargaJual'].toString()}', // Display selling price
+                            style: const TextStyle(fontSize: 14, color: Color(0xffECB709), fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        ' ${item['detail'] ?? 'No active period available'}', // Display active period
+                        style: const TextStyle(fontSize: 12, color: Color(0xff909EAE)),
+                      ),
                     ],
                   ),
                 ),
@@ -320,40 +445,6 @@ class _InjectVoucherSatuanScreenState extends State<InjectVoucherSatuanScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class FilterWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              // Logika untuk tombol filter
-            },
-            child: const Text("Filter 1"),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              // Logika untuk tombol filter
-            },
-            child: const Text("Filter 2"),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              // Logika untuk tombol filter
-            },
-            child: const Text("Filter 3"),
-          ),
-        ],
       ),
     );
   }

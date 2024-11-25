@@ -189,8 +189,8 @@ class mDompetDigitalScreenState extends State<mDompetDigital> {
     );
   }
 
-  Future<String> _getImage(String key, String index) async {
-    var result = await NativeChannel.instance.fetchAndSaveImage(key, index);
+  Future<String> _getImage(String key, String index, String tipe) async {
+    var result = await NativeChannel.instance.fetchAndSaveImage(key, index, tipe);
     return result;
   }
 
@@ -224,7 +224,7 @@ class mDompetDigitalScreenState extends State<mDompetDigital> {
         // Fetch images for each key and index
         for (var i = 0; i < keys.length; i++) {
           print('Index: $i, Key: ${keys[i]}');
-          _getImage(keys[i], i.toString());
+          _getImage(keys[i], i.toString(), 'emoney');
         }
 
         return Container(

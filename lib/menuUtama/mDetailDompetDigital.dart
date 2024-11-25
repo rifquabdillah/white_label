@@ -118,7 +118,10 @@ class mDetailDompetDigitalState extends State<mDetailDompetDigital> {
                   setState(() {
                     _selectedPromoIndex = index; // Update selected index
                   });
-                }, voucherData: widget.voucherData
+                },
+              voucherData: widget.voucherData,
+              gameTitle: widget.gameTitle,
+
             ),
           ],
         ),
@@ -186,12 +189,14 @@ class TabBarWidget extends StatefulWidget {
   final int selectedPromoIndex;
   final ValueChanged<int> onPromoSelected;
   final List<Map<String, dynamic>> voucherData;
+  final String gameTitle;
 
   const TabBarWidget({
     super.key,
     required this.selectedPromoIndex,
     required this.onPromoSelected,
     required this.voucherData,
+    required this.gameTitle
   });
 
   @override
@@ -210,8 +215,8 @@ class _TabBarWidgetState extends State<TabBarWidget> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: const Text(
-                    'Dompet Digital',
+                  child: Text(
+                    widget.gameTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,

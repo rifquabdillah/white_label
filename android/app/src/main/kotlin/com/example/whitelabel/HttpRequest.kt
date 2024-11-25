@@ -110,6 +110,7 @@ class HttpRequest(private val context: Context) {
     fun fetchAndSaveImage(
         key: String,
         index: String,
+        tipe: String,
         callback: (String?) -> Unit
     ) {
         // Make the request to get the product icon image
@@ -121,12 +122,18 @@ class HttpRequest(private val context: Context) {
                 if (response.isSuccessful) {
                     response.body()?.let { responseBody ->
                         try {
+                            var fileName = ""
                             // Define the assets directory inside the app's private storage
                             val assetsDir = File(context.filesDir, "assets")
                             if (!assetsDir.exists()) assetsDir.mkdirs()  // Create the directory if it doesn't exist
 
                             // Define the file path and name
-                            val fileName = "$index.jpg"  // Customize the file extension or name if needed
+                            if (tipe == "game") {
+                                fileName = "$index-game.jpg"
+                            } else {
+                                fileName = "$index-emoney.jpg"
+                            }
+
                             val file = File(assetsDir, fileName)
 
                             // Save the image to the file

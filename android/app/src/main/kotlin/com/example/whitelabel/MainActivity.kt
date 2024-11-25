@@ -112,10 +112,11 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 val key = call.argument<String>("key")
                 val index = call.argument<String>("index")
+                val tipe = call.argument<String>("tipe")
 
                 when (call.method) {
                     "fetchIcon" -> {
-                        httpRequest.fetchAndSaveImage(key!!, index!!) { response ->
+                        httpRequest.fetchAndSaveImage(key!!, index!!, tipe!!) { response ->
                             result.success(response)
                         }
                     } else -> result.notImplemented()

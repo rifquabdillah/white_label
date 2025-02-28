@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:white_label/menuSaldo/mSaldo.dart';
-
 import 'menuTransaksi/konfirmasiTransaksi.dart';
 
 class TransaksiPay extends StatefulWidget {

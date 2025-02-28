@@ -297,128 +297,109 @@ class _MutasiMenuState extends State<MutasiMenu> {
 
   Widget transactionCard(String title, String subtitle, String date, String amount, String balance, Color amountColor) {
     return GestureDetector(
-      onTap: () {
-      },
+      onTap: () {},
       child: SizedBox(
         width: 400, // Set your desired width
         height: 100, // Set your desired height
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15), // Shadow color with opacity
-                    spreadRadius: 0,
-                    blurRadius: 8,
-                    offset: const Offset(0, 0), // Position of shadow
-                  ),
-                ],// Rounded corners
-              ),
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Left Side Column
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w600,
-                                  color: amountColor,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                subtitle,
-                                style: TextStyle(fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xff353E43)),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                date,
-                                style: TextStyle(fontSize: 12,
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xff909EAE)),
-                              ),
-                            ],
+        child: Card(
+          elevation: 4, // Menambahkan bayangan langsung di Card
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          shadowColor: Colors.black.withOpacity(0.3), // Warna bayangan
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Left Side Column
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                            color: amountColor,
                           ),
-                            ],
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Poppins',
+                            color: Color(0xff353E43),
                           ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          date,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                            color: Color(0xff909EAE),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                          // Right Side Column
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end, // Aligns the content to the end
-                            children: [
-                              // Detail text
-                              Text(
-                                'Detail >>',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w600,
-                                  color:  Color(0xffECB709),
-                                ),
-                              ),
-                              // Amount and balance texts aligned together
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end, // Aligns amount and balance to the end
-                                children: [
-                                  Text(
-                                    '($amount)',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xff353e43),
-                                    ),
-                                  ),
-                                  // Balance text
-                                  Text(
-                                    'Sisa saldo: $balance',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w400,
-                                      color:Color(0xff909EAE),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                    // Right Side Column
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Detail text
+                        Text(
+                          'Detail >>',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xffECB709),
                           ),
-                        ],
-                      ),
-                        ],
-                      ),
-                  ),
+                        ),
+                        // Amount and balance texts aligned together
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '($amount)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff353e43),
+                              ),
+                            ),
+                            // Balance text
+                            Text(
+                              'Sisa saldo: $balance',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff909EAE),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-
 
 
   void _showFilterDialog() {
@@ -612,9 +593,4 @@ class _MutasiMenuState extends State<MutasiMenu> {
       },
     );
   }
-
-
-
-
-
 }

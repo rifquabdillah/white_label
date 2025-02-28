@@ -97,20 +97,28 @@ class _infoAkunState extends State<infoAkun> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileCard(), // Column for phone number input
-            const SizedBox(height: 3),
-            _buildNewContent(),
-            const SizedBox(height: 100),
-            _buildButtonMember(context),// Space between input and new content
-            // New content below the phone number field
-          ],
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileCard(),
+                const SizedBox(height: 3),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: _buildNewContent(), // Hanya bagian form yang bisa di-scroll
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildButtonMember(context),
+              ],
+            ),
+          );
+        },
       ),
+
     );
   }
 
@@ -141,7 +149,7 @@ class _infoAkunState extends State<infoAkun> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'PX14025',
+                              text: 'KODE PX',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 20,
@@ -188,7 +196,7 @@ class _infoAkunState extends State<infoAkun> {
               if (_profileImage == null)
                 const Center(
                   child: Text(
-                    'FF',
+                    'NP',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w400,
@@ -275,7 +283,7 @@ class _infoAkunState extends State<infoAkun> {
                 color: textColor, // Set text color
               ),
               decoration: const InputDecoration(
-                hintText: 'Ferry Febrian Nagara', // Placeholder text
+                hintText: 'NAMA LENGKAP', // Placeholder text
                 hintStyle: TextStyle(
                   fontFamily: 'Poppins', // Use Poppins font
                   color: Color(0xff353E43), // Placeholder color
@@ -308,7 +316,7 @@ class _infoAkunState extends State<infoAkun> {
                 color: textColor, // Set text color
               ),
               decoration: const InputDecoration(
-                hintText: 'Jl. Sulaksana Baru I no. 5', // Placeholder text
+                hintText: 'ALAMAT LENGKAP', // Placeholder text
                 hintStyle: TextStyle(
                   fontFamily: 'Poppins', // Use Poppins font
                   color: Color(0xff353E43), // Placeholder color
@@ -370,7 +378,7 @@ class _infoAkunState extends State<infoAkun> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  '0822 4000 0201',
+                  'NOMOR TELEPON',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,

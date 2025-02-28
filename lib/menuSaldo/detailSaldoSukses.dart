@@ -16,198 +16,133 @@ class _detailSaldooState extends State<detailSaldo> {
   @override
   Widget build(BuildContext context) {
     const String saldo = '2.862.590';
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDF7E6),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0XFFfaf9f6), // Background color of the AppBar
-          ),
-          child: AppBar(
-            backgroundColor: Color(0xffFAF9F6),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Saldo ',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFF4e5558),
-                      ),
-                    ),
-                    const SizedBox(width: 10.0),
-                    Text(
-                      _isSaldoVisible ? saldo : '********',
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 25.0),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isSaldoVisible = !_isSaldoVisible;
-                        });
-                      },
-                      child: Icon(
-                        _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons
-                            .visibility_off,
-                        color: const Color(0xff909EAE),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SaldoPageScreen()),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF909EAE), // Warna latar belakang abu-abu
-                          borderRadius: BorderRadius.circular(4), // Menambahkan sedikit lengkungan pada sudut
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          color: Color(0xffFAF9F6),
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+      appBar: AppBar(
+        backgroundColor: const Color(0xffFAF9F6),
+        title: Row(
+          children: [
+            const Text(
+              'Saldo ',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal, color: Color(0xFF4e5558)),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                Navigator.pop(context);
+            const SizedBox(width: 10.0),
+            Text(
+              _isSaldoVisible ? saldo : '********',
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 10.0),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isSaldoVisible = !_isSaldoVisible;
+                });
               },
+              child: Icon(
+                _isSaldoVisible ? Icons.remove_red_eye_outlined : Icons.visibility_off,
+                color: const Color(0xff909EAE),
+              ),
             ),
-          ),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
 
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 0),
-          _buildNewContent(),
-          const SizedBox(height: 10),
-          _buildTicketDetails(),
-          const SizedBox(height: 330),
-          _buildBackButton(context),// Add this line to call the new method
-        ],
+      body: SingleChildScrollView( // Agar layar tidak overflow
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              _buildNewContent(),
+              const SizedBox(height: 10),
+              _buildTicketDetails(),
+              const SizedBox(height: 20),
+              _buildBackButton(context),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildNewContent() {
     return Container(
-      height: 150,
+      width: double.infinity, // Agar lebar maksimal
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xffFAF9F6), // Set the background color here
-        borderRadius: BorderRadius.circular(0), // Rounded corners
+        color: const Color(0xffFAF9F6),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color
-            spreadRadius: 0,
-            blurRadius: 5, // Blur radius for shadow effect
-            offset: const Offset(0, 4), // Position of the shadow
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.2), spreadRadius: 0, blurRadius: 5, offset: const Offset(0, 4)),
         ],
       ),
-      padding: const EdgeInsets.all(16), // Add padding for better spacing
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(
-            child: Text(
-              'Tiket sukses, saldo sudah ditambahkan',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w300,
-                color: Color(0xff909EAE),
-              ),
-            ),
+          const Text(
+            'Tiket sukses, saldo sudah ditambahkan',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300, color: Color(0xff909EAE)),
           ),
           const SizedBox(height: 5),
-          Center(
-            child: Text(
-              '2.500.375',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w600,
-                color: Color(0xff198754),
-              ),
-            ),
+          const Text(
+            '2.500.375',
+            style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600, color: Color(0xff198754)),
           ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Pada tanggal 24/10/2024 10:26:28',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xff353E43),
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center, // This is optional for centering
-            ),
-          )
+          const SizedBox(height: 10),
+          const Text(
+            'Pada tanggal 24/10/2024 10:26:28',
+            style: TextStyle(fontSize: 12, color: Color(0xff353E43), fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
   }
 
   Widget _buildTicketDetails() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDetailRow('Nomor Tiket', '#688548'),
-          _buildDetailRow('Tanggal Tiket', '24/10/2024 10:21:13'),
-          _buildDetailRow('Saldo Awal', '161.575'),
-          _buildDetailRow('Deposit Masuk', '2.500.375'),
-          _buildDetailRow('Saldo Akhir', '2.661.950'),
-          _buildDetailRow('Bank Penerima', 'BCA - 280 186 8888'),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow('Nomor Tiket', '#688548'),
+        _buildDetailRow('Tanggal Tiket', '24/10/2024 10:21:13'),
+        _buildDetailRow('Saldo Awal', '161.575'),
+        _buildDetailRow('Deposit Masuk', '2.500.375'),
+        _buildDetailRow('Saldo Akhir', '2.661.950'),
+        _buildDetailRow('Bank Penerima', 'BCA - 280 186 8888'),
+      ],
     );
   }
 
   Widget _buildDetailRow(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0), // Add vertical padding
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.w400,
-            fontFamily: 'Poppins',
-            color:Color(0xff909EAE),
-            fontSize: 14),
+          Flexible( // Supaya teks tidak keluar layar
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Poppins', color: Color(0xff909EAE), fontSize: 14),
+            ),
           ),
-          Text(
+          Flexible(
+            child: Text(
               value,
-            style: TextStyle(fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color:Color(0xff353E43),
-                fontSize: 14),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Color(0xff353E43), fontSize: 14),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Tombol kembali ke halaman utama
   Widget _buildBackButton(BuildContext context) {
     return Center(
       child: TextButton(
@@ -219,15 +154,9 @@ class _detailSaldooState extends State<detailSaldo> {
         },
         child: const Text(
           'Kembali ke Beranda',
-          style: TextStyle(
-            color: Color(0xff353E43),
-            fontSize: 14,
-            decoration: TextDecoration.underline,
-            decorationColor: Color(0xff353E43),
-          ),
+          style: TextStyle(color: Color(0xff353E43), fontSize: 14, decoration: TextDecoration.underline),
         ),
       ),
     );
   }
-
 }

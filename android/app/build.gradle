@@ -45,7 +45,6 @@ android {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3' // For Play Services
         implementation 'com.squareup.retrofit2:retrofit:2.9.0'
         implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-        implementation "io.flutter:flutter_embedding_debug:1.0.0"
         implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
         implementation("com.google.firebase:firebase-storage")
     }

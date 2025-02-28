@@ -22,64 +22,70 @@ class _DaftarMemberState extends State<DaftarMember> {
   @override
   void initState() {
     super.initState();
-    // Listener to change the text color based on input
-    // Listener to change the text color based on input for each controller
-    _nameController.addListener(() {
-      setState(() {
-        textColor = _nameController.text.isEmpty ? Colors.grey : Color(0xff353E43); // Change text color based on input
-      });
-    });
 
-    _phoneController.addListener(() {
-      setState(() {
-        textColor = _phoneController.text.isEmpty ? Colors.grey : Color(0xff353E43);
-      });
-    });
+    void updateState() {
+      setState(() {});
+    }
 
-    _alamatController.addListener(() {
-      setState(() {
-        textColor = _alamatController.text.isEmpty ? Colors.grey : Color(0xff353E43);
-      });
-    });
-
-    _markUpController.addListener(() {
-      setState(() {
-        textColor = _markUpController.text.isEmpty ? Colors.grey : Color(0xff353E43);
-      });
-    });
+    _nameController.addListener(updateState);
+    _phoneController.addListener(updateState);
+    _alamatController.addListener(updateState);
+    _markUpController.addListener(updateState);
   }
 
-  void _onDaftarPressed() {
-    // Assume registration is successful
-    bool registrationSuccessful = true; // Change this based on your logic
+  bool isFormFilled() {
+    return _nameController.text.isNotEmpty &&
+        _phoneController.text.isNotEmpty &&
+        _alamatController.text.isNotEmpty &&
+        _markUpController.text.isNotEmpty;
+  }
 
-    if (registrationSuccessful) {
+
+  void _onDaftarPressed() {
+    // Cek apakah semua field sudah diisi
+    if (_nameController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        _alamatController.text.isEmpty ||
+        _markUpController.text.isEmpty) {
+      // Tampilkan peringatan jika ada field yang kosong
       final snackBar = SnackBar(
         content: const Text(
-          'Pendaftaran berhasil!',
-          style: TextStyle(color: Color(0xff353E43)), // Optional: Change text color
+          'Harap isi semua data sebelum mendaftar!',
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color(0xFFfdf7e6), // Set the background color here
+        backgroundColor: Colors.red, // Warna merah untuk peringatan
         duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: Color(0xff353E43), // Optional: Change action text color
-          onPressed: () {
-            // Optional: Code to execute when the action is pressed.
-          },
-        ),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const AccountPage()), // Replace with your target page
-        );
-      });
+      return; // Hentikan proses pendaftaran
     }
+
+    // Jika semua data telah diisi, lanjutkan proses pendaftaran
+    final snackBar = SnackBar(
+      content: const Text(
+        'Pendaftaran berhasil!',
+        style: TextStyle(color: Color(0xff353E43)),
+      ),
+      backgroundColor: Color(0xFFfdf7e6),
+      duration: const Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'OK',
+        textColor: Color(0xff353E43),
+        onPressed: () {},
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AccountPage()),
+      );
+    });
   }
+
 
   @override
   void dispose() {
@@ -183,7 +189,6 @@ class _DaftarMemberState extends State<DaftarMember> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
                   const Text(
                     'Gunakan nomor WhatsApp biar gampang dapat promo',
@@ -196,6 +201,7 @@ class _DaftarMemberState extends State<DaftarMember> {
                   ),
                   TextField(
                     controller: _phoneController,
+                    keyboardType: TextInputType.phone, // Menampilkan keyboard numerik
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       color: textColor, // Use the textColor variable
@@ -215,7 +221,6 @@ class _DaftarMemberState extends State<DaftarMember> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
                   const Text(
                     'Memudahkan pengiriman ketika ada hadiah promo',
@@ -260,6 +265,7 @@ class _DaftarMemberState extends State<DaftarMember> {
                   ),
                   TextField(
                     controller: _markUpController,
+                    keyboardType: TextInputType.number, // Menampilkan keyboard angka
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       color: textColor, // Use the textColor variable
@@ -279,6 +285,7 @@ class _DaftarMemberState extends State<DaftarMember> {
                       ),
                     ),
                   ),
+
 
                   const SizedBox(height: 20),
                   Center(
@@ -319,23 +326,24 @@ class _DaftarMemberState extends State<DaftarMember> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xffECB709), // Button color
+                          backgroundColor: isFormFilled() ? Color(0xffECB709) : Colors.grey, // Warna abu-abu jika form belum lengkap
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: _onDaftarPressed, // Call the onLoginPressed function
+                        onPressed: isFormFilled() ? _onDaftarPressed : null, // Nonaktifkan jika form belum lengkap
                         child: const Text(
                           'DAFTARKAN MEMBER',
                           style: TextStyle(
-                            fontFamily: 'Poppins', // Use Poppins font
+                            fontFamily: 'Poppins',
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
+
                     ),
                   ),
                 ],

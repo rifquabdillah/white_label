@@ -114,7 +114,7 @@ class _PembayaranSaldoState extends State<PembayaranSaldo> {
   }
 
   Widget _buildNewContent() {
-    return Container(height: 220,
+    return Container(height: 210,
       decoration: BoxDecoration(
         color: Color(0xffFAF9F6), // Set the background color here
         borderRadius: BorderRadius.circular(0), // Rounded corners
@@ -238,8 +238,8 @@ class _PembayaranSaldoState extends State<PembayaranSaldo> {
             ),
           ),
           SizedBox(
-            width: 105, // Set your desired width
-            height: 40, // Set your desired height
+            width: 90, // Set your desired width
+            height: 30, // Set your desired height
             child: ElevatedButton(
               onPressed: () {
                 _showCancellationDialog(context); // Show dialog when pressed
@@ -254,7 +254,7 @@ class _PembayaranSaldoState extends State<PembayaranSaldo> {
               child: const Text(
                 'Batalkan',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                 ),

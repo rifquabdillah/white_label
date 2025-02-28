@@ -23,7 +23,7 @@ import 'menuUtama/mPromoScreen.dart';
 import 'menuUtama/mPulsaPaket.dart' show PulsaPaketScreen;
 import 'menuUtama/mSpesialDeals.dart';
 import 'menuUtama/mTelkom.dart';
-import 'menuUtama/mTokenListrik.dart' show TokenListrikScreen, mTokenListrikScreen;
+import 'menuUtama/mTokenListrik.dart' show TokenListrikScreen;
 import 'menuUtama/mPertagas.dart' show mPertagasScreen;
 import 'menuUtama/mVoucherGame.dart';
 import 'menuVoucher/actPerdana.dart';
@@ -31,6 +31,7 @@ import 'menuVoucher/injectSatuan.dart';
 import 'menuVoucher/voucherFisik.dart';
 import 'menuVoucher/voucherMasal.dart';
 import 'notificationPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +75,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   final int _selectedPromoIndex = 0;
   final bool _isNotificationVisible = true;
   bool _isFirstText = true;
+  bool _isFirstLaunch = false;
+
+
   void _toggleText() {
     setState(() {
       _isFirstText = !_isFirstText;
@@ -90,33 +94,49 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
   }
 
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool? isFirstLaunch = prefs.getBool('isFirstLaunch');
+
+    if (isFirstLaunch == null || isFirstLaunch) {
+      setState(() {
+        _isFirstLaunch = true;
+      });
+      // Simpan status bahwa aplikasi sudah dijalankan sebelumnya
+      await prefs.setBool('isFirstLaunch', false);
+      // Panggil checkPermission hanya sekali
+      _checkPermission();
+    } else {
+      setState(() {
+        _isFirstLaunch = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this); // Inisialisasi TabController
     super.initState();
-    _pageController = PageController(viewportFraction: 0.8);
+    _pageController = PageController(viewportFraction: 0.9);
     _startAutoScroll(); // Memulai auto scroll
-
     // Timer untuk mengubah teks setiap 2 detik
     Timer.periodic(const Duration(seconds: 2), (timer) {
       _toggleText();
     });
 
-    _checkPermission();
+    _checkFirstLaunch(); // Cek apakah aplikasi pertama kali dijalankan
   }
 
   void _startAutoScroll() {
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_currentPage < 2) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
+      if (_pageController.hasClients) {
+        _currentPage = (_currentPage + 1) % 3;
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 250), // Lebih ringan
+          curve: Curves.fastOutSlowIn, // Lebih smooth
+        );
       }
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
     });
   }
 
@@ -180,54 +200,57 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size; // Get screen size
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xFFFDF7E6),
       body: SafeArea(
-        child: SingleChildScrollView( // Wrap with SingleChildScrollView to enable scrolling
-          controller: _scrollController, // Assign the scroll controller
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  _buildHomePage(screenSize),
-                ],
-              ),
-            ],
-          ),
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverToBoxAdapter(child: _buildHomePage(Size(screenWidth, screenHeight))),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: SizedBox(
-        width: 70.0,  // Set the desired width
-        height: 70.0, // Set the desired height
+        width: screenWidth * 0.15,
+        height: screenWidth * 0.15,
         child: FloatingActionButton(
           backgroundColor: const Color(0xffecb709),
-          onPressed: _scrollToSpecialDeals, // Call the scroll function here
+          onPressed: _scrollToSpecialDeals,
           tooltip: 'Shopping Cart',
           shape: const CircleBorder(),
-          child: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 45.0), // Keep the icon size as needed
+          child: Icon(
+            Icons.shopping_cart_outlined,
+            color: Colors.white,
+            size: screenWidth * 0.07,
+          ),
         ),
       ),
       bottomNavigationBar: Container(
-        height: 88.9,
+        height: screenHeight * 0.10,
         decoration: const BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(50.0), // Adjust radius as needed
+            topLeft: Radius.circular(50.0),
             topRight: Radius.circular(20.0),
           ),
         ),
-        child: BottomAppBar(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start, // Align icons to the left
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildIconWithText(Icons.home_filled, "Beranda", 0), // Pass index 0
-              _buildIconWithText(Icons.access_time_filled_rounded, "History", 1), // Pass index 1
-              _buildIconWithText(Icons.person_rounded, "Akun", 2), // Pass index 2
-              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3), // Pass index 3
+              _buildIconWithText(Icons.home_filled, "Beranda", 0, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.access_time_filled_rounded, "History", 1, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.person_rounded, "Akun", 2, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3, screenWidth),
             ],
           ),
         ),
@@ -235,33 +258,31 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildIconWithText(IconData icon, String text, int index) {
+  Widget _buildIconWithText(IconData icon, String text, int index, double screenWidth) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5.0, bottom: 1.0), // Adjust horizontal padding as needed
+      padding: EdgeInsets.only(right: screenWidth * 0.01, bottom: screenWidth * 0.02),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start, // Align items to the top
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Add the orange indicator line at the top
-          if (_selectedIndex == index) // Use if for cleaner syntax
+          if (_selectedIndex == index)
             Container(
-              width: 30.0, // Adjust width as needed
-              height: 1.5, // Thin line
-              color: Colors.orange, // Orange color for the indicator
+              width: screenWidth * 0.08,
+              height: screenWidth * 0.005,
+              color: Colors.orange,
             ),
           IconButton(
-            onPressed: () => _onItemTapped(index), // Call _onItemTapped with the index
+            onPressed: () => _onItemTapped(index),
             icon: Icon(
               icon,
-              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey, // Change color based on selection
-              size: 30.0,
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey,
+              size: screenWidth * 0.07,
             ),
           ),
-
           Text(
             text,
             style: TextStyle(
-              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey, // Change color based on selection
-              fontSize: 10.0,
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey,
+              fontSize: screenWidth * 0.025,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
@@ -273,14 +294,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   Widget _buildHomePage(Size screenSize) {
     return Stack(
-      clipBehavior: Clip.none, // To allow overflow if needed
+      clipBehavior: Clip.none,
       children: [
         Column(
           children: [
-            _buildProfileCard(context), // Profile card remains at the top
-            const SizedBox(height: 90), // Optional spacing
-            _buildTabBar(), // Tab Bar added here
-            const SizedBox(height: 250), // Optional spacing
+            _buildProfileCard(context),
+            const SizedBox(height: 90),
+            _buildTabBar(),
+            const SizedBox(height: 250),
             _buildBannerCarousel(),
             const SizedBox(height: 20),
             _buildTransactionSection(),
@@ -294,13 +315,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ],
         ),
         Positioned(
-          top: 200, // Adjust this value based on your design
+          top: 200,
           left: 0,
           right: 0,
           child: buildActionRow(),
         ),
         Positioned(
-          top: 370, // Adjust this value based on your design
+          top: 370,
           left: 0,
           right: 0,
           child: _buildTabContent(),
@@ -310,48 +331,58 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildTabBar() {
-    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(color: Color(0xff353e430), fontFamily: 'Poppins', fontWeight: FontWeight.w700, fontSize: 14); // Unselected text color set to black
-    final selectedTextStyle = textStyle?.copyWith(fontWeight: FontWeight.w700, color: Colors.white, fontFamily: 'Poppins',); // Selected text color set to white
+    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
+      color: const Color(0xff353e43),
+      fontFamily: 'Poppins',
+      fontWeight: FontWeight.w700,
+      fontSize: 14,
+    );
+    final selectedTextStyle = textStyle?.copyWith(
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
+      fontFamily: 'Poppins',
+    );
+
     return DefaultTabController(
-      length: 3, // Number of tabs
+      length: 3,
       child: Container(
         decoration: const BoxDecoration(
-          color: Color(0xffFAF9F6), // Background color
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Rounded corners
+          color: Color(0xffFAF9F6),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Color(0xff909EAE), // Shadow color
-              blurRadius: 4, // Shadow blur
-              offset: Offset(0, 2), // Shadow offset
+              color: Color(0xff909EAE),
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10.0), // Adjust padding for better appearance
+          padding: const EdgeInsets.all(10.0),
           child: SegmentedTabControl(
             controller: _tabController,
-            tabTextColor: const Color(0xff353535), // Unselected tab text color (black)
-            selectedTabTextColor: Color(0xffFAF9F6), // Active tab text color (white)// Indicator color
-            indicatorPadding: const EdgeInsets.all(2), // Adjust the padding for the indicator
+            tabTextColor: const Color(0xff353535),
+            selectedTabTextColor: const Color(0xffFAF9F6),
+            indicatorPadding: const EdgeInsets.all(2),
             squeezeIntensity: 1.5,
             tabPadding: const EdgeInsets.symmetric(horizontal: 2),
-            textStyle: textStyle, // Apply textStyle for unselected state
-            selectedTextStyle: selectedTextStyle, // Apply selectedTextStyle for selected state
-            tabs: [
+            textStyle: textStyle,
+            selectedTextStyle: selectedTextStyle,
+            tabs: const [
               SegmentTab(
                 label: 'Pulsa',
-                color: const Color(0XFFECB709), // Tab color
-                backgroundColor: const Color(0XFFFAF9F6), // Background color
+                color: Color(0XFFECB709),
+                backgroundColor: Color(0XFFFAF9F6),
               ),
               SegmentTab(
                 label: 'Tagihan',
-                color: const Color(0XFFECB709), // Tab color
-                backgroundColor: const Color(0XFFFAF9F6), // Background color
+                color: Color(0XFFECB709),
+                backgroundColor: Color(0XFFFAF9F6),
               ),
               SegmentTab(
                 label: 'Voucher',
-                color: const Color(0XFFECB709), // Tab color
-                backgroundColor: const Color(0XFFFAF9F6), // Background color
+                color: Color(0XFFECB709),
+                backgroundColor: Color(0XFFFAF9F6),
               ),
             ],
           ),
@@ -362,16 +393,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   Widget _buildTabContent() {
     return Container(
-      color: Color(0xffFAF9F6),
+      color: const Color(0xffFAF9F6),
       child: SizedBox(
-        height: 228, // Adjust height based on content
+        height: 228,
         child: TabBarView(
           controller: _tabController,
           physics: const BouncingScrollPhysics(),
           children: [
-            _buildTransactionTab(), // Your pulsa tab content widget
-            _buildBillTab(), // Your tagihan tab content widget
-            _buildVoucherTab(), // Your voucher tab content widget
+            _buildTransactionTab(),
+            _buildBillTab(),
+            _buildVoucherTab(),
           ],
         ),
       ),
@@ -406,7 +437,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'PX14025',
+                                  text: 'Kode PX',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
@@ -414,7 +445,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                   ),
                                 ),
                                 TextSpan(
-                                  text: ' - Ferry Febrian N',
+                                  text: ' - Nama Pelanggan',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     fontSize: 14,
                                     fontFamily: 'Poppins',
@@ -427,7 +458,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         ],
                       ),
                       IconButton(
-                        icon: const Icon(Icons.notifications),
+                        icon: const Icon(Icons.notifications_none_outlined),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -468,7 +499,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         ),
         child: const Center(
           child: Text(
-            'FF',
+            'NP',
             style: TextStyle(
               color: Color(0xffFAF9F6),
               fontWeight: FontWeight.w500,
@@ -1061,7 +1092,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   void _onGridItemVoucherTapped(String title) {
     late final Widget page;
-
     switch (title) {
       case 'Inject Satuan':
         page = InjectVoucherSatuanScreen();
@@ -1172,28 +1202,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   Widget _buildBannerCarousel() {
     return SizedBox(
-      height: 150, // Set the height of the banner
+      height: 150,
       child: PageView.builder(
-        itemCount: 3, // Number of banners
+        physics: const BouncingScrollPhysics(), // Efek bouncing lebih smooth
+        itemCount: 3,
+        controller: _pageController,
         itemBuilder: (context, index) {
-          // Determine color for each banner
-          Color bannerColor;
-          switch (index) {
-            case 0:
-              bannerColor = Color(0xff34C759); // Banner 1 color
-              break;
-            case 1:
-              bannerColor = Color(0xff34C759); // Banner 2 color
-              break;
-            case 2:
-              bannerColor = Color(0xff34C759); // Banner 3 color
-              break;
-            default:
-              bannerColor = Colors.grey; // Default color
-          }
-          return _buildBanner('Banner ${index + 1}', bannerColor);
+          return _buildBanner('Banner ${index + 1}', const Color(0xff34C759));
         },
-        controller: _pageController, // Use initialized controller
       ),
     );
   }
@@ -1444,7 +1460,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       ),
                     ),
                     child: const Center(
-
                     ),
                   ),
                   Padding(

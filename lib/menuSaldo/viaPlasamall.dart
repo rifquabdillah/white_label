@@ -277,6 +277,7 @@ class _viaPlasamallScreenState extends State<viaPlasamallScreen> {
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
             controller: _phoneController,
+            keyboardType: TextInputType.number, // Menampilkan keyboard angka
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFFDF7E6),
@@ -312,6 +313,7 @@ class _viaPlasamallScreenState extends State<viaPlasamallScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
+            keyboardType: TextInputType.phone, // Menampilkan keyboard angka untuk nomor HP
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFFDF7E6),
@@ -330,6 +332,7 @@ class _viaPlasamallScreenState extends State<viaPlasamallScreen> {
             ),
           ),
         ),
+
         const SizedBox(height: 25),
         // Text with bolded "PLASAMALL / WIN SOLUTION"
         Padding(

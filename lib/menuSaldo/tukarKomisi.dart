@@ -160,7 +160,6 @@ class _tukarKomisiState extends State<tukarKomisi> {
     );
   }
 
-
   Widget _buildTukarKomisiField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,6 +168,7 @@ class _tukarKomisiState extends State<tukarKomisi> {
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
             controller: _phoneController,
+            keyboardType: TextInputType.number, // Menampilkan keyboard angka
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFFDF7E6),
@@ -184,7 +184,7 @@ class _tukarKomisiState extends State<tukarKomisi> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
-              color: _phoneController.text.isEmpty ?Color(0xff353E43) : const Color(0xFF363636),
+              color: _phoneController.text.isEmpty ? Color(0xff353E43) : const Color(0xFF363636),
             ),
             onChanged: (value) {},
           ),

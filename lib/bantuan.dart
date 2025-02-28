@@ -66,6 +66,8 @@ class mBantuanState extends State<mBantuan> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xFFFDF7E6),
       appBar: AppBar(
@@ -117,29 +119,42 @@ class mBantuanState extends State<mBantuan> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xffecb709),
-        tooltip: 'Shopping Cart',
-        shape: const CircleBorder(),
-        onPressed: () {},
-        child: const Icon(Icons.shopping_cart, color: Colors.white, size: 35.0),
+      floatingActionButton: SizedBox(
+        width: screenWidth * 0.15, // Responsif terhadap lebar layar
+        height: screenWidth * 0.15, // Responsif terhadap lebar layar
+        child: FloatingActionButton(
+          backgroundColor: const Color(0xffecb709),
+          tooltip: 'Shopping Cart',
+          shape: const CircleBorder(),
+          onPressed: () {  },
+          child: Icon(
+            Icons.shopping_cart_outlined,
+            color: Colors.white,
+            size: screenWidth * 0.07, // Responsif terhadap lebar layar
+          ),
+        ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: 88.9,
-        child: BottomAppBar(
+      bottomNavigationBar: Container(
+        height: screenHeight * 0.10, // Responsif terhadap tinggi layar
+        decoration: const BoxDecoration(
+          color: Colors.white, // Warna putih untuk latar belakang
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(50.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown, // Pastikan elemen menyesuaikan skala agar tidak overflow
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            // Align icons to the left
             children: [
-              _buildIconWithText(Icons.home_filled, "Beranda ", 0),
-              // Pass index 0
-              _buildIconWithText(
-                  Icons.access_time_filled_rounded, "History", 1),
-              // Pass index 1
-              _buildIconWithText(Icons.person_rounded, "Akun", 2),
-              // Pass index 2
-              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3),
-              // Pass index 3
+              _buildIconWithText(Icons.home_filled, "Beranda", 0, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.access_time_filled_rounded, "History", 1, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.person_rounded, "Akun", 2, screenWidth),
+              SizedBox(width: screenWidth * 0.05),
+              _buildIconWithText(Icons.headset_mic_outlined, "Bantuan", 3, screenWidth),
             ],
           ),
         ),
@@ -147,37 +162,31 @@ class mBantuanState extends State<mBantuan> {
     );
   }
 
-  Widget _buildIconWithText(IconData icon, String text, int index) {
+  Widget _buildIconWithText(IconData icon, String text, int index, double screenWidth) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5.0, bottom: 1.0),
-      // Adjust horizontal padding as needed
+      padding: EdgeInsets.only(right: screenWidth * 0.01, bottom: screenWidth * 0.02),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start, // Align items to the top
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Add the orange indicator line at the top
-          if (_selectedIndex == index) // Use if for cleaner syntax
+          if (_selectedIndex == index)
             Container(
-              width: 30.0, // Adjust width as needed
-              height: 1.5, // Thin line
-              color: Colors.orange, // Orange color for the indicator
+              width: screenWidth * 0.08,
+              height: screenWidth * 0.005,
+              color: Colors.orange,
             ),
           IconButton(
             onPressed: () => _onItemTapped(index),
-            // Call _onItemTapped with the index
             icon: Icon(
               icon,
-              color: _selectedIndex == index ? const Color(0xff353e43) : Colors
-                  .grey, // Change color based on selection
-              size: 30.0,
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey,
+              size: screenWidth * 0.07,
             ),
           ),
-
           Text(
             text,
             style: TextStyle(
-              color: _selectedIndex == index ? const Color(0xff353e43) : Colors
-                  .grey, // Change color based on selection
-              fontSize: 10.0,
+              color: _selectedIndex == index ? const Color(0xff353e43) : Colors.grey,
+              fontSize: screenWidth * 0.025,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
@@ -205,7 +214,6 @@ class mBantuanState extends State<mBantuan> {
       ),
     );
   }
-
 
   Widget _buildNewContent(BuildContext context) {
     return Container(

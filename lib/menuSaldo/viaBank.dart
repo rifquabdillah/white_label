@@ -170,9 +170,9 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
           ),
           const SizedBox(height: 10), // Space between title and cards
           Row(
-            mainAxisAlignment: MainAxisAlignment.start, // Align the row contents to the start (left)
+            mainAxisAlignment: MainAxisAlignment.center, // Align the row contents to the start (left)
             children: [
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: () {},
                 child: _buildFilledCardWithImageAndButton(
@@ -182,7 +182,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
                   onPressed: () {},
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: () {},
                 child: _buildFilledCardWithImageAndButton(
@@ -192,14 +192,14 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
                   onPressed: () {},
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               _buildFilledCardWithImageAndButton(
                 title: '',
                 imagePath: 'assets/bri.png',
                 buttonText: 'OPEN',
                 onPressed: () {},
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
             ],
           ),
         ],
@@ -230,7 +230,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
       child: Column(
         children: [
           SizedBox(
-            width: 90,
+            width: 80,
             height: 60,
             child: Image.asset(imagePath, fit: BoxFit.contain),
           ),
@@ -267,6 +267,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
           padding: const EdgeInsets.only(left: 26.0, right: 16.0),
           child: TextField(
             controller: _phoneController,
+            keyboardType: TextInputType.number, // Menampilkan keyboard angka
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFFDF7E6),
@@ -282,7 +283,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: _phoneController.text.isEmpty ? FontWeight.normal : FontWeight.w600,
-              color: _phoneController.text.isEmpty ?Color(0xff353E43) : const Color(0xFF363636),
+              color: _phoneController.text.isEmpty ? Color(0xff353E43) : const Color(0xFF363636),
             ),
             onChanged: (value) {},
           ),
@@ -292,6 +293,7 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
       ],
     );
   }
+
 
   Widget _buildButtonDeposit(BuildContext context) => Center(
     child: SizedBox(

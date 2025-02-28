@@ -203,84 +203,69 @@ class _downlinePageState extends State<downlinePage> {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: Color(0XFFfaf9f6), // Set your desired background color here
+        color: const Color(0XFFfaf9f6),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Shadow color
-            offset: Offset(0, 0), // Shadow position (x, y)
-            blurRadius: 1.0, // How soft the shadow edges are
-            spreadRadius: 3.0, // How much the shadow spreads
+            color: Colors.black.withOpacity(0.1),
+            offset: const Offset(0, 0),
+            blurRadius: 1.0,
+            spreadRadius: 3.0,
           ),
         ],
       ),
-      child: SizedBox(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Add horizontal padding
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space evenly between the columns
-            children: [
-              // Left Column
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, // Space cards evenly within the column
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Navigate to the transaction history screen when the card is tapped
-                    },
-                    child: _buildCommissionCard(
-                      title: 'Komisi Saat Ini',
-                      commissionAmount: '328.025', // Commission amount
-                      boxColor: Colors.blue, // Color for the first card's box
-                    ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double spacing = constraints.maxWidth < 400 ? 8.0 : 16.0; // Menyesuaikan spacing di device kecil
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: spacing, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCommissionCard(
+                        title: 'Komisi Saat Ini',
+                        commissionAmount: '328.025',
+                        boxColor: Colors.blue,
+                      ),
+                      SizedBox(height: spacing / 2),
+                      _buildCommissionCard(
+                        title: 'Transaksi Jaringan',
+                        commissionAmount: '72',
+                        boxColor: Colors.green,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  GestureDetector(
-                    onTap: () {
-                      // Handle tap for Transaksi Hari ini
-                    },
-                    child: _buildCommissionCard(
-                      title: 'Transaksi Jaringan',
-                      commissionAmount: '72', // Commission amount for the second card
-                      boxColor: Colors.green, // Color for the second card's box
-                    ),
+                ),
+                SizedBox(width: spacing),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCommissionCard(
+                        title: 'Jumlah Downline',
+                        commissionAmount: '174',
+                        boxColor: Colors.red,
+                      ),
+                      SizedBox(height: spacing / 2),
+                      _buildCommissionCard(
+                        title: 'Downline Aktif',
+                        commissionAmount: '72',
+                        boxColor: Colors.orange,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8), // Add space between the last card and the bottom
-                ],
-              ),
-              // Right Column
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, // Space cards evenly within the column
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Handle tap for another action
-                    },
-                    child: _buildCommissionCard(
-                      title: 'Jumlah Downline',
-                      commissionAmount: '174', // Commission amount for the third card
-                      boxColor: Colors.red, // Color for the third card's box
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  GestureDetector(
-                    onTap: () {
-                      // Handle tap for another action
-                    },
-                    child: _buildCommissionCard(
-                      title: 'Downline Aktif',
-                      commissionAmount: '72', // Commission amount for the fourth card
-                      boxColor: Colors.orange, // Color for the fourth card's box
-                    ),
-                  ),
-                  const SizedBox(height: 8), // Add space between the last card and the bottom
-                ],
-              ),
-            ],
-          ),
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+
 
 
   Widget _buildCommissionCard({

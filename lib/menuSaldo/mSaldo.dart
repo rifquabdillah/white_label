@@ -158,8 +158,6 @@ class _SaldoPageScreenState extends State<SaldoPageScreen> {
     );
   }
 
-
-
   Widget _buildProdukItem(String productName) {
     bool isExpanded = _expandedProducts.contains(productName);
     return Container(
@@ -275,8 +273,6 @@ class _SaldoPageScreenState extends State<SaldoPageScreen> {
       ),
     );
   }
-
-
 
   List<Widget> _buildProductDetail(List<Map<String, String>> productDetails) {
     return productDetails.asMap().map((index, detail) {

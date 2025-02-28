@@ -102,7 +102,6 @@ class _viaPlasamallScreenState extends State<viaPlasamallScreen> {
           ),
         ),
       ),
-
       body: SingleChildScrollView( // Wrap the body content in a SingleChildScrollView
         padding: const EdgeInsets.all(0), // Remove vertical and horizontal padding
         child: Column(

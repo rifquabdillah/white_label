@@ -111,7 +111,6 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
           ),
         ),
       ),
-
       body: SingleChildScrollView( // Wrap the body content in a SingleChildScrollView
         padding: const EdgeInsets.all(0), // Remove vertical and horizontal padding
         child: Column(
@@ -293,7 +292,6 @@ class _SaldoPageScreenState extends State<transferBankScreen> {
       ],
     );
   }
-
 
   Widget _buildButtonDeposit(BuildContext context) => Center(
     child: SizedBox(

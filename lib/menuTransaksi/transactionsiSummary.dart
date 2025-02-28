@@ -34,7 +34,6 @@ class _TransactionPageState extends State<TransactionSummary> {
     'Desember 2024',
   ];
 
-
   final List<Map<String, String>> transactions = [
     {'date': '2024-10-01', 'amount': '100', 'status': 'Sukses'},
     {'date': '2024-10-02', 'amount': '50', 'status': 'Dalam Proses'},

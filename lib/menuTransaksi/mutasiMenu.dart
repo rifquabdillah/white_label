@@ -401,7 +401,6 @@ class _MutasiMenuState extends State<MutasiMenu> {
     );
   }
 
-
   void _showFilterDialog() {
     List<String> categories = [
       'Transaksi',

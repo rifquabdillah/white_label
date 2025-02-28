@@ -791,6 +791,4 @@ class _CetakfakturState extends State<CetakFaktur> {
     );
   }
 
-
-
 }

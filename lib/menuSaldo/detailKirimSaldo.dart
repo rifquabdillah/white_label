@@ -93,7 +93,6 @@ class _detailKirimSaldoState extends State<detailKirimSaldo> {
           ),
         ),
       ),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -250,7 +249,6 @@ class _detailKirimSaldoState extends State<detailKirimSaldo> {
       ],
     );
   }
-
   // Tombol kembali ke halaman utama
   Widget _buildBackButton(BuildContext context) {
     return Center(

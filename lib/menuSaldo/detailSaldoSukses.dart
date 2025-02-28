@@ -16,7 +16,6 @@ class _detailSaldooState extends State<detailSaldo> {
   @override
   Widget build(BuildContext context) {
     const String saldo = '2.862.590';
-
     return Scaffold(
       backgroundColor: const Color(0xFFFDF7E6),
       appBar: AppBar(
@@ -53,7 +52,6 @@ class _detailSaldooState extends State<detailSaldo> {
           },
         ),
       ),
-
       body: SingleChildScrollView( // Agar layar tidak overflow
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

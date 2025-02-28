@@ -137,7 +137,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         ),
                         const SizedBox(width: 8.0), // Space after Nama
                          Text(
-                          _bodoh(),
+                          _text(),
                           style: TextStyle(
                             fontSize: 15.0,
                             fontFamily: 'Poppins',
@@ -157,7 +157,6 @@ class _TransaksiPayState extends State<TransaksiPay> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 16.0),
                     _buildDynamicDataRows(),
                     const Row(
@@ -231,7 +230,7 @@ class _TransaksiPayState extends State<TransaksiPay> {
     );
   }
 
-  String _bodoh() {
+  String _text() {
     if (widget.params.containsKey('Masa Aktif')) {
       return '|';
     } else {
@@ -255,7 +254,6 @@ class _TransaksiPayState extends State<TransaksiPay> {
     });
     return Column(children: rows);
   }
-
 
   Widget _buildLabeledRow(String label, String value, {bool isBold = false, Color? textColor}) {
     return Column(
@@ -286,7 +284,6 @@ class _TransaksiPayState extends State<TransaksiPay> {
       ],
     );
   }
-
 // Special handler for Deskripsi to make it clickable
   Widget _buildClickableLabeledRow(String label, String value) {
     return Column(

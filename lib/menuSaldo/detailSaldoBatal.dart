@@ -93,7 +93,6 @@ class _detailSaldoBatalState extends State<detailSaldoBatal> {
           ),
         ),
       ),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

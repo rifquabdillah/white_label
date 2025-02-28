@@ -183,7 +183,6 @@ class _downlinePageState extends State<downlinePage> {
           ),
         ),
       ),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -266,8 +265,6 @@ class _downlinePageState extends State<downlinePage> {
     );
   }
 
-
-
   Widget _buildCommissionCard({
     required String title,
     required String commissionAmount,
@@ -331,7 +328,6 @@ class _downlinePageState extends State<downlinePage> {
       ),
     );
   }
-
 
   Future<Widget> _buildFilledCard({
     required String title,
@@ -569,7 +565,6 @@ class _downlinePageState extends State<downlinePage> {
       ),
     );
   }
-
 
   Widget _buildTransactionItem(String nama, String kodeMember, String kodeUpline, String saldo, String transaksi, String downline) {
     return Padding(
@@ -849,7 +844,6 @@ class _downlinePageState extends State<downlinePage> {
     );
   }
 
-
 // Helper method to build detail rows
   Widget _buildDetailRow(String label, String value) {
     return Row(
@@ -875,9 +869,6 @@ class _downlinePageState extends State<downlinePage> {
       ],
     );
   }
-
-
-
 
 }
 

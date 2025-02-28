@@ -115,7 +115,6 @@ class _PembayaranSaldoPlasamallState extends State<PembayaranSaldoPlasamall> {
 
   Widget _buildNewContent(BuildContext context) {
     String paymentCode = '1001422592903'; // Kode bayar yang akan disalin
-
     return Container(
       height: 220,
       decoration: BoxDecoration(
@@ -261,7 +260,6 @@ class _PembayaranSaldoPlasamallState extends State<PembayaranSaldoPlasamall> {
       ),
     );
   }
-
 
   Widget _buildBankCard(String bankName, String accountNumber,
       String info) {

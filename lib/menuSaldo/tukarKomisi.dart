@@ -98,7 +98,6 @@ class _tukarKomisiState extends State<tukarKomisi> {
           ),
         ),
       ),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -114,7 +113,6 @@ class _tukarKomisiState extends State<tukarKomisi> {
 
   Widget _buildNewContent(BuildContext context) {
     String paymentCode = '328.025'; // Kode bayar yang akan disalin
-
     return Container(
       height: 115,
       decoration: BoxDecoration(

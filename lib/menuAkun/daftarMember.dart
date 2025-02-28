@@ -40,7 +40,6 @@ class _DaftarMemberState extends State<DaftarMember> {
         _markUpController.text.isNotEmpty;
   }
 
-
   void _onDaftarPressed() {
     // Cek apakah semua field sudah diisi
     if (_nameController.text.isEmpty ||
@@ -85,7 +84,6 @@ class _DaftarMemberState extends State<DaftarMember> {
       );
     });
   }
-
 
   @override
   void dispose() {

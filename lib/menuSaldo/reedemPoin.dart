@@ -318,7 +318,6 @@ class _RedeemPoinState extends State<RedeemPoin> {
     );
   }
 
-
   Widget _buildAdditionalSection() {
     return Container(
       color: const Color(0xFFFDF7E6),

@@ -727,7 +727,6 @@ class _CetakFakturTokenState extends State<CetakFakturToken> {
     );
   }
 
-
   Widget _buildButton(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -71,7 +71,6 @@ class _infoAkunState extends State<infoAkun> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: const Color(0xfffaf9f6),
       appBar: PreferredSize(
@@ -118,7 +117,6 @@ class _infoAkunState extends State<infoAkun> {
           );
         },
       ),
-
     );
   }
 

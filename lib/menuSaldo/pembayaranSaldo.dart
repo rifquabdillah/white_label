@@ -218,7 +218,6 @@ class _PembayaranSaldoState extends State<PembayaranSaldo> {
     );
   }
 
-
   Widget _buildTransferLimitWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -529,5 +528,5 @@ class _PembayaranSaldoState extends State<PembayaranSaldo> {
     );
   }
 
-  }
+}
 

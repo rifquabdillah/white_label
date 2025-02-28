@@ -100,7 +100,6 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           ),
         ),
       ),
-
       body: SingleChildScrollView( // Wrap the body content in a SingleChildScrollView
         padding: const EdgeInsets.all(0), // Remove vertical and horizontal padding
         child: Column(
@@ -284,6 +283,4 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       ),
     );
   }
-
-
 }
